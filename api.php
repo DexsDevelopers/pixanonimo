@@ -29,10 +29,18 @@ if (!$wallet) {
     exit;
 }
 
-// Lógica de Comissionamento do Sistema
-$commissionRate = (float)$user['commission_rate'];
-$commissionAmount = ($amount * $commissionRate) / 100;
-$netAmount = $amount - $commissionAmount;
+// Lógica de Comissionamento
+$pixgoFeeRate = 2.0; // Taxa padrão do PixGo.org
+$platformFeeRate = (float)$user['commission_rate']; // Sua taxa configurada no admin
+
+$totalFeesRate = $pixgoFeeRate + $platformFeeRate;
+$netAmount = $amount * (1 - ($totalFeesRate / 100));
+
+// O PixGo.org processa o Pix pelo valor total ($amount).
+// Ele já desconta os 2% dele.
+// Os seus X% ficarão como "saldo" ou serão lidados via split se a API permitir.
+// No modelo atual de carteira direta, o DEPIX que chega na wallet já vem com a taxa do PixGo descontada.
+// Se você quer cobrar algo a mais, o valor que o usuário final recebe será o valor pago menos as duas taxas.
 
 // Chamada para a API do PixGo.org
 $url = 'https://pixgo.org/v2/orders/pix'; 
