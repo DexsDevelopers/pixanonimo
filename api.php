@@ -45,10 +45,14 @@ $netAmount = $amount * (1 - ($totalFeesRate / 100));
 // Chamada para a API do PixGo.org
 $url = 'https://pixgo.org/v2/orders/pix'; 
 
+$baseUrl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+$webhookUrl = $baseUrl . "/webhook.php";
+
 $data = [
     'totalAmount' => $amount,
     'paymentMethod' => 'pix',
     'liquidAddress' => $wallet, 
+    'webhook_url' => $webhookUrl, // Link que o PixGo vai chamar quando o Pix for pago
     'items' => [
         [
             'title' => 'Pagamento Pix Anônimo',

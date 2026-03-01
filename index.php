@@ -60,6 +60,17 @@ $rows = $transactions->fetchAll();
             </header>
 
             <div class="dashboard-grid">
+                <!-- Balance Card -->
+                <div class="card wallet-card glass" style="border-color: var(--primary);">
+                    <h3>Seu Saldo Disponível</h3>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+                        R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
+                    </div>
+                    <?php if($user['balance'] > 0): ?>
+                        <button id="btn-withdraw" class="badge paid" style="border:none; cursor:pointer; padding: 0.8rem 1.5rem; width: 100%; margin-top: 1rem;">Solicitar Saque (DEPIX)</button>
+                    <?php endif; ?>
+                </div>
+
                 <div class="card wallet-card glass">
                     <h3>Sua Carteira Liquid</h3>
                     <div class="wallet-address-box">
