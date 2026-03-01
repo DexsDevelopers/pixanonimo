@@ -37,3 +37,15 @@ INSERT IGNORE INTO settings (`key`, `value`) VALUES ('pixgo_api_key', 'YOUR_KEY_
 -- Sugestão: Alterar imediatamente após o primeiro login
 INSERT IGNORE INTO users (email, password, is_admin, status) 
 VALUES ('admin@pixanonimo.com', '$2y$10$8W9w7zQrk7y2.N8K1Yd6q.H2e3M/Tz9oFjN3.5v9h7f4G7k7q7G7u', TRUE, 'approved');
+
+-- Tabela de Saques
+CREATE TABLE IF NOT EXISTS withdrawals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    liquid_address VARCHAR(255) NOT NULL,
+    status ENUM('pending', 'completed', 'rejected') DEFAULT 'pending',
+    tx_hash VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
