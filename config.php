@@ -1,8 +1,8 @@
 // Configurações do Banco de Dados
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'pixanonimo');
+define('DB_USER', 'u853242961_johanpix');
+define('DB_PASS', 'Lucastav8012@');
+define('DB_NAME', 'u853242961_pixgo');
 
 // Configurações do PixGo.org
 define('PIXGO_API_KEY', 'SUA_API_KEY_AQUI');
