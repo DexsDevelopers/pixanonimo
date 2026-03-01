@@ -1,3 +1,4 @@
+<?php
 // Configurações do Banco de Dados
 define('DB_HOST', 'localhost');
 define('DB_USER', 'u853242961_johanpix');
