@@ -1,0 +1,38 @@
+-- Script de Criação do Banco de Dados - PixAnônimo
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    liquid_address VARCHAR(255),
+    status ENUM('pending', 'approved', 'blocked') DEFAULT 'pending',
+    commission_rate DECIMAL(5,2) DEFAULT 0.00, -- Porcentagem de comissão para este usuário
+    is_admin BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount_brl DECIMAL(10,2) NOT NULL,
+    amount_net_brl DECIMAL(10,2) NOT NULL, -- Valor após a comissão da plataforma
+    depix_amount DECIMAL(20,8) DEFAULT 0.00,
+    pix_id VARCHAR(100), -- ID retornado pelo PixGo
+    status ENUM('pending', 'paid', 'expired', 'failed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS settings (
+    `key` VARCHAR(50) PRIMARY KEY,
+    `value` TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Configurações Iniciais
+INSERT IGNORE INTO settings (`key`, `value`) VALUES ('global_commission', '2.0');
+INSERT IGNORE INTO settings (`key`, `value`) VALUES ('pixgo_api_key', 'YOUR_KEY_HERE');
+
+-- Criar Admin Inicial (Senha: admin123 - Use password_hash para produção)
+-- Sugestão: Alterar imediatamente após o primeiro login
+INSERT IGNORE INTO users (email, password, is_admin, status) 
+VALUES ('admin@pixanonimo.com', '$2y$10$8W9w7zQrk7y2.N8K1Yd6q.H2e3M/Tz9oFjN3.5v9h7f4G7k7q7G7u', TRUE, 'approved');
