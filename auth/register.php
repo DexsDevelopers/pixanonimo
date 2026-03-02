@@ -82,10 +82,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div style="margin-bottom: 1.2rem;">
-                <label style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">Chave PIX (CPF/Telefone)</label>
+                <label style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">Chave PIX (Qualquer Tipo)</label>
                 <div style="position: relative;">
                     <i class="fas fa-key" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 0.85rem;"></i>
-                    <input type="text" name="pix_key" id="pix_key" required placeholder="000.000.000-00 ou (00) 00000-0000" class="input-glass"
+                    <input type="text" name="pix_key" id="pix_key" required placeholder="E-mail, CPF, Telefone ou Chave Aleatória" class="input-glass"
                            style="width: 100%; padding: 0.9rem 1rem 0.9rem 2.6rem; border-radius: 12px; font-size: 0.95rem;">
                 </div>
             </div>
@@ -110,16 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </p>
         </div>
     </div>
-    <script src="https://unpkg.com/imask"></script>
-    <script>
-        const pixInput = document.getElementById('pix_key');
-        const maskOptions = {
-            mask: [
-                { mask: '000.000.000-00' },
-                { mask: '(00) 00000-0000' }
-            ]
-        };
-        IMask(pixInput, maskOptions);
-    </script>
+    <!-- Filtro removido para aceitar todos os tipos de chaves PIX (E-mail, CPF, Telefone, Aleatória) -->
 </body>
 </html>
