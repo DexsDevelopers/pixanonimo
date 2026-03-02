@@ -105,19 +105,36 @@ try {
         </div>
     </div>
 
+    <!-- Modal de Erro -->
+    <div class="modal hidden" id="modal-error">
+        <div class="modal-content">
+            <div class="error-icon">✕</div>
+            <h2 style="color: #fff; margin-bottom: 1rem;">Ops! Algo deu errado</h2>
+            <p id="error-message" style="color: var(--text-dim); line-height: 1.6; margin-bottom: 2rem;">
+                Não foi possível processar sua solicitação.
+            </p>
+            <button class="btn-primary" style="background: var(--danger);" onclick="document.getElementById('modal-error').classList.add('hidden')">Tentar Novamente</button>
+        </div>
+    </div>
+
     <script>
+    function showError(msg) {
+        document.getElementById('error-message').innerText = msg;
+        document.getElementById('modal-error').classList.remove('hidden');
+    }
+
     document.getElementById('btn-confirm-withdraw').addEventListener('click', async () => {
         const amountInput = document.getElementById('withdraw-amount');
         const amount = amountInput.value;
         const balance = <?php echo (float)$user['balance']; ?>;
         
         if (!amount || parseFloat(amount) < 50) {
-            alert('O valor mínimo para saque é R$ 50,00.');
+            showError('O valor mínimo para saque é R$ 50,00.');
             return;
         }
 
         if (parseFloat(amount) > balance) {
-            alert('❌ Saldo Insuficiente!\nSeu saldo atual é R$ ' + balance.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+            showError('Saldo Insuficiente! Seu saldo atual é R$ ' + balance.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
             return;
         }
 
@@ -138,16 +155,16 @@ try {
                 document.getElementById('success-amount').innerText = 'R$ ' + parseFloat(amount).toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 document.getElementById('modal-success').classList.remove('hidden');
             } else {
-                alert(data.error || 'Erro ao processar saque.');
+                showError(data.error || 'Erro ao processar saque.');
             }
         } catch (err) {
-            alert('Erro de conexão ao processar saque.');
+            showError('Erro de conexão ao processar saque.');
         } finally {
             btn.innerText = originalText;
             btn.disabled = false;
         }
     });
     </script>
-    <script src="script.js?v=1.7"></script>
+    <script src="script.js?v=1.8"></script>
 </body>
 </html>

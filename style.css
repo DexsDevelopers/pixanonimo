@@ -320,18 +320,28 @@ input {
     transform: scale(1);
 }
 
-.success-icon {
+.success-icon,
+.error-icon {
     width: 80px;
     height: 80px;
-    background: rgba(0, 255, 136, 0.1);
-    color: var(--primary);
     font-size: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     margin: 0 auto 1.5rem;
+}
+
+.success-icon {
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--primary);
     border: 2px solid rgba(0, 255, 136, 0.2);
+}
+
+.error-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 2px solid rgba(239, 68, 68, 0.2);
 }
 
 .qr-placeholder {
