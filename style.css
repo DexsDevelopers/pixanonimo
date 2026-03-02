@@ -666,6 +666,7 @@ a,
     transition: border-color .2s, box-shadow .2s;
     font-family: var(--font);
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .amount-input:focus {
@@ -677,10 +678,12 @@ a,
 .amount-input::-webkit-outer-spin-button,
 .amount-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .amount-input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1514,6 +1517,7 @@ input:-webkit-autofill:focus {
     letter-spacing: -2px;
     background: linear-gradient(180deg, #fff 0%, #777 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -1525,25 +1529,27 @@ input:-webkit-autofill:focus {
     line-height: 1.5;
 }
 
-/* Floating 3D Cards System */
+/* Floating 3D Cards System - Re-engineered for maximum impact */
 .hero-visual-wrapper {
     max-width: 1000px;
-    margin: 4rem auto 6rem;
-    height: 450px;
+    margin: 4rem auto 8rem;
+    height: 500px;
     position: relative;
-    perspective: 1200px;
+    perspective: 2000px;
 }
 
 .floating-card {
     position: absolute;
-    background: rgba(255, 255, 255, 0.035);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px;
-    padding: 2.2rem;
-    box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.6);
-    transition: all 0.5s var(--ease);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 32px;
+    padding: 2.5rem;
+    box-shadow:
+        0 40px 100px -20px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    transition: all 0.6s var(--ease);
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
@@ -1551,110 +1557,124 @@ input:-webkit-autofill:focus {
     transform-style: preserve-3d;
 }
 
+/* Glass shine overlay effect */
+.floating-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 50%, rgba(255, 255, 255, 0.06) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
 .card-1 {
-    width: 340px;
+    width: 360px;
     z-index: 3;
-    left: 5%;
-    top: 55px;
-    animation: float1 8s ease-in-out infinite;
+    left: 2%;
+    top: 60px;
+    animation: floatV1 8s ease-in-out infinite;
 }
 
 .card-2 {
-    width: 300px;
+    width: 320px;
     z-index: 2;
-    right: 8%;
-    top: 20px;
-    background: rgba(16, 185, 129, 0.06);
-    border-color: rgba(16, 185, 129, 0.2);
-    animation: float2 10s ease-in-out infinite;
+    right: 5%;
+    top: 30px;
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    animation: floatV2 10s ease-in-out infinite;
 }
 
 .card-3 {
-    width: 320px;
+    width: 340px;
     z-index: 4;
-    bottom: 20px;
-    left: 33%;
-    background: rgba(99, 102, 241, 0.06);
-    border-color: rgba(99, 102, 241, 0.2);
-    animation: float3 9s ease-in-out infinite;
+    bottom: -20px;
+    left: 30%;
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.35);
+    animation: floatV3 9s ease-in-out infinite;
 }
 
-@keyframes float1 {
+@keyframes floatV1 {
 
     0%,
     100% {
-        transform: translateY(0) rotateY(-18deg) rotateX(12deg);
+        transform: translate3d(0, 0, 0) rotateY(-22deg) rotateX(15deg);
     }
 
     50% {
-        transform: translateY(-25px) rotateY(-12deg) rotateX(6deg);
+        transform: translate3d(0, -30px, 40px) rotateY(-15deg) rotateX(10deg);
     }
 }
 
-@keyframes float2 {
+@keyframes floatV2 {
 
     0%,
     100% {
-        transform: translateY(0) rotateY(18deg) rotateX(8deg);
+        transform: translate3d(0, 0, 0) rotateY(25deg) rotateX(10deg);
     }
 
     50% {
-        transform: translateY(-20px) rotateY(24deg) rotateX(12deg);
+        transform: translate3d(0, -25px, 20px) rotateY(32deg) rotateX(16deg);
     }
 }
 
-@keyframes float3 {
+@keyframes floatV3 {
 
     0%,
     100% {
-        transform: translateY(0) translateZ(60px) rotateX(-5deg);
+        transform: translate3d(0, 0, 80px) rotateX(-8deg);
     }
 
     50% {
-        transform: translateY(-30px) translateZ(90px) rotateX(2deg);
+        transform: translate3d(0, -40px, 120px) rotateX(4deg);
     }
 }
 
 .floating-card i {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--green);
-    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));
 }
 
 .floating-card h4 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 700;
     margin: 0;
     color: #fff;
 }
 
 .floating-card p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-2);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1024px) {
     .hero-visual-wrapper {
         perspective: none;
         height: auto;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 4rem;
         padding: 2rem 0;
     }
 
     .floating-card {
-        position: relative;
+        position: relative !important;
         width: 100% !important;
+        max-width: 480px;
         left: auto !important;
         right: auto !important;
         top: auto !important;
         bottom: auto !important;
         transform: none !important;
-        animation: none !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.8s var(--ease) both !important;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
     }
 }
 
