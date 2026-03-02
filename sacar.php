@@ -12,7 +12,7 @@ try {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
 } catch (PDOException $e) {
-    die("Erro no Banco de Dados: As colunas necessárias não foram encontradas. <br>Certifique-se de acessar <b>" . (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/migrate_v2.php</b> para atualizar o sistema.");
+    die("Erro no Banco de Dados: " . $e->getMessage() . " <br><br>Certifique-se de acessar <b>" . (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/migrate_v2.php</b> para atualizar o sistema.");
 }
 ?>
 <!DOCTYPE html>
