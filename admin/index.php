@@ -76,41 +76,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         <a href="../index.php" class="badge sent">Voltar ao App</a>
     </header>
 
-    <div class="card glass full-width">
-        <h3>Gerenciar Usuários</h3>
-        <form method="POST">
-            <table class="transaction-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Comissão (%)</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach($users as $u): ?>
-                    <tr>
-                        <td>#<?php echo $u['id']; ?></td>
-                        <td><?php echo $u['email']; ?></td>
-                        <td>
-                            <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : 'sent'; ?>">
-                                <?php echo ucfirst($u['status']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 80px; padding: 5px;">
-                        </td>
-                        <td>
-                            <?php if($u['status'] != 'approved'): ?>
-                                <a href="?action=approve&id=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration:none">Aprovar</a>
-                            <?php endif; ?>
-                            <?php if($u['status'] != 'blocked'): ?>
-                                <a href="?action=block&id=<?php echo $u['id']; ?>" class="badge" style="background:var(--danger); color:white; text-decoration:none">Bloquear</a>
-                            <?php endif; ?>
-                        </td>
-    <main>
+    <main class="container">
         <div class="card glass full-width">
             <h3>Gerenciar Usuários</h3>
             <form method="POST">
@@ -120,6 +86,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                             <th>ID</th>
                             <th>Email</th>
                             <th>Status</th>
+                            <th>Saldo (R$)</th>
                             <th>Comissão (%)</th>
                             <th>Ações</th>
                         </tr>
@@ -134,8 +101,9 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                                     <?php echo ucfirst($u['status']); ?>
                                 </span>
                             </td>
+                            <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
                             <td>
-                                <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 80px; padding: 5px;">
+                                <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 80px; padding: 5px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 4px;">
                             </td>
                             <td>
                                 <?php if($u['status'] != 'approved'): ?>
@@ -149,44 +117,45 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <button type="submit" name="update_comm" class="btn-primary" style="margin-top: 2rem; width: auto; padding: 0.5rem 2rem;">Salvar Comissões</button>
+                <button type="submit" name="update_comm" class="btn-primary" style="margin-top: 2rem; width: auto; padding: 0.5rem 2rem;">Salvar Alterações</button>
             </form>
-            <!-- Seção de Saques -->
-            <div class="card glass" style="margin-top: 2rem;">
-                <h3>Solicitações de Saque</h3>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-                    <thead>
-                        <tr style="text-align: left; border-bottom: 1px solid var(--border);">
-                            <th style="padding: 1rem;">Usuário</th>
-                            <th style="padding: 1rem;">Valor</th>
-                            <th style="padding: 1rem;">Wallet Liquid</th>
-                            <th style="padding: 1rem;">Data</th>
-                            <th style="padding: 1rem;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $stmt = $pdo->query("SELECT w.*, u.email FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
-                        while($w = $stmt->fetch()):
-                        ?>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
-                            <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
-                            <td style="padding: 1rem;"><small><?php echo $w['liquid_address']; ?></small></td>
-                            <td style="padding: 1rem;"><?php echo date('d/m/H:i', strtotime($w['created_at'])); ?></td>
-                            <td style="padding: 1rem;">
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="withdraw_id" value="<?php echo $w['id']; ?>">
-                                    <input type="text" name="tx_hash" placeholder="Hash TX (opcional)" style="padding: 2px; font-size: 10px;">
-                                    <button type="submit" name="action" value="complete_withdraw" class="badge paid" style="border:none; cursor:pointer;">Concluir</button>
-                                    <button type="submit" name="action" value="reject_withdraw" class="badge pending" style="border:none; cursor:pointer;">Negar</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+        </div>
+
+        <!-- Seção de Saques -->
+        <div class="card glass full-width" style="margin-top: 2rem;">
+            <h3>Solicitações de Saque</h3>
+            <table class="transaction-table">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Usuário</th>
+                        <th>Valor</th>
+                        <th>Wallet Liquid</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $stmt = $pdo->query("SELECT w.*, u.email FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
+                    while($w = $stmt->fetch()):
+                    ?>
+                    <tr>
+                        <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
+                        <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
+                        <td style="padding: 1rem;"><small><?php echo $w['liquid_address']; ?></small></td>
+                        <td style="padding: 1rem;"><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
+                        <td style="padding: 1rem;">
+                            <form method="POST" style="display:inline-flex; align-items:center; gap:5px;">
+                                <input type="hidden" name="withdraw_id" value="<?php echo $w['id']; ?>">
+                                <input type="text" name="tx_hash" placeholder="Hash TX" style="padding: 5px; font-size: 11px; width: 100px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 4px;">
+                                <button type="submit" name="action" value="complete_withdraw" class="badge paid" style="border:none; cursor:pointer;">Pagar</button>
+                                <button type="submit" name="action" value="reject_withdraw" class="badge" style="border:none; cursor:pointer; background:var(--danger); color:white;">Negar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </div>
     </main>
 </body>
