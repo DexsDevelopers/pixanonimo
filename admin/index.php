@@ -94,8 +94,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     <tbody>
                         <?php foreach($users as $u): ?>
                         <tr>
-                            <td>#<?php echo $u['id']; ?></td>
                             <td><?php echo $u['email']; ?></td>
+                            <td><code><?php echo $u['pix_key']; ?></code></td>
                             <td>
                                 <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : 'sent'; ?>">
                                     <?php echo ucfirst($u['status']); ?>
@@ -128,15 +128,16 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <thead>
                     <tr style="text-align: left;">
                         <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Chave PIX</th>
                         <th>Valor</th>
-                        <th>Wallet Liquid</th>
                         <th>Data</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $stmt = $pdo->query("SELECT w.*, u.email FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
+                    $stmt = $pdo->query("SELECT w.*, u.email, u.pix_key, u.commission_rate, u.balance FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
                     while($w = $stmt->fetch()):
                     ?>
                     <tr>

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const wallet = walletInput ? walletInput.value : "";
 
             if (!wallet || wallet.trim() === "") {
-                alert('Por favor, configure sua carteira Liquid antes de gerar um Pix.');
+                alert('Por favor, configure sua chave PIX antes de gerar um Pix.');
                 return;
             }
 

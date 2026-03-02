@@ -16,10 +16,10 @@ if (empty($wallet)) {
 }
 
 $userId = $_SESSION['user_id'];
-$stmt = $pdo->prepare("UPDATE users SET liquid_address = ? WHERE id = ?");
+$stmt = $pdo->prepare("UPDATE users SET pix_key = ? WHERE id = ?");
 if ($stmt->execute([$wallet, $userId])) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['error' => 'Erro ao atualizar banco de dados']);
+    echo json_encode(['error' => 'Erro ao atualizar chave PIX.']);
 }
 ?>

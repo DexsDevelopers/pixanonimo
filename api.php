@@ -22,9 +22,9 @@ if ($user['status'] != 'approved') {
     exit;
 }
 
-$wallet = $user['liquid_address'];
+$wallet = $user['pix_key'];
 if (!$wallet) {
-    echo json_encode(['error' => 'Configure sua carteira Liquid no perfil antes de gerar um Pix.']);
+    echo json_encode(['error' => 'Configure sua chave PIX no perfil antes de gerar um Pix.']);
     exit;
 }
 

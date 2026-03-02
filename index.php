@@ -67,17 +67,20 @@ $rows = $transactions->fetchAll();
                     </div>
                     <?php if($user['balance'] > 0): ?>
                         <button id="btn-withdraw" class="badge paid" style="border:none; cursor:pointer; padding: 0.8rem 1.5rem; width: 100%; margin-top: 1rem;">Solicitar Saque (DEPIX)</button>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
+                            <i class="fas fa-info-circle"></i> Os saques podem levar até 2 dias úteis para serem processados.
+                        </p>
                     <?php endif; ?>
                 </div>
 
                 <div class="card wallet-card glass">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="margin: 0;">Sua Carteira Liquid</h3>
+                        <h3 style="margin: 0;">Sua Chave PIX</h3>
                         <button id="btn-edit-wallet" class="badge sent" style="border:none; cursor:pointer; font-size: 0.7rem;">Editar</button>
                     </div>
                     <div class="wallet-address-box">
-                        <input type="text" id="wallet-input" value="<?php echo $user['liquid_address']; ?>" 
-                               placeholder="Endereço Liquid (lq1...)" 
+                        <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>" 
+                               placeholder="Sua Chave PIX" 
                                style="background: transparent; border: none; color: white; width: 100%; font-family: inherit; font-size: 0.9rem;" 
                                readonly>
                         <button id="btn-copy-wallet" class="btn-icon" title="Copiar">📋</button>
@@ -97,6 +100,9 @@ $rows = $transactions->fetchAll();
                     <button id="btn-generate" class="btn-primary" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
                         <?php echo $user['status'] == 'approved' ? 'Gerar QR Code Pix' : 'Conta Pendente'; ?>
                     </button>
+                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
+                        Importante: O valor pago será creditado em seu saldo após confirmação.
+                    </p>
                 </div>
 
                 <div class="card history-card glass full-width">
