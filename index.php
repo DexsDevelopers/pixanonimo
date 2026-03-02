@@ -50,7 +50,7 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=5.1">
+    <link rel="stylesheet" href="style.css?v=7.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -108,66 +108,73 @@ $rows = $transactions->fetchAll();
 
             <!-- Analytics Cards -->
             <div class="analytics-grid">
-                <div class="card glass">
+                <div class="stat-card green-accent">
                     <span class="stat-label">Volume Hoje</span>
                     <div class="stat-value" id="stat-today">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub"><i class="fas fa-arrow-up"></i> últimas 24h</div>
+                    <div class="stat-sub green"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
-                <div class="card glass">
+                <div class="stat-card blue-accent">
                     <span class="stat-label">Volume Mensal</span>
                     <div class="stat-value" id="stat-month">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
                     <div class="stat-sub">Mês atual</div>
                 </div>
-                <div class="card glass">
-                    <span class="stat-label">Total Transacionado</span>
+                <div class="stat-card">
+                    <span class="stat-label">Total Vitalício</span>
                     <div class="stat-value" id="stat-total">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub">Vitalício</div>
+                    <div class="stat-sub">Acumulado</div>
                 </div>
-                <div class="card glass">
+                <div class="stat-card amber-accent">
                     <span class="stat-label">Pendentes</span>
-                    <div class="stat-value" id="stat-pending" style="color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
+                    <div class="stat-value" id="stat-pending" style="color: var(--amber);"><?php echo $stats['pending_count']; ?></div>
                     <div class="stat-sub">Aguardando pagamento</div>
                 </div>
             </div>
 
             <div class="dashboard-grid">
                 <!-- Balance Card -->
-                <div class="card wallet-card glass">
-                    <div class="card-icon-row">
-                        <div class="card-icon"><i class="fas fa-wallet"></i></div>
-                        <h3>Saldo Disponível</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                            <h3 class="card-title">Saldo Disponível</h3>
+                        </div>
                     </div>
-                    <div class="balance-value" id="stat-balance">
-                        R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
+                    <div class="balance-display" id="stat-balance">
+                        <span class="currency">R$</span><?php echo number_format($user['balance'], 2, ',', '.'); ?>
                     </div>
                     <?php if($user['balance'] > 0): ?>
                         <a href="sacar.php" class="btn-primary btn-withdraw">
-                            <i class="fas fa-arrow-right"></i> Solicitar Saque
+                            <i class="fas fa-arrow-up-right-from-square"></i> Solicitar Saque
                         </a>
                         <p class="card-hint">
-                            <i class="fas fa-info-circle"></i> Mínimo para saque: R$ 50,00
+                            <i class="fas fa-info-circle"></i> Saque mínimo: R$ 50,00
+                        </p>
+                    <?php else: ?>
+                        <p class="card-hint" style="margin-top:.5rem;">
+                            <i class="fas fa-info-circle"></i> Gere cobranças para acumular saldo
                         </p>
                     <?php endif; ?>
                 </div>
 
                 <!-- PIX Key Card -->
-                <div class="card wallet-card glass">
-                    <div class="card-header-row">
-                        <div class="card-icon-row">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
                             <div class="card-icon"><i class="fas fa-key"></i></div>
-                            <h3>Sua Chave PIX</h3>
+                            <h3 class="card-title">Chave PIX</h3>
                         </div>
                         <button id="btn-edit-wallet" class="btn-edit">
                             <i class="fas fa-pen"></i> Editar
                         </button>
                     </div>
-                    <div class="wallet-address-box">
-                        <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>" 
-                               placeholder="Sua Chave PIX" 
-                               class="wallet-input-field"
+                    <div class="pix-key-box">
+                        <input type="text" id="wallet-input"
+                               value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>"
+                               placeholder="Sua Chave PIX"
+                               class="pix-key-input"
                                readonly>
-                        <button id="btn-copy-wallet" class="btn-icon" title="Copiar">📋</button>
-                        <button id="btn-save-wallet" class="btn-icon hidden" title="Salvar">💾</button>
+                        <button id="btn-copy-wallet" class="btn-icon-sm" title="Copiar"><i class="far fa-copy"></i></button>
+                        <button id="btn-save-wallet" class="btn-icon-sm hidden" title="Salvar"><i class="far fa-save"></i></button>
                     </div>
                     <?php if($user['status'] == 'pending'): ?>
                         <p class="card-warning"><i class="fas fa-clock"></i> Aguardando aprovação do admin.</p>
@@ -175,31 +182,36 @@ $rows = $transactions->fetchAll();
                 </div>
 
                 <!-- Generate Card -->
-                <div class="card generate-card glass">
-                    <div class="card-icon-row">
-                        <div class="card-icon"><i class="fas fa-qrcode"></i></div>
-                        <h3>Gerar Nova Cobrança</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-qrcode"></i></div>
+                            <h3 class="card-title">Gerar Cobrança</h3>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>Valor (BRL)</label>
-                        <input type="number" id="amount" placeholder="0,00" step="0.01" min="10" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
-                        <p class="card-hint">Mínimo: R$ 10,00</p>
+                    <div class="amount-input-wrap">
+                        <span class="amount-prefix">R$</span>
+                        <input type="number" id="amount" class="amount-input" placeholder="0,00" step="0.01" min="10"
+                               <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
                     </div>
-                    <button id="btn-generate" class="btn-primary" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
+                    <p class="card-hint" style="margin-bottom:.75rem;">Mínimo: R$ 10,00</p>
+                    <button id="btn-generate" class="btn-primary"
+                            <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
                         <i class="fas fa-bolt"></i>
                         <?php echo $user['status'] == 'approved' ? 'Gerar QR Code Pix' : 'Conta Pendente'; ?>
                     </button>
-                    <p class="card-hint" style="text-align:center; margin-top: 0.8rem;">
-                        Crédito após confirmação do pagamento.
-                    </p>
+                    <p class="card-hint center">Crédito após confirmação.</p>
                 </div>
 
                 <!-- History Card -->
-                <div class="card history-card glass full-width">
-                    <div class="card-icon-row">
-                        <div class="card-icon"><i class="fas fa-history"></i></div>
-                        <h3>Histórico Recente</h3>
+                <div class="card full-width">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-history"></i></div>
+                            <h3 class="card-title">Histórico Recente</h3>
+                        </div>
                     </div>
+                    <div class="table-wrap">
                     <table class="transaction-table" id="transactions-table">
                         <thead>
                             <tr>
@@ -260,6 +272,7 @@ $rows = $transactions->fetchAll();
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </main>
