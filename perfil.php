@@ -33,7 +33,7 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jfif?v=1.1" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">

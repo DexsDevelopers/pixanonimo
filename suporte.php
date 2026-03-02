@@ -37,7 +37,7 @@ $user = $stmt->fetch();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo">
-            <img src="ghost.jfif" class="logo-img" style="height: 24px;">
+            <img src="ghost.jfif?v=1.1" class="logo-img" style="height: 24px;">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -46,7 +46,7 @@ $user = $stmt->fetch();
     <div class="app-container">
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif" class="logo-img">
+                <img src="ghost.jfif?v=1.1" class="logo-img">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
