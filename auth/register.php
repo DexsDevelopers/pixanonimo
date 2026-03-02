@@ -31,12 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix - Cadastro</title>
     <link rel="stylesheet" href="../style.css?v=5.0">
 </head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
-    <div class="card glass" style="width: 100%; max-width: 450px; text-align: center;">
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: #000; background-image: none;">
+    <div class="card glass" style="width: 100%; max-width: 450px; text-align: center; background: transparent; border: none; box-shadow: none;">
         <img src="../ghost.jpg?v=5.0" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
         <h2>Criar Conta</h2>
         <?php if(isset($_GET['error']) && $_GET['error'] == 'exists'): ?>
