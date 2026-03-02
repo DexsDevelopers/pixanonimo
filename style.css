@@ -349,9 +349,9 @@ input {
 }
 
 .success-icon {
-    background: rgba(0, 255, 136, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--primary);
-    border: 2px solid rgba(0, 255, 136, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .error-icon {
@@ -400,7 +400,7 @@ input {
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         height: 100vh;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
-        background: rgba(15, 23, 42, 0.98);
+        background: rgba(0, 0, 0, 0.98);
     }
 
     .sidebar.active {
@@ -431,7 +431,7 @@ input {
         align-items: center;
         justify-content: space-between;
         padding: 0.8rem 1rem;
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(0, 0, 0, 0.98);
         backdrop-filter: blur(15px);
         position: fixed;
         top: 0;
