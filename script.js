@@ -1,14 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Dashboard Script Carregado v1.3');
+
     const btnGenerate = document.getElementById('btn-generate');
     const modalQr = document.getElementById('modal-qr');
     const closeModal = document.querySelector('.close-modal');
     const amountInput = document.getElementById('amount');
     const modalAmount = document.getElementById('modal-amount');
-    const transactionHistory = document.getElementById('transaction-history');
 
     // Gerar Pix via Backend PHP
     btnGenerate.addEventListener('click', async () => {
-        const value = amountInput.value;
+        let value = amountInput.value.replace(',', '.');
         const wallet = document.getElementById('wallet-input').value;
 
         if (!wallet || wallet.trim() === "") {
