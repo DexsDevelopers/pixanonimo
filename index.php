@@ -1,11 +1,6 @@
 <?php
 require_once 'includes/db.php';
-
-// Se já estiver logado, redireciona para o dashboard
-if (isLoggedIn()) {
-    header("Location: dashboard.php");
-    exit;
-}
+// Removemos o redirecionamento automático para permitir que usuários logados vejam a VSL se desejarem.
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -34,8 +29,12 @@ if (isLoggedIn()) {
             <a href="suporte.php" class="lp-nav-link">Suporte</a>
         </div>
         <div class="lp-auth-buttons">
-            <a href="auth/login.php" class="btn-lp-outline">Entrar</a>
-            <a href="auth/register.php" class="btn-lp-primary">Criar Conta</a>
+            <?php if(isLoggedIn()): ?>
+                <a href="dashboard.php" class="btn-lp-primary">Acessar Painel</a>
+            <?php else: ?>
+                <a href="auth/login.php" class="btn-lp-outline">Entrar</a>
+                <a href="auth/register.php" class="btn-lp-primary">Criar Conta</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -45,16 +44,39 @@ if (isLoggedIn()) {
         <h1>Receba com Total <br><span style="color: var(--green);">Blindagem e Sigilo</span></h1>
         <p>Pare de se preocupar com bloqueios judiciais ou exposição de dados. O Ghost Pix é a primeira plataforma de liquidação blindada focada em privacidade absoluta.</p>
         
-        <!-- VSL Placeholder -->
-        <div class="vsl-container" id="vsl">
-            <div class="vsl-placeholder">
-                <div class="vsl-play-btn">
-                    <i class="fas fa-play"></i>
+        <!-- Visual Hero: 3D Floating Glass Cards -->
+        <div class="hero-visual-wrapper">
+            <div class="floating-card card-1">
+                <i class="fas fa-shield-virus"></i>
+                <h4>Blindagem Total</h4>
+                <p>Seu CPF nunca aparece. Transações 100% anônimas via liquidadora.</p>
+                <div style="height: 2px; width: 40px; background: var(--green); border-radius: 10px;"></div>
+            </div>
+            
+            <div class="floating-card card-2">
+                <i class="fas fa-university"></i>
+                <h4>Anti-Bacen</h4>
+                <p>Imunidade a bloqueios judiciais instantâneos.</p>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); opacity: 0.5;"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); opacity: 0.2;"></span>
                 </div>
+            </div>
+
+            <div class="floating-card card-3">
+                <i class="fas fa-bolt"></i>
+                <h4>Webhook Real-time</h4>
+                <p>Liquidado e confirmado em 2 segundos. Sem delay.</p>
+                <div style="background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; font-family: monospace; font-size: 10px; color: var(--green);">status: success</div>
             </div>
         </div>
 
-        <a href="auth/register.php" class="btn-lp-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Quero minha conta blindada</a>
+        <?php if(isLoggedIn()): ?>
+            <a href="dashboard.php" class="btn-lp-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Acessar Meu Painel</a>
+        <?php else: ?>
+            <a href="auth/register.php" class="btn-lp-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Quero minha conta blindada</a>
+        <?php endif; ?>
     </header>
 
     <!-- Features Section -->
@@ -140,8 +162,12 @@ if (isLoggedIn()) {
             <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <div class="footer-links">
-            <a href="auth/login.php" class="lp-nav-link">Login</a>
-            <a href="auth/register.php" class="lp-nav-link">Cadastrar</a>
+            <?php if(isLoggedIn()): ?>
+                <a href="dashboard.php" class="lp-nav-link">Dashboard</a>
+            <?php else: ?>
+                <a href="auth/login.php" class="lp-nav-link">Login</a>
+                <a href="auth/register.php" class="lp-nav-link">Cadastrar</a>
+            <?php endif; ?>
             <a href="suporte.php" class="lp-nav-link">Suporte</a>
         </div>
         <p>© 2026 Ghost Pix. Todos os direitos reservados. Foco em Privacidade e Blindagem.</p>
