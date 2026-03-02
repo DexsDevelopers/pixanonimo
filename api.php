@@ -76,6 +76,7 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     echo json_encode([
         'status' => 'success',
         'qrCodeImage' => $qrImage,
+        'pix_code' => '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD',
         'amount' => $amount,
         'message' => 'Simulação ativa. Configure a API KEY real para processar.'
     ]);
@@ -111,6 +112,7 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
         'success' => true,
         'pix_id' => $pixId,
         'qrCodeImage' => $qrImage,
+        'pix_code' => $pixData['pix_code'] ?? ($pixData['payload'] ?? ''),
         'amount' => $amount
     ]);
 } else {

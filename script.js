@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         qrPlaceholder.innerHTML = `<img src="${data.qrCodeImage}" alt="QR Code Pix" style="width:100%">`;
                     }
 
+                    const pixCodeText = document.getElementById('pix-code-text');
+                    if (pixCodeText) {
+                        pixCodeText.value = data.pix_code || "";
+                    }
+
                     if (modalQr) modalQr.classList.remove('hidden');
 
                     // Iniciar Polling de Status
@@ -176,9 +181,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const addr = walletInput.value;
             if (addr) {
                 navigator.clipboard.writeText(addr);
-                alert('Endereço copiado!');
+                alert('Chave PIX copiada!');
             } else {
-                alert('Nenhuma carteira para copiar.');
+                alert('Nenhuma chave para copiar.');
+            }
+        });
+    }
+
+    const btnCopyPix = document.getElementById('btn-copy-pix');
+    const pixCodeText = document.getElementById('pix-code-text');
+    if (btnCopyPix && pixCodeText) {
+        btnCopyPix.addEventListener('click', () => {
+            const code = pixCodeText.value;
+            if (code) {
+                navigator.clipboard.writeText(code);
+                const originalText = btnCopyPix.innerText;
+                btnCopyPix.innerText = 'Copiado!';
+                btnCopyPix.style.background = '#22c55e'; // Verde Ghost
+                setTimeout(() => {
+                    btnCopyPix.innerText = originalText;
+                    btnCopyPix.style.background = '';
+                }, 2000);
             }
         });
     }

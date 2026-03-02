@@ -20,7 +20,7 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link rel="stylesheet" href="style.css?v=2.4">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -167,11 +167,29 @@ $rows = $transactions->fetchAll();
             <span class="close-modal">&times;</span>
             <h2>Escaneie o Pix</h2>
             <div class="qr-placeholder"></div>
-            <p class="qr-value">Valor: <strong id="modal-amount">R$ 0,00</strong></p>
+            
+            <div class="pix-copy-area" style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; text-align: left;">Copia e Cola:</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <textarea id="pix-code-text" readonly style="flex-grow: 1; background: transparent; border: none; color: white; font-size: 0.8rem; resize: none; height: 45px; font-family: monospace;"></textarea>
+                    <button id="btn-copy-pix" class="btn-primary" style="padding: 0 1rem; font-size: 0.8rem;">Copiar</button>
+                </div>
+            </div>
+
+            <div class="pix-warning" style="margin-top: 1.5rem; background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2); text-align: left;">
+                <p style="font-size: 0.8rem; color: #f59e0b; font-weight: 600; margin-bottom: 0.4rem;">⚠️ Atenção: Evite valores repetidos</p>
+                <p style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.4;">
+                    Para sua segurança, não gere dois Pix com o mesmo valor exato em menos de 20 min. 
+                    <strong>Altere os centavos</strong> se precisar de uma nova cobrança. <br>
+                    <em>Exemplo: R$ 50,00 e R$ 50,01</em>
+                </p>
+            </div>
+
+            <p class="qr-value" style="margin-top: 1.5rem;">Valor: <strong id="modal-amount">R$ 0,00</strong></p>
             <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 10px;">O DEPIX será enviado para sua carteira após o pagamento.</p>
         </div>
     </div>
 
-    <script src="script.js?v=1.5"></script>
+    <script src="script.js?v=2.3"></script>
 </body>
 </html>
