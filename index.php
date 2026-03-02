@@ -56,7 +56,7 @@ $rows = $transactions->fetchAll();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="im the ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -66,7 +66,7 @@ $rows = $transactions->fetchAll();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="im the ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -81,7 +81,7 @@ $rows = $transactions->fetchAll();
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="avatar" style="overflow: hidden; border: 2px solid var(--primary);">
-                        <img src="im the ghost.jfif" class="avatar-img" alt="Avatar">
+                        <img src="ghost.jfif" class="avatar-img" alt="Avatar">
                     </div>
                     <div class="user-info">
                         <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
@@ -284,7 +284,7 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=3.9"></script>
+    <script src="script.js?v=4.0"></script>
 
 </body>
 </html>

@@ -33,13 +33,14 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="im the ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
                 <a href="index.php" class="nav-item">📊 Dashboard</a>
                 <a href="sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item active">👤 Perfil</a>
+                <a href="suporte.php" class="nav-item">🎧 Suporte</a>
                 <?php if(isAdmin()): ?>
                     <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
                 <?php endif; ?>

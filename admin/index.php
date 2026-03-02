@@ -75,7 +75,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="../im the ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="../ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span> Admin</span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -85,7 +85,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="../im the ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="../ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
