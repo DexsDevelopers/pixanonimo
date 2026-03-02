@@ -76,13 +76,15 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     
     // Salvar transação no banco
     try {
+        $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
         $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
-        $ins->execute([$userId, $amount, $netAmount, $pixId, '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD', $qrImage]);
+        $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
 
         echo json_encode([
             'status' => 'success',
+            'success' => true,
             'qr_image' => $qrImage,
-            'pix_code' => '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD',
+            'pix_code' => $pixCode,
             'amount' => $amount,
             'pix_id' => $pixId,
             'message' => 'Simulação ativa.'
