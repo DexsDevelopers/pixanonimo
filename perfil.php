@@ -40,7 +40,7 @@ $user = $stmt->fetch();
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
-                <a href="index.php" class="nav-item">📊 Dashboard</a>
+                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
                 <a href="sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item active">👤 Perfil</a>
                 <a href="suporte.php" class="nav-item">🎧 Suporte</a>
@@ -65,7 +65,7 @@ $user = $stmt->fetch();
         <main class="main-content">
             <header class="top-header">
                 <h1>Meu Perfil</h1>
-                <a href="index.php" class="badge sent" style="text-decoration:none">Voltar</a>
+                <a href="dashboard.php" class="badge sent" style="text-decoration:none">Voltar</a>
             </header>
 
             <div style="max-width: 600px; margin: 0 auto;">
@@ -126,7 +126,7 @@ $user = $stmt->fetch();
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-nav">
-        <a href="index.php" class="mobile-nav-item">
+        <a href="dashboard.php" class="mobile-nav-item">
             <i class="fas fa-th-large"></i>
             <span>Home</span>
         </a>

@@ -89,7 +89,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
-                <a href="../index.php" class="nav-item">📊 Dashboard</a>
+                <a href="../dashboard.php" class="nav-item">📊 Dashboard</a>
                 <a href="../sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="../perfil.php" class="nav-item">👤 Perfil</a>
                 <a href="../suporte.php" class="nav-item">🎧 Suporte</a>
@@ -113,7 +113,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                         <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px;">💰 Lucro Total (Comissões)</p>
                         <h2 style="margin: 0; color: #fff;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></h2>
                     </div>
-                    <a href="../index.php" class="badge sent" style="text-decoration:none; padding: 10px 15px;">Voltar ao App</a>
+                    <a href="../dashboard.php" class="badge sent" style="text-decoration:none; padding: 10px 15px;">Voltar ao App</a>
                 </div>
             </header>
 

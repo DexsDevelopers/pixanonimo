@@ -45,7 +45,7 @@ try {
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
-                <a href="index.php" class="nav-item">📊 Dashboard</a>
+                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
                 <a href="sacar.php" class="nav-item active">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item">👤 Perfil</a>
                 <a href="suporte.php" class="nav-item">🎧 Suporte</a>
@@ -70,7 +70,7 @@ try {
         <main class="main-content">
             <header class="top-header">
                 <h1>Solicitar Saque</h1>
-                <a href="index.php" class="badge sent" style="text-decoration:none">Voltar ao Dashboard</a>
+                <a href="dashboard.php" class="badge sent" style="text-decoration:none">Voltar ao Dashboard</a>
             </header>
 
             <div style="max-width: 600px; margin: 0 auto;">
@@ -122,7 +122,7 @@ try {
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-nav">
-        <a href="index.php" class="mobile-nav-item">
+        <a href="dashboard.php" class="mobile-nav-item">
             <i class="fas fa-th-large"></i>
             <span>Home</span>
         </a>
@@ -153,7 +153,7 @@ try {
                 Seu saque de <strong id="success-amount" style="color: var(--primary);">R$ 0,00</strong> foi registrado com sucesso.<br><br>
                 <strong>Importante:</strong> O prazo para processamento é de até <strong>2 dias úteis</strong>.
             </p>
-            <button class="btn-primary" onclick="window.location.href='index.php'">Entendido</button>
+            <button class="btn-primary" onclick="window.location.href='dashboard.php'">Entendido</button>
         </div>
     </div>
 

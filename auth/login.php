@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['is_admin'] = $user['is_admin'];
         
-        redirect('../index.php');
+        redirect('../dashboard.php');
     } else {
         header("Location: login.php?error=1");
         exit;
