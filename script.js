@@ -9,7 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gerar Pix via Backend PHP
     btnGenerate.addEventListener('click', async () => {
         const value = amountInput.value;
-        const wallet = document.getElementById('wallet-address').innerText;
+        const wallet = document.getElementById('wallet-input').value;
+
+        if (!wallet || wallet.trim() === "") {
+            alert('Por favor, configure sua carteira Liquid antes de gerar um Pix.');
+            return;
+        }
 
         if (!value || value <= 0) {
             alert('Por favor, insira um valor válido.');
