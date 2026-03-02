@@ -112,10 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(amountDisp).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
                     // Mapeamento extra robusto
-                    const code = data.pix_code || data.qr_code || data.payload || "";
+                    const code = data.pix_code || data.qr_code || data.payload || data.qrcodepix || "";
                     if (pixCodeText) {
                         pixCodeText.value = code;
-                        console.log('Código Pix atribuído ao sistema:', code ? 'SIM' : 'NÃO (Vazio)');
+                        pixCodeText.style.color = "white"; // Forçar cor
+                        console.log('Código Pix atribuído:', code ? 'SIM' : 'NÃO');
+                        console.log('Valor atual do textarea:', pixCodeText.value);
                     }
 
                     if (qrPlaceholder) {
