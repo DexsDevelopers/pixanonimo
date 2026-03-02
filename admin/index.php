@@ -66,24 +66,49 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - PixAnônimo</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="main-content">
-    <header class="top-header">
-        <h1>Painel Administrativo</h1>
-        <a href="../index.php" class="badge sent">Voltar ao App</a>
-    </header>
+<body>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="mobile-header">
+        <div class="logo" style="margin-bottom: 0;">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text" style="font-size: 1.2rem;">Pix<span>Anônimo</span> Admin</span>
+        </div>
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+    </div>
 
-    <main class="container">
-        <div class="card glass full-width">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Pix<span>Anônimo</span></span>
+            </div>
+            <nav class="nav-menu">
+                <a href="../index.php" class="nav-item">📊 Dashboard Clipping</a>
+                <a href="#" class="nav-item active">🛡️ Administração</a>
+                <a href="../auth/logout.php" class="nav-item">🚪 Sair</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Painel Administrativo</h1>
+                <a href="../index.php" class="badge sent" style="text-decoration:none">Voltar ao App</a>
+            </header>
+
+            <div class="card glass full-width">
             <h3>Gerenciar Usuários</h3>
             <form method="POST">
                 <table class="transaction-table">
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Nome</th>
                             <th>Email</th>
                             <th>Chave PIX</th>
                             <th>Status</th>
@@ -96,6 +121,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                         <?php foreach($users as $u): ?>
                         <tr>
                             <td>#<?php echo $u['id']; ?></td>
+                            <td><?php echo $u['full_name']; ?></td>
                             <td><?php echo $u['email']; ?></td>
                             <td><code><?php echo $u['pix_key']; ?></code></td>
                             <td>
@@ -129,6 +155,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
             <table class="transaction-table">
                 <thead>
                     <tr style="text-align: left;">
+                        <th style="padding: 1rem;">Nome</th>
                         <th style="padding: 1rem;">Email</th>
                         <th style="padding: 1rem;">Chave PIX</th>
                         <th style="padding: 1rem;">Valor</th>
@@ -142,6 +169,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     while($w = $stmt->fetch()):
                     ?>
                     <tr>
+                        <td style="padding: 1rem;"><?php echo $w['full_name']; ?></td>
                         <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
                         <td style="padding: 1rem;"><small><?php echo $w['pix_key']; ?></small></td>
                         <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
@@ -160,5 +188,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
             </table>
         </div>
     </main>
+    </div>
+    <script src="../script.js?v=1.5"></script>
 </body>
 </html>

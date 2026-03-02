@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
     pix_key VARCHAR(255),
     status ENUM('pending', 'approved', 'blocked') DEFAULT 'pending',
     commission_rate DECIMAL(5,2) DEFAULT 0.00, -- Porcentagem de comissão para este usuário

@@ -17,8 +17,13 @@ $stmt = $pdo->prepare("SELECT balance, pix_key FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-if ($amount <= 0 || $amount > $user['balance']) {
-    echo json_encode(['error' => 'Saldo insuficiente ou valor inválido.']);
+if ($amount < 50) {
+    echo json_encode(['error' => 'O valor mínimo para saque é R$ 50,00.']);
+    exit;
+}
+
+if ($amount > $user['balance']) {
+    echo json_encode(['error' => 'Saldo insuficiente.']);
     exit;
 }
 

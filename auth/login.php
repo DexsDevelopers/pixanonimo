@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['is_admin'] = $user['is_admin'];
         
         redirect('../index.php');
@@ -30,10 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - PixAnônimo</title>
     <link rel="stylesheet" href="../style.css">
 </head>
-<body style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
     <div class="card glass" style="width: 100%; max-width: 400px;">
         <h2>Login</h2>
         <?php if(isset($_GET['error'])): ?>

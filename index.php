@@ -24,6 +24,15 @@ $rows = $transactions->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="mobile-header">
+        <div class="logo" style="margin-bottom: 0;">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text" style="font-size: 1.2rem;">Pix<span>Anônimo</span></span>
+        </div>
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -42,7 +51,7 @@ $rows = $transactions->fetchAll();
                 <div class="user-profile">
                     <div class="avatar"><?php echo strtoupper(substr($user['email'], 0, 1)); ?></div>
                     <div class="user-info">
-                        <span class="user-name"><?php echo explode('@', $user['email'])[0]; ?></span>
+                        <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
                         <span class="user-status"><?php echo ucfirst($user['status']); ?></span>
                     </div>
                 </div>
@@ -66,9 +75,9 @@ $rows = $transactions->fetchAll();
                         R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
                     </div>
                     <?php if($user['balance'] > 0): ?>
-                        <button id="btn-withdraw" class="badge paid" style="border:none; cursor:pointer; padding: 0.8rem 1.5rem; width: 100%; margin-top: 1rem;">Solicitar Saque (DEPIX)</button>
+                        <a href="sacar.php" class="btn-primary" style="display:block; text-decoration:none; text-align:center; padding: 0.8rem 1.5rem; width: 100%; margin-top: 1rem; background: var(--primary); color: var(--bg-dark); border-radius: 12px; font-weight:700;">Solicitar Saque</a>
                         <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
-                            <i class="fas fa-info-circle"></i> Os saques podem levar até 2 dias úteis para serem processados.
+                            <i class="fas fa-info-circle"></i> O mínimo para saque é R$ 50,00.
                         </p>
                     <?php endif; ?>
                 </div>
