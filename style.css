@@ -276,6 +276,21 @@ input {
     color: var(--primary);
 }
 
+.badge.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.badge.expired {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+}
+
+.badge.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
 .badge.sent {
     background: rgba(59, 130, 246, 0.1);
     color: var(--accent);

@@ -136,14 +136,18 @@ $rows = $transactions->fetchAll();
                                 <td>
                                     <?php 
                                     $status = $t['status'];
-                                    $badgeClass = ($status == 'paid') ? 'paid' : 'sent';
                                     $displayStatus = ucfirst($status);
+                                    $badgeClass = 'pending'; // Padrão para pendente (âmbar)
                                     
-                                    if ($status == 'pending') {
+                                    if ($status == 'paid') {
+                                        $badgeClass = 'paid'; // Verde
+                                    } elseif ($status == 'pending') {
                                         if ($t['seconds_old'] > (20 * 60)) {
                                             $displayStatus = 'Expirado';
-                                            $badgeClass = 'sent';
+                                            $badgeClass = 'expired'; // Laranja
                                         }
+                                    } elseif ($status == 'rejected') {
+                                        $badgeClass = 'rejected'; // Vermelho
                                     }
                                     ?>
                                     <span class="badge <?php echo $badgeClass; ?>"><?php echo $displayStatus; ?></span>

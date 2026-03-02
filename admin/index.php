@@ -127,8 +127,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                             <td><?php echo $u['email']; ?></td>
                             <td><code><?php echo $u['pix_key']; ?></code></td>
                             <td>
-                                <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : 'sent'; ?>">
-                                    <?php echo ucfirst($u['status']); ?>
+                                <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : 'pending'; ?>">
+                                    <?php echo $u['status'] == 'approved' ? 'Aprovado' : 'Pendente'; ?>
                                 </span>
                             </td>
                             <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
