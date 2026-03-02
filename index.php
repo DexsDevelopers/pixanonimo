@@ -191,8 +191,13 @@ require_once 'includes/db.php';
             <h1>RECEBA COM <span class="lp-gradient-text">BLINDAGEM MILITAR</span> E PRIVACIDADE</h1>
             <p>A única tecnologia PIX com criptografia de ponta a ponta e anonimato garantido por protocolo Ghost.</p>
             <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.85rem; color: #4ade80; font-weight: 600;">
-                <span style="display: inline-block; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                <span class="lp-pulse-dot"></span>
                 SISTEMA OPERANDO EM CAPACIDADE MÁXIMA PARA PRIVACIDADE
+            </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1.5rem; filter: grayscale(1) opacity(0.5); font-size: 1.2rem;">
+                <i class="fab fa-bitcoin" title="Crypto Ready"></i>
+                <i class="fas fa-user-shield" title="End-to-End Encryption"></i>
+                <i class="fas fa-university" title="Central Bank Protocol Compatible"></i>
             </div>
         </div>
         <div class="lp-analytics-grid">
