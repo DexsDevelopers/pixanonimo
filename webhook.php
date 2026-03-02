@@ -53,6 +53,7 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
             $pdo->rollBack();
             file_put_contents($logFile, "[ERROR] Falha ao processar: " . $e->getMessage() . PHP_EOL, FILE_APPEND);
         }
+        }
     }
 }
 
