@@ -1555,6 +1555,10 @@ input:-webkit-autofill:focus {
     gap: 1.2rem;
     text-align: left;
     transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform;
+    outline: 1px solid transparent;
+    /* Anti-aliasing fix for 3D */
 }
 
 /* Glass shine overlay effect */
