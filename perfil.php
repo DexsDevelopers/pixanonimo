@@ -33,7 +33,7 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif?v=1.1" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -92,6 +92,26 @@ $user = $stmt->fetch();
             </div>
         </main>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <a href="index.php" class="mobile-nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>Home</span>
+        </a>
+        <a href="sacar.php" class="mobile-nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Sacar</span>
+        </a>
+        <a href="perfil.php" class="mobile-nav-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>Perfil</span>
+        </a>
+        <a href="suporte.php" class="mobile-nav-item">
+            <i class="fas fa-headset"></i>
+            <span>Suporte</span>
+        </a>
+    </nav>
 
     <script src="script.js?v=1.6"></script>
     <script>

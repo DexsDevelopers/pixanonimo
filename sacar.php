@@ -28,7 +28,7 @@ try {
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jfif?v=1.1" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -38,7 +38,7 @@ try {
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif?v=1.1" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -92,6 +92,26 @@ try {
             </div>
         </main>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <a href="index.php" class="mobile-nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>Home</span>
+        </a>
+        <a href="sacar.php" class="mobile-nav-item active">
+            <i class="fas fa-wallet"></i>
+            <span>Sacar</span>
+        </a>
+        <a href="perfil.php" class="mobile-nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Perfil</span>
+        </a>
+        <a href="suporte.php" class="mobile-nav-item">
+            <i class="fas fa-headset"></i>
+            <span>Suporte</span>
+        </a>
+    </nav>
 
     <!-- Modal de Sucesso -->
     <div class="modal hidden" id="modal-success">
