@@ -1411,9 +1411,6 @@ input:-webkit-autofill:focus {
     display: none !important;
 }
 
-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-}
-
 .lp-navbar {
     position: fixed;
     top: 0;
