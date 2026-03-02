@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix - Cadastro</title>
-    <link rel="stylesheet" href="../style.css?v=5.0">
+    <link rel="stylesheet" href="../style.css?v=5.1">
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: #000; background-image: none;">
     <div class="card glass" style="width: 100%; max-width: 450px; text-align: center; background: transparent; border: none; box-shadow: none;">

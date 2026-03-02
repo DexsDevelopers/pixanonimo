@@ -394,8 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- WIDGET DE SUPORTE FLUTUANTE ---
 
     const supportWidgetHTML = `
-    <div id="support-widget" style="position: fixed; bottom: 100px; right: 20px; z-index: 9999;">
-        <div id="support-balloon" class="glass" style="display: none; position: absolute; bottom: 70px; right: 0; width: 300px; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);">
+    <div id="support-widget" style="position: fixed; bottom: 100px; left: 20px; z-index: 9999;">
+        <div id="support-balloon" class="glass" style="display: none; position: absolute; bottom: 70px; left: 0; width: 300px; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h4 style="margin: 0; display: flex; align-items: center; gap: 8px; color: white;"><i class="fas fa-ghost" style="color: var(--primary);"></i> Ghost Bot</h4>
                 <button id="close-support" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem;">&times;</button>
