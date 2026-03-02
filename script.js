@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Ghost Pix Dashboard Loaded v3.3');
+    console.log('Ghost Pix Dashboard Loaded v3.5');
 
     // --- ELEMENTOS GLOBAIS ---
     const btnGenerate = document.getElementById('btn-generate');
@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- AÇÕES DO HISTÓRICO ---
 
     window.initHistoryActions = () => {
+        console.log('Inicializando ações do histórico...');
         document.querySelectorAll('.btn-view-qr').forEach(btn => {
             btn.onclick = function () {
                 const qr = this.getAttribute('data-qr');
@@ -273,8 +274,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('.btn-delete-row').forEach(btn => {
-            btn.onclick = async function () {
-                if (!confirm('Excluir transação?')) return;
+            btn.onclick = async function (e) {
+                e.preventDefault();
+                console.log('Botão excluir clicado, ID:', this.getAttribute('data-id'));
+                if (!confirm('Deseja realmente excluir esta transação?')) return;
                 const id = this.getAttribute('data-id');
                 const row = this.closest('tr');
                 try {
