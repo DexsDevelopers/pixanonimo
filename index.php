@@ -25,6 +25,31 @@ require_once 'includes/db.php';
         .lp-body { background: #000 !important; color: #fff !important; }
         .lp-hero-bg { display: none !important; }
         #canvas-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
+        
+        /* Fail-safe Mobile Menu Styles */
+        @media (max-width: 768px) {
+            .btn-lp-outline-sm, .btn-lp-primary-sm {
+                text-decoration: none !important;
+                padding: 8px 12px !important;
+                border-radius: 8px !important;
+                font-size: 0.75rem !important;
+                font-weight: 700 !important;
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+            .btn-lp-outline-sm {
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                color: #fff !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+            .btn-lp-primary-sm {
+                background: #4ade80 !important;
+                color: #000 !important;
+                border: 1px solid #4ade80 !important;
+            }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
