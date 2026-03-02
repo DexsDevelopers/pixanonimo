@@ -31,7 +31,4 @@ try {
 } catch (Exception $e) {}
 
 echo "<b>Migração concluída!</b>";
-} catch (Exception $e) {
-    echo "Erro Geral: " . $e->getMessage();
-}
 ?>
