@@ -111,9 +111,25 @@ body {
     flex-direction: column;
 }
 
+.user-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
 .user-status {
     font-size: 0.8rem;
     color: var(--primary);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--glass-border);
 }
 
 /* Main Content */
@@ -328,15 +344,15 @@ input {
     }
 
     .sidebar {
-        width: 100%;
-        height: auto;
+        width: 280px;
         position: fixed;
         top: 0;
         left: -280px;
         z-index: 1001;
-        transition: left 0.3s ease;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         height: 100vh;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        background: rgba(15, 23, 42, 0.98);
     }
 
     .sidebar.active {
@@ -344,28 +360,31 @@ input {
     }
 
     .main-content {
-        padding: 1rem;
-        margin-top: 60px;
+        padding: 1rem 0.8rem;
+        margin-top: 65px;
+        width: 100%;
     }
 
     .top-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .dashboard-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .mobile-header {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
-        padding: 0.8rem 1.2rem;
-        background: rgba(15, 23, 42, 0.9);
-        backdrop-filter: blur(10px);
+        padding: 0.8rem 1rem;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(15px);
         position: fixed;
         top: 0;
         left: 0;
@@ -374,14 +393,25 @@ input {
         border-bottom: 1px solid var(--glass-border);
     }
 
+    .card {
+        padding: 1.2rem;
+        border-radius: 20px;
+    }
+
     .transaction-table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .card {
-        padding: 1.2rem;
+    .transaction-table th,
+    .transaction-table td {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .logo-text {
+        font-size: 1.1rem !important;
     }
 }
 
