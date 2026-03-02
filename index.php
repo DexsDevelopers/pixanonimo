@@ -133,7 +133,22 @@ $rows = $transactions->fetchAll();
                                 <td><?php echo date('d/m/Y H:i', strtotime($t['created_at'])); ?></td>
                                 <td>R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></td>
                                 <td>R$ <?php echo number_format($t['amount_net_brl'], 2, ',', '.'); ?></td>
-                                <td><span class="badge <?php echo $t['status'] == 'paid' ? 'paid' : 'sent'; ?>"><?php echo ucfirst($t['status']); ?></span></td>
+                                <td>
+                                    <?php 
+                                    $status = $t['status'];
+                                    $badgeClass = ($status == 'paid') ? 'paid' : 'sent';
+                                    $displayStatus = ucfirst($status);
+                                    
+                                    if ($status == 'pending') {
+                                        $createdAt = strtotime($t['created_at']);
+                                        if (time() - $createdAt > (20 * 60)) {
+                                            $displayStatus = 'Expirado';
+                                            $badgeClass = 'sent'; // Cinza/Neutro
+                                        }
+                                    }
+                                    ?>
+                                    <span class="badge <?php echo $badgeClass; ?>"><?php echo $displayStatus; ?></span>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
