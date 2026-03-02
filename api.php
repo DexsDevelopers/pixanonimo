@@ -28,18 +28,27 @@ if (!$wallet) {
     exit;
 }
 
-// Lógica de Comissionamento
+// Lógica Anti-Colisão (Varredura de centavos)
+// Se já existir uma transação pendente com o mesmo valor EXATO, adicionamos 0.01 até ficar único.
+// Isso evita que o PixGo bloqueie QR Codes repetidos.
+$attempts = 0;
+while ($attempts < 10) {
+    $check = $pdo->prepare("SELECT id FROM transactions WHERE amount_brl = ? AND status = 'pending'");
+    $check->execute([$amount]);
+    if ($check->fetch()) {
+        $amount += 0.01;
+        $attempts++;
+    } else {
+        break;
+    }
+}
+
+// Lógica de Comissionamento (Recalcular sobre o valor final)
 $pixgoFeeRate = 2.0; // Taxa padrão do PixGo.org
 $platformFeeRate = (float)$user['commission_rate']; // Sua taxa configurada no admin
 
 $totalFeesRate = $pixgoFeeRate + $platformFeeRate;
 $netAmount = $amount * (1 - ($totalFeesRate / 100));
-
-// O PixGo.org processa o Pix pelo valor total ($amount).
-// Ele já desconta os 2% dele.
-// Os seus X% ficarão como "saldo" ou serão lidados via split se a API permitir.
-// No modelo atual de carteira direta, o DEPIX que chega na wallet já vem com a taxa do PixGo descontada.
-// Se você quer cobrar algo a mais, o valor que o usuário final recebe será o valor pago menos as duas taxas.
 
 // Chamada para a API do PixGo.org
 $url = 'https://pixgo.org/v2/orders/pix'; 
@@ -67,6 +76,7 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     echo json_encode([
         'status' => 'success',
         'qrCodeImage' => $qrImage,
+        'amount' => $amount,
         'message' => 'Simulação ativa. Configure a API KEY real para processar.'
     ]);
     exit;
@@ -100,7 +110,8 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
     echo json_encode([
         'success' => true,
         'pix_id' => $pixId,
-        'qrCodeImage' => $qrImage
+        'qrCodeImage' => $qrImage,
+        'amount' => $amount
     ]);
 } else {
     echo json_encode([

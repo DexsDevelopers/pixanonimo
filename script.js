@@ -41,13 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.error) {
                     alert('Erro: ' + data.error);
                 } else {
-                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                    const finalAmount = data.amount || value;
+                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(finalAmount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
                     if (qrPlaceholder) {
                         qrPlaceholder.innerHTML = `<img src="${data.qrCodeImage}" alt="QR Code Pix" style="width:100%">`;
                     }
 
                     if (modalQr) modalQr.classList.remove('hidden');
+
+                    // Iniciar Polling de Status
+                    startPixPolling(data.pix_id);
                 }
             } catch (err) {
                 alert('Erro de conexão com o servidor.');
@@ -59,14 +63,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let statusInterval = null;
+    function startPixPolling(pixId) {
+        if (statusInterval) clearInterval(statusInterval);
+
+        const startTime = Date.now();
+        const expirationTime = 20 * 60 * 1000; // 20 minutos em ms
+
+        statusInterval = setInterval(async () => {
+            const now = Date.now();
+            if (now - startTime > expirationTime) {
+                clearInterval(statusInterval);
+                if (qrPlaceholder) {
+                    qrPlaceholder.innerHTML = `
+                        <div style="color: var(--danger); font-size: 1.2rem; font-weight: bold; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                            QR Code Expirado<br>
+                            <span style="font-size: 0.9rem; color: var(--text-dim);">O tempo limite de 20 minutos acabou. Gere um novo Pix.</span>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            try {
+                const res = await fetch(`check_status.php?pix_id=${pixId}`);
+                const data = await res.json();
+
+                if (data.status === 'paid') {
+                    clearInterval(statusInterval);
+                    if (qrPlaceholder) {
+                        qrPlaceholder.innerHTML = `
+                            <div style="color: var(--primary); font-size: 1.2rem; font-weight: bold; padding: 2rem;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                                Pagamento Confirmado!<br>
+                                <span style="font-size: 0.9rem; color: var(--text-dim);">Seu saldo será atualizado em instantes...</span>
+                            </div>
+                        `;
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }
+            } catch (e) {
+                console.error("Erro no polling:", e);
+            }
+        }, 3000);
+    }
+
     if (closeModal && modalQr) {
         closeModal.addEventListener('click', () => {
             modalQr.classList.add('hidden');
+            if (statusInterval) clearInterval(statusInterval);
         });
 
         window.addEventListener('click', (e) => {
             if (e.target === modalQr) {
                 modalQr.classList.add('hidden');
+                if (statusInterval) clearInterval(statusInterval);
             }
         });
     }

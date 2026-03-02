@@ -89,8 +89,10 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <span class="logo-text">Pix<span>Anônimo</span></span>
             </div>
             <nav class="nav-menu">
-                <a href="../index.php" class="nav-item">📊 Dashboard Clipping</a>
-                <a href="#" class="nav-item active">🛡️ Administração</a>
+                <a href="../index.php" class="nav-item">📊 Dashboard</a>
+                <a href="../sacar.php" class="nav-item">💸 Sacar</a>
+                <a href="../perfil.php" class="nav-item">👤 Perfil</a>
+                <a href="#" class="nav-item active">🛡️ Admin</a>
                 <a href="../auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
         </aside>

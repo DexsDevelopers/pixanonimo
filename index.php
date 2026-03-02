@@ -42,8 +42,10 @@ $rows = $transactions->fetchAll();
             </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active">📊 Dashboard</a>
+                <a href="sacar.php" class="nav-item">💸 Sacar</a>
+                <a href="perfil.php" class="nav-item">👤 Perfil</a>
                 <?php if(isAdmin()): ?>
-                    <a href="admin/index.php" class="nav-item" style="color: var(--primary);">🛡️ Administração</a>
+                    <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
                 <?php endif; ?>
                 <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>

@@ -39,6 +39,10 @@ $user = $stmt->fetch();
             <nav class="nav-menu">
                 <a href="index.php" class="nav-item">📊 Dashboard</a>
                 <a href="#" class="nav-item active">💸 Sacar</a>
+                <a href="perfil.php" class="nav-item">👤 Perfil</a>
+                <?php if(isAdmin()): ?>
+                    <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
+                <?php endif; ?>
                 <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
         </aside>
