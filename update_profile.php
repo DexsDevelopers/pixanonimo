@@ -16,19 +16,31 @@ $pixKey = $input['pix_key'] ?? '';
 $currentPassword = $input['current_password'] ?? '';
 $newPassword = $input['new_password'] ?? '';
 
-if (empty($fullName) || empty($pixKey) || empty($currentPassword)) {
-    echo json_encode(['error' => 'Preencha todos os campos obrigatórios.']);
+if (empty($fullName) || empty($pixKey)) {
+    echo json_encode(['error' => 'Nome e Chave PIX são obrigatórios.']);
     exit;
 }
 
-// Verificar senha atual
+// Buscar dados atuais do usuário
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-if (!$user || !password_verify($currentPassword, $user['password'])) {
-    echo json_encode(['error' => 'Senha atual incorreta.']);
+if (!$user) {
+    echo json_encode(['error' => 'Usuário não encontrado.']);
     exit;
+}
+
+// Se o usuário quer mudar a senha, a senha atual é obrigatória
+if (!empty($newPassword)) {
+    if (empty($currentPassword)) {
+        echo json_encode(['error' => 'Para mudar a senha, você deve informar a senha atual.']);
+        exit;
+    }
+    if (!password_verify($currentPassword, $user['password'])) {
+        echo json_encode(['error' => 'Senha atual incorreta.']);
+        exit;
+    }
 }
 
 try {

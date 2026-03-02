@@ -73,10 +73,10 @@ $user = $stmt->fetch();
                             <input type="text" name="pix_key" value="<?php echo htmlspecialchars($user['pix_key']); ?>" required>
                         </div>
 
-                        <h3 style="margin-top: 3rem; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Alterar Senha</h3>
+                        <h3 style="margin-top: 3rem; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Alterar Senha (Opcional)</h3>
                         
                         <div class="input-group">
-                            <label>Senha Atual (Para confirmar mudanças)</label>
+                            <label>Senha Atual (Necessária apenas para mudar a senha)</label>
                             <input type="password" name="current_password" placeholder="Digite sua senha atual">
                         </div>
 
@@ -101,11 +101,7 @@ $user = $stmt->fetch();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
 
-        if (!data.current_password) {
-            alert('Por favor, informe sua senha atual para salvar as alterações.');
-            return;
-        }
-
+        // A senha atual só será validada no backend se o usuário tentar mudar a senha
         btn.innerText = 'Salvando...';
         btn.disabled = true;
 
