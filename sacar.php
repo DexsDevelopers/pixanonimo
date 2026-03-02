@@ -20,9 +20,12 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
     <title>Solicitar Saque - Ghost Pix</title>
     <link rel="stylesheet" href="style.css?v=5.1">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -110,6 +113,10 @@ try {
         <a href="suporte.php" class="mobile-nav-item">
             <i class="fas fa-headset"></i>
             <span>Suporte</span>
+        </a>
+        <a href="auth/logout.php" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
         </a>
     </nav>
 

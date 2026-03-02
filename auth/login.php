@@ -35,10 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../style.css?v=5.1">
     <title>Ghost Pix - Login</title>
 </head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: #000; background-image: none;">
-    <div class="card glass" style="width: 100%; max-width: 400px; text-align: center; background: transparent; border: none; box-shadow: none;">
-        <img src="../ghost.jpg?v=5.0" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
-        <h2>Login</h2>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: #000; background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);">
+    <div class="card glass" style="width: 100%; max-width: 420px; padding: 3rem 2rem; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px);">
+        <img src="../ghost.jpg?v=5.0" style="width: 100px; height: 100px; border-radius: 20px; margin-bottom: 2rem; object-fit: cover; border: 1px solid var(--glass-border);">
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Ghost Pix</h2>
+        <p style="color: var(--text-dim); margin-bottom: 2rem;">Acesse sua carteira blindada</p>
         <?php if(isset($_GET['error'])): ?>
             <p style="color: var(--danger);">Email ou senha incorretos.</p>
         <?php endif; ?>

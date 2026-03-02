@@ -47,9 +47,11 @@ $rows = $transactions->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Ghost Pix - Dashboard</title>
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
+    <title>Ghost Pix - Dashboard Premium</title>
     <link rel="stylesheet" href="style.css?v=5.1">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -105,7 +107,7 @@ $rows = $transactions->fetchAll();
             </header>
 
             <!-- Analytics Cards -->
-            <div class="analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="analytics-grid">
                 <div class="card glass" style="padding: 1.2rem;">
                     <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Hoje</span>
                     <div id="stat-today" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
@@ -261,6 +263,10 @@ $rows = $transactions->fetchAll();
             <i class="fas fa-headset"></i>
             <span>Suporte</span>
         </a>
+        <a href="auth/logout.php" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+        </a>
     </nav>
 
     <!-- Modal QR Code -->
@@ -306,6 +312,15 @@ $rows = $transactions->fetchAll();
     </div>
 
     <script src="script.js?v=5.1"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+    </script>
 
 </body>
 </html>

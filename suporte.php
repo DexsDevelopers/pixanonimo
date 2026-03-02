@@ -36,8 +36,8 @@ $user = $stmt->fetch();
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
-        <div class="logo">
-            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;">
+        <div class="logo" style="margin-bottom: 0;">
+            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -151,6 +151,10 @@ $user = $stmt->fetch();
         <a href="suporte.php" class="mobile-nav-item active">
             <i class="fas fa-headset"></i>
             <span>Suporte</span>
+        </a>
+        <a href="auth/logout.php" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
         </a>
     </nav>
 
