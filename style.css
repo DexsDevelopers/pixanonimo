@@ -1866,3 +1866,214 @@ input:-webkit-autofill:focus {
         font-size: 1rem;
     }
 }
+
+/* =====================================================
+   NEW COMPONENTS: SOCIAL PROOF & FOOTER V2
+   ===================================================== */
+
+.lp-social-proof-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 1rem;
+    animation: fadeIn 1s var(--ease);
+}
+
+.lp-social-proof {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1.2rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lp-avatar-group {
+    display: flex;
+    align-items: center;
+}
+
+.lp-avatar-group img,
+.lp-avatar-more {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    margin-left: -12px;
+    object-fit: cover;
+}
+
+.lp-avatar-group img:first-child {
+    margin-left: 0;
+}
+
+.lp-avatar-more {
+    background: #fff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.lp-social-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+/* Footer V2 */
+.lp-footer-v2 {
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+}
+
+.lp-footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1.2fr;
+    gap: 3rem;
+}
+
+.lp-brand-tagline {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 1.5rem 0;
+    max-width: 200px;
+    line-height: 1.3;
+}
+
+.lp-social-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.lp-social-icons a {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s var(--ease);
+}
+
+.lp-social-icons a:hover {
+    background: #fff;
+    color: #000;
+    transform: translateY(-3px);
+}
+
+.lp-footer-links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.lp-footer-col h4,
+.lp-footer-apps h4 {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+.lp-footer-col a {
+    display: block;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    transition: color 0.3s;
+}
+
+.lp-footer-col a:hover {
+    color: #fff;
+}
+
+.lp-footer-apps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.lp-app-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.lp-app-btn:hover {
+    background: #111;
+    border-color: #fff;
+}
+
+.lp-app-btn i {
+    font-size: 1.8rem;
+}
+
+.lp-app-btn-text span {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.lp-app-btn-text strong {
+    display: block;
+    font-size: 1.1rem;
+}
+
+.lp-footer-bottom {
+    max-width: 1200px;
+    margin: 4rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    color: var(--text-2);
+    font-size: 0.8rem;
+}
+
+.lp-footer-cnpj {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 968px) {
+    .lp-footer-container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .lp-footer-brand,
+    .lp-footer-apps {
+        align-items: center;
+    }
+
+    .lp-footer-links-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .lp-brand-tagline {
+        max-width: none;
+    }
+}
