@@ -50,7 +50,7 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=7.0">
+    <link rel="stylesheet" href="style.css?v=8.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -108,24 +108,24 @@ $rows = $transactions->fetchAll();
 
             <!-- Analytics Cards -->
             <div class="analytics-grid">
-                <div class="stat-card green-accent">
+                <div class="stat-card accent-green">
                     <span class="stat-label">Volume Hoje</span>
                     <div class="stat-value" id="stat-today">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub green"><i class="fas fa-arrow-up"></i> últimas 24h</div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
-                <div class="stat-card blue-accent">
+                <div class="stat-card accent-blue">
                     <span class="stat-label">Volume Mensal</span>
                     <div class="stat-value" id="stat-month">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
                     <div class="stat-sub">Mês atual</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card accent-purple">
                     <span class="stat-label">Total Vitalício</span>
                     <div class="stat-value" id="stat-total">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
                     <div class="stat-sub">Acumulado</div>
                 </div>
-                <div class="stat-card amber-accent">
+                <div class="stat-card accent-amber">
                     <span class="stat-label">Pendentes</span>
-                    <div class="stat-value" id="stat-pending" style="color: var(--amber);"><?php echo $stats['pending_count']; ?></div>
+                    <div class="stat-value" id="stat-pending" style="color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
                     <div class="stat-sub">Aguardando pagamento</div>
                 </div>
             </div>
