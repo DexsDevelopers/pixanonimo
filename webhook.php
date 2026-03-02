@@ -8,11 +8,13 @@ file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] Payload: " . $input .
 
 $data = json_decode($input, true);
 
-// O PixGo costuma enviar status 'paid' ou 'approved'
-if (isset($data['status']) && ($data['status'] == 'paid' || $data['status'] == 'approved')) {
-    $pixId = $data['id'] ?? $data['external_id'] ?? '';
+// O PixGo V1 envia um campo 'event' e os dados em 'data'
+if (isset($data['event']) && $data['event'] === 'payment.completed') {
+    $pixData = $data['data'] ?? [];
+    $pixId = $pixData['payment_id'] ?? '';
+    $status = $pixData['status'] ?? '';
     
-    if (empty($pixId)) exit;
+    if ($status === 'completed' && !empty($pixId)) {
 
     // Buscar a transação pendente
     $stmt = $pdo->prepare("SELECT * FROM transactions WHERE pix_id = ? AND status = 'pending'");

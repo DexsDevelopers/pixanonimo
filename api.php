@@ -48,17 +48,10 @@ $baseUrl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOS
 $webhookUrl = $baseUrl . "/webhook.php";
 
 $data = [
-    'totalAmount' => $amount,
-    'paymentMethod' => 'pix',
-    'liquidAddress' => $wallet, 
-    'webhook_url' => $webhookUrl, // Link que o PixGo vai chamar quando o Pix for pago
-    'items' => [
-        [
-            'title' => 'Pagamento Pix Anônimo',
-            'quantity' => 1,
-            'unitPrice' => $amount
-        ]
-    ]
+    'amount' => $amount,
+    'description' => 'Recarga de Saldo - Pix Anônimo',
+    'webhook_url' => $webhookUrl,
+    'external_id' => 'user_' . $userId . '_' . time()
 ];
 
 // Simulação de resposta se não houver API KEY
@@ -95,12 +88,20 @@ curl_close($ch);
 
 $res = json_decode($response, true);
 if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['success']) {
+    // O PixGo V1 retorna os dados dentro da chave 'data'
+    $pixData = $res['data'] ?? [];
+    $pixId = $pixData['payment_id'] ?? '';
+    $qrImage = $pixData['qr_image_url'] ?? '';
+
     // Salvar transação no banco (Produção)
-    $pixId = $res['id'] ?? $res['data']['id'] ?? '';
     $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) VALUES (?, ?, ?, ?, 'pending')");
     $ins->execute([$userId, $amount, $netAmount, $pixId]);
 
-    echo $response;
+    echo json_encode([
+        'success' => true,
+        'pix_id' => $pixId,
+        'qrCodeImage' => $qrImage
+    ]);
 } else {
     echo json_encode([
         'error' => 'Erro na API PixGo',
