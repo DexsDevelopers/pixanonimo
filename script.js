@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Ghost Pix Dashboard Loaded v3.5');
+    console.log('Ghost Pix Dashboard Loaded v3.6');
 
     // --- ELEMENTOS GLOBAIS ---
     const btnGenerate = document.getElementById('btn-generate');
     const modalQr = document.getElementById('modal-qr');
-    const closeModal = document.querySelector('.close-modal');
+    const modalConfirm = document.getElementById('modal-confirm');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+    const closeModal = document.querySelectorAll('.close-modal');
     const amountInput = document.getElementById('amount');
     const modalAmount = document.getElementById('modal-amount');
     const qrPlaceholder = document.querySelector('.qr-placeholder');
@@ -19,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('sidebar-overlay');
 
     let statusInterval = null;
+    let deleteTarget = null; // Guardar ID e Linha para exclusão
 
     // --- FUNÇÕES AUXILIARES ---
 
@@ -107,17 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.error) {
                     alert('Erro: ' + data.error);
                 } else if (data.success || data.status === 'success' || data.pix_id) {
-                    // Preencher modal
                     const amountDisp = data.amount || val;
                     if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(amountDisp).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
-                    // Mapeamento extra robusto
                     const code = data.pix_code || data.qr_code || data.payload || data.qrcodepix || "";
                     if (pixCodeText) {
                         pixCodeText.value = code;
-                        pixCodeText.style.color = "white"; // Forçar cor
+                        pixCodeText.style.color = "white";
                         console.log('Código Pix atribuído:', code ? 'SIM' : 'NÃO');
-                        console.log('Valor atual do textarea:', pixCodeText.value);
                     }
 
                     if (qrPlaceholder) {
@@ -125,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         qrPlaceholder.innerHTML = `<img src="${img}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
                     }
 
-                    // Mostrar modal
                     if (modalQr) {
                         modalQr.classList.remove('hidden');
                         modalQr.style.display = 'flex';
@@ -145,20 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MODAL CLOSE ---
 
-    if (closeModal && modalQr) {
-        closeModal.onclick = () => {
-            modalQr.classList.add('hidden');
-            modalQr.style.display = 'none';
-            if (statusInterval) clearInterval(statusInterval);
-        };
-        window.onclick = (e) => {
-            if (e.target === modalQr) {
-                modalQr.classList.add('hidden');
-                modalQr.style.display = 'none';
-                if (statusInterval) clearInterval(statusInterval);
-            }
-        };
-    }
+    const closeAllModals = () => {
+        if (modalQr) { modalQr.classList.add('hidden'); modalQr.style.display = 'none'; }
+        if (modalConfirm) { modalConfirm.classList.add('hidden'); modalConfirm.style.display = 'none'; }
+        if (statusInterval) clearInterval(statusInterval);
+    };
+
+    closeModal.forEach(btn => btn.onclick = closeAllModals);
+
+    window.onclick = (e) => {
+        if (e.target === modalQr || e.target === modalConfirm) {
+            closeAllModals();
+        }
+    };
 
     // --- RECURSOS DE CÓPIA ---
 
@@ -239,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.initHistoryActions = () => {
         console.log('Inicializando ações do histórico...');
+
         document.querySelectorAll('.btn-view-qr').forEach(btn => {
             btn.onclick = function () {
                 const qr = this.getAttribute('data-qr');
@@ -274,28 +274,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('.btn-delete-row').forEach(btn => {
-            btn.onclick = async function (e) {
+            btn.onclick = function (e) {
                 e.preventDefault();
-                console.log('Botão excluir clicado, ID:', this.getAttribute('data-id'));
-                if (!confirm('Deseja realmente excluir esta transação?')) return;
                 const id = this.getAttribute('data-id');
                 const row = this.closest('tr');
-                try {
-                    const res = await fetch('delete_transaction.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id })
-                    });
-                    const d = await res.json();
-                    if (d.success) {
-                        row.style.opacity = '0';
-                        row.style.transform = 'scale(0.9)';
-                        setTimeout(() => row.remove(), 300);
-                    }
-                } catch (e) { alert("Erro de conexão"); }
+                console.log('Solicitando exclusão, ID:', id);
+
+                deleteTarget = { id, row };
+                if (modalConfirm) {
+                    modalConfirm.classList.remove('hidden');
+                    modalConfirm.style.display = 'flex';
+                }
             };
         });
     };
+
+    // --- LOGICA MODAL CONFIRMAÇÃO ---
+
+    if (btnConfirmCancel) {
+        btnConfirmCancel.onclick = closeAllModals;
+    }
+
+    if (btnConfirmDelete) {
+        btnConfirmDelete.onclick = async () => {
+            if (!deleteTarget) return;
+            const { id, row } = deleteTarget;
+
+            btnConfirmDelete.innerText = 'Excluindo...';
+            btnConfirmDelete.disabled = true;
+
+            try {
+                const res = await fetch('delete_transaction.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const d = await res.json();
+                if (d.success) {
+                    row.style.opacity = '0';
+                    row.style.transform = 'scale(0.9)';
+                    setTimeout(() => row.remove(), 300);
+                    closeAllModals();
+                }
+            } catch (e) { alert("Erro de conexão"); }
+            finally {
+                btnConfirmDelete.innerText = 'Excluir';
+                btnConfirmDelete.disabled = false;
+                deleteTarget = null;
+            }
+        };
+    }
 
     initHistoryActions();
 });
