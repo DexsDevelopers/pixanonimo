@@ -10,6 +10,34 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
+// Estatísticas do Usuário
+$stats = [
+    'today_volume' => 0,
+    'month_volume' => 0,
+    'total_paid' => 0,
+    'pending_count' => 0
+];
+
+// Volume Hoje (24h)
+$stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
+$stmtToday->execute([$userId]);
+$stats['today_volume'] = $stmtToday->fetch()['vol'] ?? 0;
+
+// Volume Mês Atual
+$stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
+$stmtMonth->execute([$userId]);
+$stats['month_volume'] = $stmtMonth->fetch()['vol'] ?? 0;
+
+// Total Acumulado (Pago)
+$stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'");
+$stmtTotal->execute([$userId]);
+$stats['total_paid'] = $stmtTotal->fetch()['vol'] ?? 0;
+
+// Cobranças Pendentes
+$stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'");
+$stmtPending->execute([$userId]);
+$stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
+
 $transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
@@ -63,12 +91,39 @@ $rows = $transactions->fetchAll();
 
         <main class="main-content">
             <header class="top-header">
-                <h1>Painel de Controle</h1>
+                <div>
+                    <h1 style="margin-bottom: 0.2rem;">Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">Bem-vindo ao seu painel Ghost Pix.</p>
+                </div>
                 <div class="wallet-status">
                     <span class="status-indicator"></span>
                     Taxa do Sistema: <strong><?php echo $user['commission_rate']; ?>%</strong>
                 </div>
             </header>
+
+            <!-- Analytics Cards -->
+            <div class="analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="card glass" style="padding: 1.2rem;">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Hoje</span>
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
+                    <div style="font-size: 0.7rem; color: var(--primary); margin-top: 0.3rem;"><i class="fas fa-arrow-up"></i> últimas 24h</div>
+                </div>
+                <div class="card glass" style="padding: 1.2rem;">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Mensal</span>
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Mês atual</div>
+                </div>
+                <div class="card glass" style="padding: 1.2rem;">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Total Transacionado</span>
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Vitalício</div>
+                </div>
+                <div class="card glass" style="padding: 1.2rem;">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Pendentes</span>
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Aguardando pagamento</div>
+                </div>
+            </div>
 
             <div class="dashboard-grid">
                 <!-- Balance Card -->
