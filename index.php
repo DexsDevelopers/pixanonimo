@@ -19,7 +19,7 @@ require_once 'includes/db.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=15.0">
+    <link rel="stylesheet" href="style.css?v=16.0">
     <style>
         /* Force dark theme even if CSS is cached */
         .lp-body { background: #000 !important; color: #fff !important; }
@@ -50,7 +50,7 @@ require_once 'includes/db.php';
     <!-- Navbar -->
     <nav class="lp-navbar">
         <div class="logo">
-            <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+            <img src="logo_premium.png?v=9.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">GHOST<span> PIX</span></span>
         </div>
         <div class="lp-nav-links">
