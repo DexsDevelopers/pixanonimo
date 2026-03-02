@@ -165,6 +165,6 @@ try {
         }
     });
     </script>
-    <script src="script.js?v=1.8"></script>
+    <script src="script.js?v=1.9"></script>
 </body>
 </html>
