@@ -92,16 +92,37 @@ try {
         </main>
     </div>
 
+    <!-- Modal de Sucesso -->
+    <div class="modal hidden" id="modal-success">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <h2 style="color: #fff; margin-bottom: 1rem;">Solicitação Enviada!</h2>
+            <p style="color: var(--text-dim); line-height: 1.6; margin-bottom: 2rem;">
+                Seu saque de <strong id="success-amount" style="color: var(--primary);">R$ 0,00</strong> foi registrado com sucesso.<br><br>
+                <strong>Importante:</strong> O prazo para processamento é de até <strong>2 dias úteis</strong>.
+            </p>
+            <button class="btn-primary" onclick="window.location.href='index.php'">Entendido</button>
+        </div>
+    </div>
+
     <script>
     document.getElementById('btn-confirm-withdraw').addEventListener('click', async () => {
-        const amount = document.getElementById('withdraw-amount').value;
+        const amountInput = document.getElementById('withdraw-amount');
+        const amount = amountInput.value;
+        const balance = <?php echo (float)$user['balance']; ?>;
         
         if (!amount || parseFloat(amount) < 50) {
             alert('O valor mínimo para saque é R$ 50,00.');
             return;
         }
 
+        if (parseFloat(amount) > balance) {
+            alert('❌ Saldo Insuficiente!\nSeu saldo atual é R$ ' + balance.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+            return;
+        }
+
         const btn = document.getElementById('btn-confirm-withdraw');
+        const originalText = btn.innerText;
         btn.innerText = 'Processando...';
         btn.disabled = true;
 
@@ -114,19 +135,19 @@ try {
 
             const data = await res.json();
             if (data.status === 'success') {
-                alert(data.message);
-                window.location.href = 'index.php';
+                document.getElementById('success-amount').innerText = 'R$ ' + parseFloat(amount).toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('modal-success').classList.remove('hidden');
             } else {
                 alert(data.error || 'Erro ao processar saque.');
             }
         } catch (err) {
-            alert('Erro de conexão.');
+            alert('Erro de conexão ao processar saque.');
         } finally {
-            btn.innerText = 'Confirmar Saque';
+            btn.innerText = originalText;
             btn.disabled = false;
         }
     });
     </script>
-    <script src="script.js?v=1.6"></script>
+    <script src="script.js?v=1.7"></script>
 </body>
 </html>
