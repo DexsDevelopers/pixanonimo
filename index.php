@@ -214,6 +214,20 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=3.5"></script>
+    <!-- Modal de Confirmação Customizado -->
+    <div id="modal-confirm" class="modal hidden">
+        <div class="modal-content glass" style="max-width: 400px; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🗑️</div>
+            <h2 style="margin-bottom: 0.5rem;">Confirmação</h2>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Deseja realmente excluir esta transação? Esta ação não pode ser desfeita.</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="btn-confirm-cancel" class="btn-primary" style="background: rgba(255,255,255,0.1); flex: 1;">Cancelar</button>
+                <button id="btn-confirm-delete" class="btn-primary" style="background: var(--danger); flex: 1;">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=3.6"></script>
+
 </body>
 </html>
