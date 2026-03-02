@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    liquid_address VARCHAR(255),
+    pix_key VARCHAR(255),
     status ENUM('pending', 'approved', 'blocked') DEFAULT 'pending',
     commission_rate DECIMAL(5,2) DEFAULT 0.00, -- Porcentagem de comissão para este usuário
     balance DECIMAL(15,2) DEFAULT 0.00, -- Saldo virtual acumulado (já limpo de taxas)
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS withdrawals (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
-    liquid_address VARCHAR(255) NOT NULL,
+    pix_key VARCHAR(255) NOT NULL,
     status ENUM('pending', 'completed', 'rejected') DEFAULT 'pending',
     tx_hash VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

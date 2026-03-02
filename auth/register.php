@@ -7,7 +7,7 @@ require_once '../includes/db.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
-    $liquid = $_POST['liquid_address'] ?? '';
+    $pix_key = $_POST['pix_key'] ?? '';
 
     // Verificar se o email já existe
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
@@ -19,8 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $pdo->prepare("INSERT INTO users (email, password, liquid_address, status) VALUES (?, ?, ?, 'pending')");
-    $stmt->execute([$email, $hash, $liquid]);
+    $stmt = $pdo->prepare("INSERT INTO users (email, password, pix_key, status) VALUES (?, ?, ?, 'pending')");
+    $stmt->execute([$email, $hash, $pix_key]);
 
     header("Location: login.php?registered=1");
     exit;
