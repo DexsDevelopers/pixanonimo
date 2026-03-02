@@ -100,7 +100,20 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         <main class="main-content">
             <header class="top-header">
                 <h1>Painel Administrativo</h1>
-                <a href="../index.php" class="badge sent" style="text-decoration:none">Voltar ao App</a>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <?php
+                    // Calcular Lucro Real Acumulado
+                    // Lucro = Soma(Bruto - Líquido - 2% do Bruto)
+                    $profitStmt = $pdo->query("SELECT SUM(amount_brl - amount_net_brl - (amount_brl * 0.02)) as total_profit FROM transactions WHERE status = 'paid'");
+                    $profitData = $profitStmt->fetch();
+                    $totalProfit = (float)$profitData['total_profit'];
+                    ?>
+                    <div class="card glass" style="padding: 0.8rem 1.5rem; margin-bottom: 0; min-width: 200px; border-left: 4px solid var(--primary);">
+                        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px;">💰 Lucro Total (Comissões)</p>
+                        <h2 style="margin: 0; color: #fff;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></h2>
+                    </div>
+                    <a href="../index.php" class="badge sent" style="text-decoration:none; padding: 10px 15px;">Voltar ao App</a>
+                </div>
             </header>
 
             <div class="card glass full-width">

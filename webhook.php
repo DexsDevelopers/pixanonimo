@@ -32,6 +32,21 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
             $balanceUpd = $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
             $balanceUpd->execute([$transaction['amount_net_brl'], $transaction['user_id']]);
 
+            // 3. Calcular e Credit lucro do Admin
+            // Lucro plataforma = Valor Bruto - Valor Líquido - Taxa PixGo (2%)
+            $pixgoFee = $transaction['amount_brl'] * 0.02;
+            $adminProfit = $transaction['amount_brl'] - $transaction['amount_net_brl'] - $pixgoFee;
+            
+            if ($adminProfit > 0) {
+                // Creditar ao primeiro admin encontrado
+                $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+                $admin = $adminStmt->fetch();
+                if ($admin) {
+                    $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$adminProfit, $admin['id']]);
+                    file_put_contents($logFile, "[PROFIT] Lucro de R$ " . number_format($adminProfit, 2) . " creditado ao admin " . $admin['id'] . PHP_EOL, FILE_APPEND);
+                }
+            }
+
             $pdo->commit();
             file_put_contents($logFile, "[SUCCESS] Transação " . $transaction['id'] . " processada." . PHP_EOL, FILE_APPEND);
         } catch (Exception $e) {
