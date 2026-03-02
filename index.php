@@ -153,7 +153,7 @@ require_once 'includes/db.php';
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
-                    Os saques são prioritários e geralmente liquidados em até 2 horas para sua chave PIX cadastrada, garantindo que seu dinheiro esteja sempre à mão.
+                    Os saques são processados e liquidados em até 2 dias úteis para sua chave PIX cadastrada, garantindo a segurança de toda a operação.
                 </div>
             </div>
         </div>
@@ -247,7 +247,7 @@ require_once 'includes/db.php';
             </div>
             <div class="lp-faq-item">
                 <div class="lp-faq-q">Quanto tempo leva o saque? <i class="fas fa-chevron-down"></i></div>
-                <div class="lp-faq-a">Os saques são prioridade absoluta no Ghost Pix. Após a solicitação, o valor é liquidado na sua chave PIX cadastrada em até 2 horas.</div>
+                <div class="lp-faq-a">Os saques são processados com segurança e liquidados na sua chave PIX cadastrada em até 2 dias úteis.</div>
             </div>
         </div>
     </section>
