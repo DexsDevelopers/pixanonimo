@@ -20,8 +20,9 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2.7">
+    <link rel="stylesheet" href="style.css?v=2.8">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -160,13 +161,19 @@ $rows = $transactions->fetchAll();
                                                 data-qr="<?php echo htmlspecialchars($t['qr_image'] ?? ''); ?>" 
                                                 data-code="<?php echo htmlspecialchars($t['pix_code'] ?? ''); ?>"
                                                 data-amount="<?php echo number_format($t['amount_brl'], 2, ',', '.'); ?>"
-                                                title="Ver QR Code">👁️</button>
+                                                title="Ver QR Code">
+                                            <i class="fas fa-qrcode"></i>
+                                        </button>
                                         <button class="btn-history-action btn-copy-pix-row" 
                                                 data-code="<?php echo htmlspecialchars($t['pix_code'] ?? ''); ?>"
-                                                title="Copiar Pix">📋</button>
+                                                title="Copiar Pix">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
                                         <button class="btn-history-action btn-delete-row" 
                                                 data-id="<?php echo $t['id']; ?>"
-                                                title="Excluir">🗑️</button>
+                                                title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -207,6 +214,6 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=2.3"></script>
+    <script src="script.js?v=2.4"></script>
 </body>
 </html>
