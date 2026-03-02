@@ -58,7 +58,7 @@ $rows = $transactions->fetchAll();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -67,10 +67,10 @@ $rows = $transactions->fetchAll();
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo">
-                <img src="ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
-                <span class="logo-text">Ghost<span> Pix</span></span>
-            </div>
+                <div class="logo">
+                    <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+                    <span class="logo-text">Ghost<span> Pix</span></span>
+                </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active">📊 Dashboard</a>
                 <a href="sacar.php" class="nav-item">💸 Sacar</a>
@@ -83,8 +83,8 @@ $rows = $transactions->fetchAll();
             </nav>
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar" style="overflow: hidden; border: 2px solid var(--primary);">
-                        <img src="ghost.jpg?v=5.0" class="avatar-img" alt="Avatar">
+                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
+                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
                     </div>
                     <div class="user-info">
                         <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
@@ -97,8 +97,8 @@ $rows = $transactions->fetchAll();
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 style="margin-bottom: 0.2rem;">Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
-                    <p style="color: var(--text-dim); font-size: 0.9rem;">Bem-vindo ao seu painel Ghost Pix.</p>
+                    <h1>Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
+                    <p>Bem-vindo ao seu painel Ghost Pix.</p>
                 </div>
                 <div class="wallet-status">
                     <span class="status-indicator"></span>
@@ -142,12 +142,15 @@ $rows = $transactions->fetchAll();
                     <div class="balance-display" id="stat-balance">
                         <span class="currency">R$</span><?php echo number_format($user['balance'], 2, ',', '.'); ?>
                     </div>
+                    <p class="card-hint" style="color:var(--green); font-weight:600; margin-bottom:1rem;">
+                        <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
+                    </p>
                     <?php if($user['balance'] > 0): ?>
                         <a href="sacar.php" class="btn-primary btn-withdraw">
                             <i class="fas fa-arrow-up-right-from-square"></i> Solicitar Saque
                         </a>
                         <p class="card-hint">
-                            <i class="fas fa-info-circle"></i> Saque mínimo: R$ 50,00
+                            <i class="fas fa-bolt"></i> Pagamento Identificado em Segundos
                         </p>
                     <?php else: ?>
                         <p class="card-hint" style="margin-top:.5rem;">
@@ -200,7 +203,10 @@ $rows = $transactions->fetchAll();
                         <i class="fas fa-bolt"></i>
                         <?php echo $user['status'] == 'approved' ? 'Gerar QR Code Pix' : 'Conta Pendente'; ?>
                     </button>
-                    <p class="card-hint center">Crédito após confirmação.</p>
+                    <p class="card-hint center" style="margin-top:1rem;">
+                        <i class="fas fa-check-circle"></i> Verificado pelo Banco Central
+                    </p>
+                    <p class="card-hint center">Crédito imediato após confirmação.</p>
                 </div>
 
                 <!-- History Card -->

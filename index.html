@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixGo External System - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="theme-color" content="#080808">
+    <title>Ghost Pix - Dashboard Premium</title>
+    <link rel="stylesheet" href="style.css?v=8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="mobile-header">
+        <div class="logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <span class="logo-text">Ghost<span> Pix</span></span>
+        </div>
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <span class="logo-icon">⚡</span>
-                <span class="logo-text">Pix<span>Go</span></span>
+                <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+                <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
-                <a href="#" class="nav-item active">
-                    <span class="icon">📊</span> Dashboard
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">👛</span> Carteira Liquid
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">💳</span> Cobranças
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">⚙️</span> Configurações
-                </a>
+                <a href="#" class="nav-item active"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                <a href="#" class="nav-item"><i class="fas fa-wallet"></i> Carteira</a>
+                <a href="#" class="nav-item"><i class="fas fa-qrcode"></i> Cobranças</a>
+                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Configurações</a>
+                <a href="auth/login.php" class="nav-item"><i class="fas fa-sign-in-alt"></i> Login</a>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar">U</div>
+                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
+                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
+                    </div>
                     <div class="user-info">
                         <span class="user-name">Usuário</span>
-                        <span class="user-status">Online</span>
+                        <span class="user-status">Demonstração</span>
                     </div>
                 </div>
             </div>
@@ -45,76 +52,149 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-header">
-                <h1>Painel de Controle</h1>
+                <div>
+                    <h1>Painel de Controle</h1>
+                    <p>Acompanhe sua movimentação em tempo real.</p>
+                </div>
                 <div class="wallet-status">
                     <span class="status-indicator"></span>
-                    Rede Liquid: <strong>Conectado</strong>
+                    Rede Ghost: <strong>Conectado</strong>
                 </div>
             </header>
 
+            <!-- Analytics Cards -->
+            <div class="analytics-grid">
+                <div class="stat-card accent-green">
+                    <span class="stat-label">Volume Hoje</span>
+                    <div class="stat-value">R$ 1.250,00</div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +12% hoje</div>
+                </div>
+                <div class="stat-card accent-blue">
+                    <span class="stat-label">Volume Mensal</span>
+                    <div class="stat-value">R$ 45.890,00</div>
+                    <div class="stat-sub">Mês de Março</div>
+                </div>
+                <div class="stat-card accent-purple">
+                    <span class="stat-label">Total Vitalício</span>
+                    <div class="stat-value">R$ 128.400,00</div>
+                    <div class="stat-sub">Acumulado</div>
+                </div>
+                <div class="stat-card accent-amber">
+                    <span class="stat-label">Pendentes</span>
+                    <div class="stat-value" style="color: var(--amber);">3</div>
+                    <div class="stat-sub">Aguardando Pix</div>
+                </div>
+            </div>
+
             <div class="dashboard-grid">
                 <!-- Wallet Card -->
-                <div class="card wallet-card glass">
-                    <h3>Sua Carteira Liquid</h3>
-                    <div class="wallet-address-box">
-                        <span id="wallet-address">lq1q2w3e4r5t6y7u8i9o0p...</span>
-                        <button class="btn-icon">📋</button>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                            <h3 class="card-title">Saldo Disponível</h3>
+                        </div>
                     </div>
-                    <p class="crypto-note">O DEPIX será enviado para este endereço automaticamente após o Pix ser pago.</p>
+                    <div class="balance-display">
+                        <span class="currency">R$</span>2.450,00
+                    </div>
+                    <p class="card-hint" style="color:var(--green); font-weight:600; margin-bottom:1rem;">
+                        <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
+                    </p>
+                    <button class="btn-primary">
+                        <i class="fas fa-arrow-up-right-from-square"></i> Solicitar Saque
+                    </button>
                 </div>
 
                 <!-- Generate Pix Card -->
-                <div class="card generate-card glass">
-                    <h3>Gerar Nova Cobrança</h3>
-                    <div class="input-group">
-                        <label for="amount">Valor (BRL)</label>
-                        <input type="number" id="amount" placeholder="0,00" step="0.01">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-qrcode"></i></div>
+                            <h3 class="card-title">Gerar Cobrança</h3>
+                        </div>
                     </div>
-                    <button id="btn-generate" class="btn-primary">Gerar QR Code Pix</button>
+                    <div class="amount-input-wrap">
+                        <span class="amount-prefix">R$</span>
+                        <input type="number" class="amount-input" placeholder="0,00">
+                    </div>
+                    <button class="btn-primary">Gerar QR Code Pix</button>
+                    <p class="card-hint center" style="margin-top:1rem;">
+                        <i class="fas fa-check-circle"></i> Verificado pelo Banco Central
+                    </p>
                 </div>
 
                 <!-- Recent Transactions -->
-                <div class="card history-card glass full-width">
-                    <h3>Histórico Recente</h3>
-                    <table class="transaction-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Valor</th>
-                                <th>Status Pix</th>
-                                <th>Status Crypto</th>
-                                <th>Hash</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transaction-history">
-                            <tr>
-                                <td>01/03/2026</td>
-                                <td>R$ 150,00</td>
-                                <td><span class="badge paid">Pago</span></td>
-                                <td><span class="badge sent">Enviado</span></td>
-                                <td class="tx-hash">a1b2c3d4...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card full-width">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-history"></i></div>
+                            <h3 class="card-title">Histórico Recente</h3>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Status Pix</th>
+                                    <th>Status Checkout</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>01/03 14:20</td>
+                                    <td>R$ 150,00</td>
+                                    <td><span class="badge paid">Pago</span></td>
+                                    <td><span class="badge sent">Liberado</span></td>
+                                    <td>
+                                        <div class="action-row">
+                                            <button class="btn-history-action"><i class="fas fa-eye"></i></button>
+                                            <button class="btn-history-action"><i class="fas fa-copy"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal for QR Code -->
-    <div id="modal-qr" class="modal hidden">
-        <div class="modal-content glass">
-            <span class="close-modal">&times;</span>
-            <h2>Escaneie o Pix</h2>
-            <div class="qr-placeholder">
-                <p>Aguardando pagamento...</p>
-                <!-- O QR Code será inserido aqui pelo JS -->
-            </div>
-            <p class="qr-value">Valor: <strong id="modal-amount">R$ 0,00</strong></p>
-            <button class="btn-secondary">Copiar Código Pix</button>
-        </div>
-    </div>
+    <!-- Mobile Navigation (Thumb Zone) -->
+    <nav class="mobile-nav">
+        <a href="#" class="mobile-nav-item active">
+            <i class="fas fa-th-large"></i>
+            <span>Início</span>
+        </a>
+        <a href="#" class="mobile-nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Carteira</span>
+        </a>
+        <a href="#" class="mobile-nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Gerar</span>
+        </a>
+        <a href="#" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <a href="auth/login.php" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+        </a>
+    </nav>
 
-    <script src="script.js"></script>
+    <script>
+        // Simple mobile toggle
+        document.getElementById('menu-toggle')?.addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        });
+    </script>
 </body>
+
 </html>

@@ -23,16 +23,16 @@ try {
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Solicitar Saque - Ghost Pix</title>
-    <link rel="stylesheet" href="style.css?v=5.1">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
-        <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
-            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
+        <div class="logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
@@ -41,7 +41,7 @@ try {
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
+                <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -54,6 +54,17 @@ try {
                 <?php endif; ?>
                 <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
+                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
+                        <span class="user-status">Conta Ativa</span>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <main class="main-content">
@@ -63,35 +74,48 @@ try {
             </header>
 
             <div style="max-width: 600px; margin: 0 auto;">
-                <div class="card glass" style="border-color: var(--primary);">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-dim); margin-bottom: 0.5rem;">Saldo Disponível</h3>
-                        <div style="font-size: 3rem; font-weight: 800; color: var(--primary);">
-                            R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="card">
+                    <div style="text-align: center; margin-bottom: 2.2rem;">
+                        <span class="stat-label">Saldo Disponível</span>
+                        <div class="balance-display" style="font-size: 3rem; margin-top: 0.5rem; letter-spacing: -2px;">
+                            <span class="currency">R$</span><?php echo number_format($user['balance'], 2, ',', '.'); ?>
                         </div>
-                    </div>
-
-                    <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
-                        <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">Destino do Pagamento:</p>
-                        <div style="display:flex; flex-direction:column; gap: 0.5rem;">
-                            <span style="font-weight: 600; font-size: 1.1rem; color: #fff;"><?php echo htmlspecialchars($user['full_name'] ?? 'Nome não configurado'); ?></span>
-                            <span style="font-family: monospace; color: var(--primary); background: rgba(0,255,136,0.1); padding: 0.5rem; border-radius: 8px;"><?php echo htmlspecialchars($user['pix_key'] ?? 'Chave não configurada'); ?></span>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Valor para Saque (Mínimo R$ 50,00)</label>
-                        <input type="number" id="withdraw-amount" placeholder="0,00" step="0.01" style="font-size: 1.5rem; text-align: center;">
-                    </div>
-
-                    <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
-                        <p style="font-size: 0.85rem; color: #ff9999; margin: 0;">
-                            <strong>Aviso:</strong> O processamento pode levar até <strong>2 dias úteis</strong>. Certifique-se de que os dados acima estão corretos.
+                        <p class="card-hint center" style="color:var(--green); font-weight:600; margin-top: 0.5rem;">
+                            <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
                         </p>
                     </div>
 
-                    <button id="btn-confirm-withdraw" class="btn-primary" style="padding: 1.2rem; font-size: 1.1rem;">Confirmar Saque</button>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+                        <p class="stat-label" style="margin-bottom: 0.8rem; font-size: 0.65rem;">Destino do Pagamento</p>
+                        <div style="display:flex; flex-direction:column; gap: 0.4rem;">
+                            <span style="font-weight: 700; font-size: 1.15rem; color: var(--text);"><?php echo htmlspecialchars($user['full_name'] ?? 'Nome não configurado'); ?></span>
+                            <span style="font-family: 'SF Mono', monospace; color: var(--blue); font-size: 0.9rem; letter-spacing: 0.5px;"><?php echo htmlspecialchars($user['pix_key'] ?? 'Chave não configurada'); ?></span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label class="stat-label" style="display:block; margin-bottom: 0.6rem;">Valor para Saque (Mínimo R$ 50,00)</label>
+                        <div class="amount-input-wrap">
+                            <span class="amount-prefix">R$</span>
+                            <input type="number" id="withdraw-amount" class="amount-input" placeholder="0,00" step="0.01">
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); padding: 1rem; border-radius: 10px; margin-bottom: 2.2rem;">
+                        <p style="font-size: 0.75rem; color: var(--red); margin: 0; line-height: 1.5; font-weight: 500;">
+                            <i class="fas fa-triangle-exclamation"></i> <strong>Aviso:</strong> O processamento pode levar até <strong>2 dias úteis</strong>. Certifique-se de que os dados acima estão corretos.
+                        </p>
+                    </div>
+
+                    <button id="btn-confirm-withdraw" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Confirmar Saque
+                    </button>
+                    <p class="card-hint center" style="margin-top: 1.2rem;">
+                        <i class="fas fa-lock"></i> Transferência via PIX Instantâneo
+                    </p>
                 </div>
+            </div>
             </div>
         </main>
     </div>
@@ -107,7 +131,7 @@ try {
             <span>Sacar</span>
         </a>
         <a href="perfil.php" class="mobile-nav-item">
-            <i class="fas fa-user-circle"></i>
+            <i class="fas fa-user"></i>
             <span>Perfil</span>
         </a>
         <a href="suporte.php" class="mobile-nav-item">

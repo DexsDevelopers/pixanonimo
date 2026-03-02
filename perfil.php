@@ -18,16 +18,16 @@ $user = $stmt->fetch();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Perfil</title>
-    <link rel="stylesheet" href="style.css?v=5.1">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
-        <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
-            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
+        <div class="logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
@@ -36,7 +36,7 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
+                <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -49,6 +49,17 @@ $user = $stmt->fetch();
                 <?php endif; ?>
                 <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
+                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
+                        <span class="user-status">Conta Ativa</span>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <main class="main-content">
@@ -58,38 +69,55 @@ $user = $stmt->fetch();
             </header>
 
             <div style="max-width: 600px; margin: 0 auto;">
-                <div class="card glass">
+                <div class="card">
                     <form id="profile-form">
-                        <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Dados Pessoais</h3>
+                        <div class="card-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                            <div class="card-title-group">
+                                <div class="card-icon"><i class="fas fa-user-edit"></i></div>
+                                <h3 class="card-title">Dados Pessoais</h3>
+                            </div>
+                        </div>
                         
-                        <div class="input-group">
-                            <label>Email (Não pode ser alterado)</label>
-                            <input type="email" value="<?php echo htmlspecialchars($user['email']); ?>" disabled style="opacity: 0.6; cursor: not-allowed;">
+                        <div style="margin-bottom: 1.2rem;">
+                            <label class="stat-label" style="display:block; margin-bottom: 0.5rem;">Email (Protegido)</label>
+                            <input type="email" value="<?php echo htmlspecialchars($user['email']); ?>" disabled 
+                                   style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 0.8rem 1rem; border-radius: 10px; color: var(--text-2); cursor: not-allowed; font-family: var(--font);">
                         </div>
 
-                        <div class="input-group">
-                            <label>Nome Completo (Como no Banco)</label>
-                            <input type="text" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+                        <div style="margin-bottom: 1.2rem;">
+                            <label class="stat-label" style="display:block; margin-bottom: 0.5rem;">Nome Completo</label>
+                            <input type="text" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required
+                                   style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 0.8rem 1rem; border-radius: 10px; color: var(--text); font-family: var(--font); transition: border-color 0.2s;">
                         </div>
 
-                        <div class="input-group">
-                            <label>Chave PIX (Para Recebimento)</label>
-                            <input type="text" name="pix_key" value="<?php echo htmlspecialchars($user['pix_key']); ?>" required>
+                        <div style="margin-bottom: 1.2rem;">
+                            <label class="stat-label" style="display:block; margin-bottom: 0.5rem;">Chave PIX</label>
+                            <input type="text" name="pix_key" value="<?php echo htmlspecialchars($user['pix_key']); ?>" required
+                                   style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 0.8rem 1rem; border-radius: 10px; color: var(--text); font-family: 'SF Mono', monospace; transition: border-color 0.2s;">
                         </div>
 
-                        <h3 style="margin-top: 3rem; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">Alterar Senha (Opcional)</h3>
+                        <div class="card-header" style="margin-top: 3rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                            <div class="card-title-group">
+                                <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                                <h3 class="card-title">Segurança</h3>
+                            </div>
+                        </div>
                         
-                        <div class="input-group">
-                            <label>Senha Atual (Necessária apenas para mudar a senha)</label>
-                            <input type="password" name="current_password" placeholder="Digite sua senha atual">
+                        <div style="margin-bottom: 1.2rem;">
+                            <label class="stat-label" style="display:block; margin-bottom: 0.5rem;">Senha Atual</label>
+                            <input type="password" name="current_password" placeholder="Para validar alterações"
+                                   style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 0.8rem 1rem; border-radius: 10px; color: var(--text); font-family: var(--font);">
                         </div>
 
-                        <div class="input-group">
-                            <label>Nova Senha (Deixe em branco para não alterar)</label>
-                            <input type="password" name="new_password" placeholder="Mínimo 6 caracteres">
+                        <div style="margin-bottom: 1.2rem;">
+                            <label class="stat-label" style="display:block; margin-bottom: 0.5rem;">Nova Senha (Opcional)</label>
+                            <input type="password" name="new_password" placeholder="Mínimo 6 caracteres"
+                                   style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 0.8rem 1rem; border-radius: 10px; color: var(--text); font-family: var(--font);">
                         </div>
 
-                        <button type="submit" class="btn-primary" id="btn-save-profile" style="margin-top: 2rem;">Salvar Alterações</button>
+                        <button type="submit" class="btn-primary" id="btn-save-profile" style="margin-top: 2rem;">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
                     </form>
                 </div>
             </div>
@@ -107,7 +135,7 @@ $user = $stmt->fetch();
             <span>Sacar</span>
         </a>
         <a href="perfil.php" class="mobile-nav-item active">
-            <i class="fas fa-user-circle"></i>
+            <i class="fas fa-user"></i>
             <span>Perfil</span>
         </a>
         <a href="suporte.php" class="mobile-nav-item">

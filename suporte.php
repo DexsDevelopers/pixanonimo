@@ -16,29 +16,32 @@ $user = $stmt->fetch();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix - Suporte & FAQ</title>
-    <link rel="stylesheet" href="style.css?v=5.1">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
     <style>
         .faq-container { max-width: 800px; margin: 0 auto; }
-        .faq-item { margin-bottom: 1rem; border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; }
-        .faq-question { padding: 1.2rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); font-weight: 600; }
-        .faq-question:hover { background: rgba(255,255,255,0.07); }
-        .faq-answer { padding: 0 1.2rem; max-height: 0; overflow: hidden; transition: all 0.3s ease; background: rgba(0,0,0,0.2); font-size: 0.9rem; line-height: 1.6; color: var(--text-dim); }
-        .faq-item.active .faq-answer { padding: 1.2rem; max-height: 500px; }
-        .faq-item.active .faq-question i { transform: rotate(180deg); }
-        .support-contact-card { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
-        .contact-method { flex: 1; min-width: 250px; padding: 1.5rem; text-align: center; border-radius: 16px; border: 1px solid var(--glass-border); transition: transform 0.3s; text-decoration: none; color: white; }
-        .contact-method:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .contact-method i { font-size: 2rem; margin-bottom: 1rem; color: var(--primary); }
+        .faq-item { margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: all 0.3s var(--ease); background: var(--bg-card); }
+        .faq-question { padding: 1.2rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); font-weight: 600; color: var(--text); }
+        .faq-question:hover { background: rgba(255,255,255,0.04); }
+        .faq-answer { padding: 0 1.2rem; max-height: 0; overflow: hidden; transition: all 0.3s var(--ease); background: rgba(0,0,0,0.15); font-size: 0.9rem; line-height: 1.6; color: var(--text-2); }
+        .faq-item.active { border-color: var(--border-h); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .faq-item.active .faq-answer { padding: 1.2rem; max-height: 600px; }
+        .faq-item.active .faq-question i { transform: rotate(180deg); color: var(--text); }
+        .support-contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .contact-method { padding: 1.5rem; text-align: center; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-card); transition: all 0.3s var(--ease); text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; }
+        .contact-method:hover { transform: translateY(-5px); border-color: var(--border-h); background: var(--bg-card-h); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .contact-method i { font-size: 2rem; margin-bottom: 1rem; color: var(--green); }
+    </style>
     </style>
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
-        <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
-            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
+        <div class="logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
@@ -46,7 +49,7 @@ $user = $stmt->fetch();
     <div class="app-container">
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jpg?v=5.0" class="logo-img">
+                <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -59,6 +62,17 @@ $user = $stmt->fetch();
                 <?php endif; ?>
                 <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
+                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
+                        <span class="user-status">Conta Ativa</span>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <main class="main-content">
@@ -71,13 +85,18 @@ $user = $stmt->fetch();
             </header>
 
             <div class="faq-container">
-                <div class="card glass" style="margin-bottom: 2rem;">
-                    <h3>Sobre a Plataforma</h3>
-                    <p style="color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem;">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-shield-halved"></i></div>
+                            <h3 class="card-title">Sobre a Plataforma</h3>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-2); line-height: 1.7; margin-bottom: 1rem; font-size: 0.95rem;">
                         O **Ghost Pix** começou como uma solução de pagamentos focada 100% em **privacidade e segurança anti-rastreio**. Nossa plataforma foi originalmente projetada considerando o cenário atual onde muitas pessoas precisam **fugir de bloqueios judiciais, taxações abusivas ou apenas preservar seu patrimônio de forma totalmente anônima**.
                     </p>
-                    <p style="color: var(--text-dim); line-height: 1.6;">
-                        Permitimos gerar cobranças via Pix com confirmação instantânea através de integrações off-shore seguras. Garantimos **proteção completa da sua identidade**. Aqui você movimenta seu capital sem deixar rastros corporativos. Oferecemos segurança impenetrável e taxas justas, para que você foque no que importa: **ter o controle do seu dinheiro.**
+                    <p style="color: var(--text-2); line-height: 1.7; font-size: 0.95rem;">
+                        Asseguramos proteção completa da sua identidade e movimentação sem rastros corporativos, garantindo que você tenha o **controle total do seu dinheiro**.
                     </p>
                 </div>
 
@@ -113,20 +132,25 @@ $user = $stmt->fetch();
                     <div class="faq-answer">Acesse o menu "Perfil" no painel lateral. Lá você poderá atualizar seu nome e sua chave Pix para recebimento de saques. Certifique-se de que a chave está correta para evitar atrasos.</div>
                 </div>
 
-                <div class="card glass" style="margin-top: 3rem; text-align: center;">
-                    <h3>Ainda precisa de ajuda?</h3>
-                    <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Fale diretamente com nossa equipe de suporte humano.</p>
+                <div class="card" style="margin-top: 3rem; text-align: center;">
+                    <div class="card-header" style="justify-content: center;">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-headset"></i></div>
+                            <h3 class="card-title">Ainda precisa de ajuda?</h3>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-2); margin-bottom: 1.5rem; font-size: 0.95rem;">Fale diretamente com nossa equipe de suporte humano.</p>
                     
-                    <div class="support-contact-card">
-                        <a href="https://wa.me/5551996148568" target="_blank" class="contact-method glass">
+                    <div class="support-contact-grid">
+                        <a href="https://wa.me/5551996148568" target="_blank" class="contact-method">
                             <i class="fab fa-whatsapp"></i>
-                            <h4>WhatsApp</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-dim);">+55 51 99614-8568</p>
+                            <h4 style="margin-bottom: 0.3rem;">WhatsApp</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-2);">Atendimento Instantâneo</p>
                         </a>
-                        <a href="mailto:empresatokio@gmail.com" class="contact-method glass">
+                        <a href="mailto:empresatokio@gmail.com" class="contact-method">
                             <i class="far fa-envelope"></i>
-                            <h4>E-mail</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-dim);">empresatokio@gmail.com</p>
+                            <h4 style="margin-bottom: 0.3rem;">E-mail</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-2);">Suporte Corporativo</p>
                         </a>
                     </div>
                 </div>
@@ -145,7 +169,7 @@ $user = $stmt->fetch();
             <span>Sacar</span>
         </a>
         <a href="perfil.php" class="mobile-nav-item">
-            <i class="fas fa-user-circle"></i>
+            <i class="fas fa-user"></i>
             <span>Perfil</span>
         </a>
         <a href="suporte.php" class="mobile-nav-item active">
