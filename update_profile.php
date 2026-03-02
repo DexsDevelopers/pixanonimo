@@ -42,6 +42,7 @@ try {
     // Atualizar senha se fornecida
     if (!empty($newPassword)) {
         if (strlen($newPassword) < 6) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
             echo json_encode(['error' => 'A nova senha deve ter pelo menos 6 caracteres.']);
             exit;
         }
@@ -57,6 +58,8 @@ try {
 
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    echo json_encode(['error' => 'Erro interno ao salvar: ' . $e->getMessage()]);
+    if ($pdo && $pdo->inTransaction()) $pdo->rollBack();
+    // Logar o erro internamente para o desenvolvedor
+    error_log("Erro no perfil (User ID: $userId): " . $e->getMessage());
+    echo json_encode(['error' => 'Erro ao salvar no banco: ' . $e->getMessage()]);
 }

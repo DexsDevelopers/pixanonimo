@@ -116,7 +116,14 @@ $user = $stmt->fetch();
                 body: JSON.stringify(data)
             });
 
-            const result = await res.json();
+            const text = await res.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                throw new Error('Resposta inválida do servidor: ' + text.substring(0, 100));
+            }
+
             if (result.success) {
                 alert('Perfil atualizado com sucesso!');
                 location.reload();
@@ -124,7 +131,7 @@ $user = $stmt->fetch();
                 alert(result.error || 'Erro ao atualizar perfil.');
             }
         } catch (err) {
-            alert('Erro de conexão.');
+            alert('Erro: ' + err.message);
         } finally {
             btn.innerText = 'Salvar Alterações';
             btn.disabled = false;
