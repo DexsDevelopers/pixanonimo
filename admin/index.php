@@ -68,14 +68,14 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=3.0">
+    <link rel="stylesheet" href="../style.css?v=5.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="../ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="../ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span> Admin</span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -85,7 +85,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="../ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="../ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">

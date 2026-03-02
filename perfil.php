@@ -16,7 +16,7 @@ $user = $stmt->fetch();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Perfil</title>
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link rel="stylesheet" href="style.css?v=5.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -33,7 +33,7 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">

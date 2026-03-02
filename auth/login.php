@@ -32,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../style.css?v=2.2">
+    <link rel="stylesheet" href="../style.css?v=5.0">
     <title>Ghost Pix - Login</title>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
     <div class="card glass" style="width: 100%; max-width: 400px; text-align: center;">
-        <img src="../ghost.jfif" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
+        <img src="../ghost.jpg?v=5.0" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
         <h2>Login</h2>
         <?php if(isset($_GET['error'])): ?>
             <p style="color: var(--danger);">Email ou senha incorretos.</p>

@@ -16,7 +16,7 @@ $user = $stmt->fetch();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Suporte & FAQ</title>
-    <link rel="stylesheet" href="style.css?v=3.9">
+    <link rel="stylesheet" href="style.css?v=5.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -37,7 +37,7 @@ $user = $stmt->fetch();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo">
-            <img src="ghost.jfif" class="logo-img" style="height: 24px;">
+            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -46,7 +46,7 @@ $user = $stmt->fetch();
     <div class="app-container">
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif" class="logo-img">
+                <img src="ghost.jpg?v=5.0" class="logo-img">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -73,11 +73,11 @@ $user = $stmt->fetch();
             <div class="faq-container">
                 <div class="card glass" style="margin-bottom: 2rem;">
                     <h3>Sobre a Plataforma</h3>
+                    <p style="color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem;">
+                        O **Ghost Pix** começou como uma solução de pagamentos focada 100% em **privacidade e segurança anti-rastreio**. Nossa plataforma foi originalmente projetada considerando o cenário atual onde muitas pessoas precisam **fugir de bloqueios judiciais, taxações abusivas ou apenas preservar seu patrimônio de forma totalmente anônima**.
+                    </p>
                     <p style="color: var(--text-dim); line-height: 1.6;">
-                        O **Ghost Pix** é uma solução de pagamentos focada em rapidez e facilidade. 
-                        Nossa plataforma permite gerar cobranças via Pix com confirmação instantânea 
-                        e gestão simplificada de recebimentos. Oferecemos segurança total e taxas 
-                        competitivas para que você foque no que importa: seu negócio.
+                        Permitimos gerar cobranças via Pix com confirmação instantânea através de integrações off-shore seguras. Garantimos **proteção completa da sua identidade**. Aqui você movimenta seu capital sem deixar rastros corporativos. Oferecemos segurança impenetrável e taxas justas, para que você foque no que importa: **ter o controle do seu dinheiro.**
                     </p>
                 </div>
 
@@ -89,13 +89,23 @@ $user = $stmt->fetch();
                 </div>
 
                 <div class="faq-item">
-                    <div class="faq-question">Qual o prazo para saques? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Os saques são processados manualmente pela nossa equipe administrativa. O prazo médio é de até 2 dias úteis, garantindo a segurança de todas as transações.</div>
+                    <div class="faq-question">O recebimento é realmente anônimo? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Sim! Priorizamos o sigilo. Quem faz o pagamento do Pix gerado por você, não verá os seus dados pessoais diretos nem cruzamentos com seu CPF. Usamos contas de liquidação parceiras terceirizadas para garantir que o dinheiro chegue até você de forma limpa e sem amarras judiciais.</div>
                 </div>
 
                 <div class="faq-item">
-                    <div class="faq-question">Por que meu Pix foi rejeitado? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Geralmente ocorre por expiração (passou dos 20 minutos) ou por tentativa de pagamento de um valor idêntico ao de outra cobrança pendente em curto período (colisão de valores). Sempre verifique o tempo restante.</div>
+                    <div class="faq-question">Posso usar a plataforma para fugir de problemas com fisco/bloqueios? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">O Ghost Pix foi construído pensando na blindagem de patrimônio e fluxos de caixa paralelos. Entendemos a necessidade de operar sem a supervisão do Banco Central ou congelamentos de BACENJUD. Nós provemos as ferramentas para você fazer isso com segurança.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Qual o prazo e como é feito o saque? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">O seu saldo Ghost Pix fica protegido conosco. Quando você solicitar o saque, a transferência será realizada por contas blindadas da nossa própria base de liquidez, em até 2 dias úteis, despistando qualquer análise na sua conta bancária de destino final.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Por que meu Pix foi rejeitado ou expirou? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Para garantir que a liquidação não deixe rastros e funcione via nosso proxy, cada chave copia e cola tem validade rigorosa de 20 minutos. Passado esse tempo, o intermediário descarta a cobrança para evitar falhas de conciliação. Em caso de expiração, basta gerar um novo QR Code idêntico.</div>
                 </div>
 
                 <div class="faq-item">

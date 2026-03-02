@@ -48,7 +48,7 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=5.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -56,7 +56,7 @@ $rows = $transactions->fetchAll();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <img src="ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
+            <img src="ghost.jpg?v=5.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -66,7 +66,7 @@ $rows = $transactions->fetchAll();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <img src="ghost.jpg?v=5.0" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -82,7 +82,7 @@ $rows = $transactions->fetchAll();
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="avatar" style="overflow: hidden; border: 2px solid var(--primary);">
-                        <img src="ghost.jfif" class="avatar-img" alt="Avatar">
+                        <img src="ghost.jpg?v=5.0" class="avatar-img" alt="Avatar">
                     </div>
                     <div class="user-info">
                         <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
