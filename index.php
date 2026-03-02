@@ -58,12 +58,12 @@ require_once 'includes/db.php';
             <a href="#faq" class="lp-nav-link">FAQ</a>
             <a href="suporte.php" class="lp-nav-link">CONTATO</a>
         </div>
-        <div class="lp-auth-buttons">
+        <div class="lp-auth-buttons mobile-hide-links">
             <?php if(isLoggedIn()): ?>
-                <a href="dashboard.php" class="btn-lp-primary">Acessar Painel</a>
+                <a href="dashboard.php" class="btn-lp-primary">PAINEL</a>
             <?php else: ?>
-                <a href="auth/login.php" class="btn-lp-outline">Entrar</a>
-                <a href="auth/register.php" class="btn-lp-primary">Criar Conta</a>
+                <a href="auth/login.php" class="btn-lp-outline-sm">ENTRAR</a>
+                <a href="auth/register.php" class="btn-lp-primary-sm">CRIAR CONTA</a>
             <?php endif; ?>
         </div>
     </nav>
@@ -83,8 +83,8 @@ require_once 'includes/db.php';
 
     <!-- Hero Section -->
     <header class="lp-hero">
-        <div class="lp-hero-tag">A Era da Blindagem Financeira Chegou</div>
-        <h1>Receba com Total <br><span style="color: var(--green);">Blindagem e Sigilo</span></h1>
+        <div class="lp-hero-tag" data-aos="fade-down">A ERA DA BLINDAGEM FINANCEIRA CHEGOU</div>
+        <h1 class="lp-responsive-title">RECEBA COM TOTAL <br><span class="lp-gradient-text">BLINDAGEM E SIGILO</span></h1>
         <p>Pare de se preocupar com bloqueios judiciais ou exposição de dados. O Ghost Pix é a primeira plataforma de liquidação blindada focada em privacidade absoluta.</p>
         
         <!-- Visual Hero: 3D Floating Glass Cards -->
