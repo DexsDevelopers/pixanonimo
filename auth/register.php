@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../style.css?v=2.2">
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
-    <div class="card glass" style="width: 100%; max-width: 450px;">
+    <div class="card glass" style="width: 100%; max-width: 450px; text-align: center;">
+        <img src="../im the ghost.jfif" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
         <h2>Criar Conta</h2>
         <?php if(isset($_GET['error']) && $_GET['error'] == 'exists'): ?>
             <p style="color: var(--danger);">Este email já está cadastrado.</p>

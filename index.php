@@ -56,7 +56,7 @@ $rows = $transactions->fetchAll();
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
-            <span class="logo-icon">⚡</span>
+            <img src="im the ghost.jfif" class="logo-img" style="height: 24px;" alt="Ghost Logo">
             <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -66,7 +66,7 @@ $rows = $transactions->fetchAll();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <span class="logo-icon">⚡</span>
+                <img src="im the ghost.jfif" class="logo-img" alt="Ghost Logo">
                 <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
@@ -80,7 +80,9 @@ $rows = $transactions->fetchAll();
             </nav>
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar"><?php echo strtoupper(substr($user['email'], 0, 1)); ?></div>
+                    <div class="avatar" style="overflow: hidden; border: 2px solid var(--primary);">
+                        <img src="im the ghost.jfif" class="avatar-img" alt="Avatar">
+                    </div>
                     <div class="user-info">
                         <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
                         <span class="user-status"><?php echo ucfirst($user['status']); ?></span>
@@ -105,22 +107,22 @@ $rows = $transactions->fetchAll();
             <div class="analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 <div class="card glass" style="padding: 1.2rem;">
                     <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Hoje</span>
-                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
+                    <div id="stat-today" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
                     <div style="font-size: 0.7rem; color: var(--primary); margin-top: 0.3rem;"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
                 <div class="card glass" style="padding: 1.2rem;">
                     <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Mensal</span>
-                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
+                    <div id="stat-month" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
                     <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Mês atual</div>
                 </div>
                 <div class="card glass" style="padding: 1.2rem;">
                     <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Total Transacionado</span>
-                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
+                    <div id="stat-total" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
                     <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Vitalício</div>
                 </div>
                 <div class="card glass" style="padding: 1.2rem;">
                     <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Pendentes</span>
-                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
+                    <div id="stat-pending" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
                     <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Aguardando pagamento</div>
                 </div>
             </div>
@@ -129,7 +131,7 @@ $rows = $transactions->fetchAll();
                 <!-- Balance Card -->
                 <div class="card wallet-card glass" style="border-color: var(--primary);">
                     <h3>Seu Saldo Disponível</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+                    <div id="stat-balance" style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
                         R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
                     </div>
                     <?php if($user['balance'] > 0): ?>
@@ -175,7 +177,7 @@ $rows = $transactions->fetchAll();
 
                 <div class="card history-card glass full-width">
                     <h3>Histórico Recente</h3>
-                    <table class="transaction-table">
+                    <table class="transaction-table" id="transactions-table">
                         <thead>
                             <tr>
                                 <th>Data</th>
@@ -282,7 +284,7 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=3.6"></script>
+    <script src="script.js?v=3.8"></script>
 
 </body>
 </html>

@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Ghost Pix - Login</title>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
-    <div class="card glass" style="width: 100%; max-width: 400px;">
+    <div class="card glass" style="width: 100%; max-width: 400px; text-align: center;">
+        <img src="../im the ghost.jfif" style="width: 80px; height: 80px; border-radius: 12px; margin-bottom: 1.5rem; object-fit: cover;">
         <h2>Login</h2>
         <?php if(isset($_GET['error'])): ?>
             <p style="color: var(--danger);">Email ou senha incorretos.</p>

@@ -33,8 +33,8 @@ $user = $stmt->fetch();
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <span class="logo-icon">⚡</span>
-                <span class="logo-text">Pix<span>Anônimo</span></span>
+                <img src="im the ghost.jfif" class="logo-img" alt="Ghost Logo">
+                <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
                 <a href="index.php" class="nav-item">📊 Dashboard</a>
