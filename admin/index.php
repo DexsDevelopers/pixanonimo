@@ -67,8 +67,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - PixAnônimo</title>
-    <link rel="stylesheet" href="../style.css?v=1.9">
+    <title>Ghost Pix Admin</title>
+    <link rel="stylesheet" href="../style.css?v=2.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -76,7 +76,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
             <span class="logo-icon">⚡</span>
-            <span class="logo-text" style="font-size: 1.2rem;">Pix<span>Anônimo</span> Admin</span>
+            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span> Admin</span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
@@ -86,7 +86,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         <aside class="sidebar">
             <div class="logo">
                 <span class="logo-icon">⚡</span>
-                <span class="logo-text">Pix<span>Anônimo</span></span>
+                <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
                 <a href="../index.php" class="nav-item">📊 Dashboard</a>

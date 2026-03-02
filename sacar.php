@@ -20,8 +20,8 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Saque - PixAnônimo</title>
-    <link rel="stylesheet" href="style.css?v=1.6">
+    <title>Solicitar Saque - Ghost Pix</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -29,7 +29,7 @@ try {
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
             <span class="logo-icon">⚡</span>
-            <span class="logo-text" style="font-size: 1.2rem;">Pix<span>Anônimo</span></span>
+            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
@@ -39,7 +39,7 @@ try {
         <aside class="sidebar">
             <div class="logo">
                 <span class="logo-icon">⚡</span>
-                <span class="logo-text">Pix<span>Anônimo</span></span>
+                <span class="logo-text">Ghost<span> Pix</span></span>
             </div>
             <nav class="nav-menu">
                 <a href="index.php" class="nav-item">📊 Dashboard</a>
@@ -165,6 +165,6 @@ try {
         }
     });
     </script>
-    <script src="script.js?v=1.9"></script>
+    <script src="script.js?v=2.0"></script>
 </body>
 </html>

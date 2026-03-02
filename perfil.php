@@ -15,8 +15,8 @@ $user = $stmt->fetch();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Perfil - PixAnônimo</title>
-    <link rel="stylesheet" href="style.css?v=1.6">
+    <title>Ghost Pix - Perfil</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -24,7 +24,7 @@ $user = $stmt->fetch();
     <div class="mobile-header">
         <div class="logo" style="margin-bottom: 0;">
             <span class="logo-icon">⚡</span>
-            <span class="logo-text" style="font-size: 1.2rem;">Pix<span>Anônimo</span></span>
+            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>

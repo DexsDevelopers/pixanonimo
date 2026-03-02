@@ -58,7 +58,7 @@ $webhookUrl = $baseUrl . "/webhook.php";
 
 $data = [
     'amount' => $amount,
-    'description' => 'Recarga de Saldo - Pix Anônimo',
+    'description' => 'Recarga de Saldo - Ghost Pix',
     'webhook_url' => $webhookUrl,
     'external_id' => 'user_' . $userId . '_' . time()
 ];

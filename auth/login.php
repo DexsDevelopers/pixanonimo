@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PixAnônimo</title>
-    <link rel="stylesheet" href="../style.css?v=1.5">
+    <title>Ghost Pix - Login</title>
+    <link rel="stylesheet" href="../style.css?v=2.0">
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
     <div class="card glass" style="width: 100%; max-width: 400px;">
