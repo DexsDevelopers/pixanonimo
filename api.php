@@ -80,5 +80,33 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     exit;
 }
 
-// Chamada Real via CURL (Omitida por brevidade, mas segue o mesmo padrão anterior)
+// Chamada Real via CURL para API V1
+$ch = curl_init('https://pixgo.org/api/v1/payment/create');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'x-api-key: ' . PIXGO_API_KEY,
+    'Content-Type: application/json'
+]);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+$res = json_decode($response, true);
+if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['success']) {
+    // Salvar transação no banco (Produção)
+    $pixId = $res['id'] ?? $res['data']['id'] ?? '';
+    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) VALUES (?, ?, ?, ?, 'pending')");
+    $ins->execute([$userId, $amount, $netAmount, $pixId]);
+
+    echo $response;
+} else {
+    echo json_encode([
+        'error' => 'Erro na API PixGo',
+        'detail' => $res,
+        'code' => $httpCode
+    ]);
+}
 ?>
