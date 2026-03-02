@@ -132,60 +132,80 @@ $rows = $transactions->fetchAll();
 
             <div class="dashboard-grid">
                 <!-- Balance Card -->
-                <div class="card wallet-card glass" style="border-color: var(--primary);">
-                    <h3>Seu Saldo Disponível</h3>
-                    <div id="stat-balance" style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+                <div class="card wallet-card glass">
+                    <div class="card-icon-row">
+                        <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                        <h3>Saldo Disponível</h3>
+                    </div>
+                    <div class="balance-value" id="stat-balance">
                         R$ <?php echo number_format($user['balance'], 2, ',', '.'); ?>
                     </div>
                     <?php if($user['balance'] > 0): ?>
-                        <a href="sacar.php" class="btn-primary" style="display:block; text-decoration:none; text-align:center; padding: 0.8rem 1.5rem; width: 100%; margin-top: 1rem; background: var(--primary); color: var(--bg-dark); border-radius: 12px; font-weight:700;">Solicitar Saque</a>
-                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
-                            <i class="fas fa-info-circle"></i> O mínimo para saque é R$ 50,00.
+                        <a href="sacar.php" class="btn-primary btn-withdraw">
+                            <i class="fas fa-arrow-right"></i> Solicitar Saque
+                        </a>
+                        <p class="card-hint">
+                            <i class="fas fa-info-circle"></i> Mínimo para saque: R$ 50,00
                         </p>
                     <?php endif; ?>
                 </div>
 
+                <!-- PIX Key Card -->
                 <div class="card wallet-card glass">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="margin: 0;">Sua Chave PIX</h3>
-                        <button id="btn-edit-wallet" class="badge sent" style="border:none; cursor:pointer; font-size: 0.7rem;">Editar</button>
+                    <div class="card-header-row">
+                        <div class="card-icon-row">
+                            <div class="card-icon"><i class="fas fa-key"></i></div>
+                            <h3>Sua Chave PIX</h3>
+                        </div>
+                        <button id="btn-edit-wallet" class="btn-edit">
+                            <i class="fas fa-pen"></i> Editar
+                        </button>
                     </div>
                     <div class="wallet-address-box">
                         <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>" 
                                placeholder="Sua Chave PIX" 
-                               style="background: transparent; border: none; color: white; width: 100%; font-family: inherit; font-size: 0.9rem;" 
+                               class="wallet-input-field"
                                readonly>
                         <button id="btn-copy-wallet" class="btn-icon" title="Copiar">📋</button>
-                        <button id="btn-save-wallet" class="btn-icon hidden" title="Salvar" style="color: var(--primary);">💾</button>
+                        <button id="btn-save-wallet" class="btn-icon hidden" title="Salvar">💾</button>
                     </div>
                     <?php if($user['status'] == 'pending'): ?>
-                        <p style="color: var(--accent); font-size: 0.8rem; margin-top: 10px;">Aguardando aprovação do admin para gerar Pix.</p>
+                        <p class="card-warning"><i class="fas fa-clock"></i> Aguardando aprovação do admin.</p>
                     <?php endif; ?>
                 </div>
 
+                <!-- Generate Card -->
                 <div class="card generate-card glass">
-                    <h3>Gerar Nova Cobrança</h3>
+                    <div class="card-icon-row">
+                        <div class="card-icon"><i class="fas fa-qrcode"></i></div>
+                        <h3>Gerar Nova Cobrança</h3>
+                    </div>
                     <div class="input-group">
                         <label>Valor (BRL)</label>
                         <input type="number" id="amount" placeholder="0,00" step="0.01" min="10" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
-                        <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">Mínimo: R$ 10,00</p>
+                        <p class="card-hint">Mínimo: R$ 10,00</p>
                     </div>
                     <button id="btn-generate" class="btn-primary" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
+                        <i class="fas fa-bolt"></i>
                         <?php echo $user['status'] == 'approved' ? 'Gerar QR Code Pix' : 'Conta Pendente'; ?>
                     </button>
-                    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
-                        Importante: O valor pago será creditado em seu saldo após confirmação.
+                    <p class="card-hint" style="text-align:center; margin-top: 0.8rem;">
+                        Crédito após confirmação do pagamento.
                     </p>
                 </div>
 
+                <!-- History Card -->
                 <div class="card history-card glass full-width">
-                    <h3>Histórico Recente</h3>
+                    <div class="card-icon-row">
+                        <div class="card-icon"><i class="fas fa-history"></i></div>
+                        <h3>Histórico Recente</h3>
+                    </div>
                     <table class="transaction-table" id="transactions-table">
                         <thead>
                             <tr>
                                 <th>Data</th>
-                                <th>Valor Bruto</th>
-                                <th>Líquido (DEPIX)</th>
+                                <th>Bruto</th>
+                                <th>Líquido</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -193,30 +213,30 @@ $rows = $transactions->fetchAll();
                         <tbody>
                             <?php foreach($rows as $t): ?>
                             <tr>
-                                <td><?php echo date('d/m/Y H:i', strtotime($t['created_at'])); ?></td>
+                                <td><?php echo date('d/m H:i', strtotime($t['created_at'])); ?></td>
                                 <td>R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></td>
                                 <td>R$ <?php echo number_format($t['amount_net_brl'], 2, ',', '.'); ?></td>
                                 <td>
                                     <?php 
                                     $status = $t['status'];
                                     $displayStatus = ucfirst($status);
-                                    $badgeClass = 'pending'; // Padrão para pendente (âmbar)
+                                    $badgeClass = 'pending';
                                     
                                     if ($status == 'paid') {
-                                        $badgeClass = 'paid'; // Verde
+                                        $badgeClass = 'paid';
                                     } elseif ($status == 'pending') {
                                         if ($t['seconds_old'] > (20 * 60)) {
                                             $displayStatus = 'Expirado';
-                                            $badgeClass = 'expired'; // Laranja
+                                            $badgeClass = 'expired';
                                         }
                                     } elseif ($status == 'rejected') {
-                                        $badgeClass = 'rejected'; // Vermelho
+                                        $badgeClass = 'rejected';
                                     }
                                     ?>
                                     <span class="badge <?php echo $badgeClass; ?>"><?php echo $displayStatus; ?></span>
                                 </td>
                                 <td>
-                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                    <div class="action-row">
                                         <button class="btn-history-action btn-view-qr" 
                                                 data-qr="<?php echo htmlspecialchars($t['qr_image'] ?? ''); ?>" 
                                                 data-code="<?php echo htmlspecialchars($t['pix_code'] ?? ''); ?>"
