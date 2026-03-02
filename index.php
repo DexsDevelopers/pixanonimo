@@ -9,7 +9,12 @@ require_once 'includes/db.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=10.0">
+    <link rel="stylesheet" href="style.css?v=15.0">
+    <style>
+        /* Force dark theme even if CSS is cached */
+        .lp-body { background: #000 !important; color: #fff !important; }
+        .lp-hero-bg { display: none !important; }
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -24,7 +29,6 @@ require_once 'includes/db.php';
         </div>
         <div class="lp-nav-links">
             <a href="#vsl" class="lp-nav-link">O SISTEMA</a>
-            <a href="#taxas" class="lp-nav-link">PLANOS</a>
             <a href="#faq" class="lp-nav-link">FAQ</a>
             <a href="suporte.php" class="lp-nav-link">CONTATO</a>
         </div>
@@ -117,35 +121,6 @@ require_once 'includes/db.php';
         </div>
     </section>
 
-    <!-- Rates Section -->
-    <section class="lp-section" id="taxas">
-        <div class="lp-section-title">
-            <h2>Transparência é Tudo</h2>
-            <p>Sem letras miúdas. Taxas fixas e competitivas.</p>
-        </div>
-        <div class="lp-pricing-grid">
-            <div class="lp-pricing-card">
-                <h3>Plano Padrão</h3>
-                <div class="lp-price">5% <span>/ transação</span></div>
-                <ul style="list-style: none; color: var(--text-2); text-align: left; margin-top: 2rem;">
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> Aprovação Instantânea</li>
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> Blindagem Anti-Bacen</li>
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> Saques em até 2 dias</li>
-                </ul>
-            </div>
-            <div class="lp-pricing-card featured">
-                <div style="position: absolute; top: 12px; right: -30px; background: var(--green); color: black; padding: 5px 40px; transform: rotate(45deg); font-size: 0.7rem; font-weight: 700;">MAIS USADO</div>
-                <h3>Plano Pro</h3>
-                <div class="lp-price">3.5% <span>/ transação</span></div>
-                <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 2rem;">Para volumes acima de R$ 50k/mês</p>
-                <ul style="list-style: none; color: var(--text-2); text-align: left;">
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> Gerente de Conta Dedicado</li>
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> Saques Prioritários</li>
-                    <li style="margin-bottom: 1rem;"><i class="fas fa-check" style="color: var(--green);"></i> API Customizada</li>
-                </ul>
-            </div>
-        </div>
-    </section>
 
     <!-- FAQ Section -->
     <section class="lp-section" id="faq">
@@ -192,9 +167,9 @@ require_once 'includes/db.php';
                 </div>
                 <div class="lp-footer-col">
                     <h4>Legal</h4>
-                    <a href="#">Termos de Uso</a>
-                    <a href="#">Política de Privacidade</a>
-                    <a href="#">Aviso Crypto</a>
+                    <a href="termos.php">Termos de Uso</a>
+                    <a href="privacidade.php">Política de Privacidade</a>
+                    <a href="aviso-crypto.php">Aviso Crypto</a>
                 </div>
                 <div class="lp-footer-col">
                     <h4>Fale conosco</h4>
@@ -203,23 +178,6 @@ require_once 'includes/db.php';
                 </div>
             </div>
 
-            <div class="lp-footer-apps">
-                <h4>Baixe o app</h4>
-                <a href="#" class="lp-app-btn">
-                    <i class="fab fa-apple"></i>
-                    <div class="lp-app-btn-text">
-                        <span>Download on the</span>
-                        <strong>App Store</strong>
-                    </div>
-                </a>
-                <a href="#" class="lp-app-btn">
-                    <i class="fab fa-google-play"></i>
-                    <div class="lp-app-btn-text">
-                        <span>GET IT ON</span>
-                        <strong>Google Play</strong>
-                    </div>
-                </a>
-            </div>
         </div>
         <div class="lp-footer-bottom">
             <p>© 2026 GHOST PIX - Todos os direitos reservados</p>
