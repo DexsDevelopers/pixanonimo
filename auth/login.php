@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../style.css?v=8.0">
+    <link rel="stylesheet" href="../style.css?v=9.0">
     <title>Ghost Pix - Login</title>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: var(--bg); background-image: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%);">

@@ -50,16 +50,16 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=8.0">
+    <link rel="stylesheet" href="style.css?v=9.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="mobile-header">
-        <div class="logo" style="margin-bottom: 0;">
-            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
-            <span class="logo-text" style="font-size: 1.2rem;">Ghost<span> Pix</span></span>
+        <div class="logo">
+            <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+            <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <button class="menu-toggle" id="menu-toggle">☰</button>
     </div>
