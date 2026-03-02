@@ -83,8 +83,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <table class="transaction-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Email</th>
+                            <th>Chave PIX</th>
                             <th>Status</th>
                             <th>Saldo (R$)</th>
                             <th>Comissão (%)</th>
@@ -127,12 +127,11 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
             <table class="transaction-table">
                 <thead>
                     <tr style="text-align: left;">
-                        <th>Usuário</th>
-                        <th>Email</th>
-                        <th>Chave PIX</th>
-                        <th>Valor</th>
-                        <th>Data</th>
-                        <th>Ações</th>
+                        <th style="padding: 1rem;">Email</th>
+                        <th style="padding: 1rem;">Chave PIX</th>
+                        <th style="padding: 1rem;">Valor</th>
+                        <th style="padding: 1rem;">Data</th>
+                        <th style="padding: 1rem;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,8 +141,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     ?>
                     <tr>
                         <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
-                        <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
                         <td style="padding: 1rem;"><small><?php echo $w['pix_key']; ?></small></td>
+                        <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
                         <td style="padding: 1rem;"><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
                         <td style="padding: 1rem;">
                             <form method="POST" style="display:inline-flex; align-items:center; gap:5px;">
