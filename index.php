@@ -20,7 +20,7 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2.8">
+    <link rel="stylesheet" href="style.css?v=3.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -214,6 +214,6 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=2.4"></script>
+    <script src="script.js?v=3.0"></script>
 </body>
 </html>
