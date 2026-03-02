@@ -38,6 +38,19 @@ require_once 'includes/db.php';
         </div>
     </nav>
 
+    <!-- Social Proof Badge -->
+    <div class="lp-social-proof-wrapper">
+        <div class="lp-social-proof">
+            <div class="lp-avatar-group">
+                <img src="assets/user1.png" alt="User 1">
+                <img src="assets/user2.png" alt="User 2">
+                <img src="assets/user3.png" alt="User 3">
+                <div class="lp-avatar-more">+</div>
+            </div>
+            <span class="lp-social-text">+2.000 usuários ativos</span>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <header class="lp-hero">
         <div class="lp-hero-tag">A Era da Blindagem Financeira Chegou</div>
@@ -155,22 +168,63 @@ require_once 'includes/db.php';
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="lp-footer">
-        <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
-            <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
-            <span class="logo-text">Ghost<span> Pix</span></span>
+    <!-- New Structured Footer -->
+    <footer class="lp-footer-v2">
+        <div class="lp-footer-container">
+            <div class="lp-footer-brand">
+                <div class="logo">
+                    <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+                    <span class="logo-text">GHOST<span> PIX</span></span>
+                </div>
+                <p class="lp-brand-tagline">Feito por uma comunidade para uma comunidade.</p>
+                <div class="lp-social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="lp-footer-links-grid">
+                <div class="lp-footer-col">
+                    <h4>Atalhos</h4>
+                    <a href="auth/register.php">Criar conta</a>
+                    <a href="auth/login.php">Login</a>
+                    <a href="#">Recuperar senha</a>
+                </div>
+                <div class="lp-footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Termos de Uso</a>
+                    <a href="#">Política de Privacidade</a>
+                    <a href="#">Aviso Crypto</a>
+                </div>
+                <div class="lp-footer-col">
+                    <h4>Fale conosco</h4>
+                    <a href="suporte.php">Suporte</a>
+                    <a href="mailto:suporte@ghostpix.site">suporte@ghostpix.site</a>
+                </div>
+            </div>
+
+            <div class="lp-footer-apps">
+                <h4>Baixe o app</h4>
+                <a href="#" class="lp-app-btn">
+                    <i class="fab fa-apple"></i>
+                    <div class="lp-app-btn-text">
+                        <span>Download on the</span>
+                        <strong>App Store</strong>
+                    </div>
+                </a>
+                <a href="#" class="lp-app-btn">
+                    <i class="fab fa-google-play"></i>
+                    <div class="lp-app-btn-text">
+                        <span>GET IT ON</span>
+                        <strong>Google Play</strong>
+                    </div>
+                </a>
+            </div>
         </div>
-        <div class="footer-links">
-            <?php if(isLoggedIn()): ?>
-                <a href="dashboard.php" class="lp-nav-link">Dashboard</a>
-            <?php else: ?>
-                <a href="auth/login.php" class="lp-nav-link">Login</a>
-                <a href="auth/register.php" class="lp-nav-link">Cadastrar</a>
-            <?php endif; ?>
-            <a href="suporte.php" class="lp-nav-link">Suporte</a>
+        <div class="lp-footer-bottom">
+            <p>© 2026 GHOST PIX - Todos os direitos reservados</p>
+            <p class="lp-footer-cnpj">CNPJ: 00.000.000/0001-00, com sede em São Paulo, SP.</p>
         </div>
-        <p>© 2026 Ghost Pix. Todos os direitos reservados. Foco em Privacidade e Blindagem.</p>
     </footer>
 
     <script>

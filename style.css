@@ -135,8 +135,10 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
-    /* Pure black background */
-    background-image: none;
+    /* Modern Dark Gradient Background */
+    background: radial-gradient(circle at 0% 0%, #18181b 0%, #000000 50%),
+        radial-gradient(circle at 100% 100%, #18181b 0%, #000000 50%);
+    background-attachment: fixed;
 }
 
 /* Prevent 16px font-size issue → no zoom on iOS (mobile-design) */
@@ -480,23 +482,23 @@ a,
    CARD
 ══════════════════════════════════════════════════════ */
 .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--r-md);
     padding: 1.7rem;
     position: relative;
     overflow: hidden;
-    transition:
-        border-color .3s var(--ease),
-        box-shadow .3s var(--ease),
-        transform .3s var(--ease);
+    transition: all 0.4s var(--ease);
     animation: fadeInUp .55s var(--ease) both;
 }
 
 .card:hover {
-    border-color: var(--border-h);
-    box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .8);
-    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px);
 }
 
 /* subtle inner glow overlay (frontend-design depth) */
