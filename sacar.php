@@ -1,4 +1,8 @@
-<?php
+// Ativar exibição de erros para debug (Opcional: Remover após resolver)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'includes/db.php';
 
 if (!isLoggedIn()) {
@@ -6,9 +10,15 @@ if (!isLoggedIn()) {
 }
 
 $userId = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT balance, pix_key, full_name FROM users WHERE id = ?");
-$stmt->execute([$userId]);
-$user = $stmt->fetch();
+
+try {
+    $stmt = $pdo->prepare("SELECT balance, pix_key, full_name FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+} catch (PDOException $e) {
+    // Caso a migração não tenha sido feita ou as colunas faltem
+    die("Erro no Banco de Dados: As colunas necessárias não foram encontradas. <br>Certifique-se de acessar <b>" . (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/migrate_v2.php</b> para atualizar o sistema.");
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

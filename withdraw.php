@@ -1,5 +1,7 @@
-<?php
-session_start();
+// Ativar exibição de erros para debug (Opcional)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'includes/db.php';
 
 header('Content-Type: application/json');
@@ -13,9 +15,14 @@ $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
 $amount = (float)($input['amount'] ?? 0);
 
-$stmt = $pdo->prepare("SELECT balance, pix_key FROM users WHERE id = ?");
-$stmt->execute([$userId]);
-$user = $stmt->fetch();
+try {
+    $stmt = $pdo->prepare("SELECT balance, pix_key FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+} catch (PDOException $e) {
+    echo json_encode(['error' => 'Erro de Banco de Dados: Colunas faltando. Por favor, execute a migração acessando ' . (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/migrate_v2.php"]);
+    exit;
+}
 
 if ($amount < 50) {
     echo json_encode(['error' => 'O valor mínimo para saque é R$ 50,00.']);
