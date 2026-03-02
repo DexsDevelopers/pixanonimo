@@ -1,7 +1,4 @@
-// Ativar exibição de erros para debug (Opcional)
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
+<?php
 require_once 'includes/db.php';
 
 header('Content-Type: application/json');
