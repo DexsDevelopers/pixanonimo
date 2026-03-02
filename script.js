@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Ghost Pix Dashboard Loaded v3.2');
+    console.log('Ghost Pix Dashboard Loaded v3.3');
 
     // --- ELEMENTOS GLOBAIS ---
     const btnGenerate = document.getElementById('btn-generate');
@@ -89,9 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGenerate) {
         btnGenerate.onclick = async () => {
             const val = (amountInput.value || "").toString().replace(',', '.');
-            const wallet = walletInput ? walletInput.value.trim() : "";
-
-            if (!wallet) return alert('Configure sua chave PIX primeiro.');
             if (!val || parseFloat(val) < 10) return alert('Mínimo R$ 10,00.');
 
             btnGenerate.innerText = 'Processando...';
@@ -110,20 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.error) {
                     alert('Erro: ' + data.error);
                 } else if (data.success || data.status === 'success' || data.pix_id) {
-                    // Preencher modal de forma robusta
-                    const displayAmount = data.amount || val;
-                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(displayAmount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                    // Preencher modal
+                    const amountDisp = data.amount || val;
+                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(amountDisp).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
-                    // Tentar várias chaves possíveis para o código Copia e Cola
-                    const code = data.pix_code || data.payload || data.qr_code || data.qrCode || "";
+                    // Mapeamento extra robusto
+                    const code = data.pix_code || data.qr_code || data.payload || "";
                     if (pixCodeText) {
                         pixCodeText.value = code;
-                        console.log('Código Pix atribuído ao textarea:', code ? 'SIM' : 'NÃO (Vazio)');
+                        console.log('Código Pix atribuído ao sistema:', code ? 'SIM' : 'NÃO (Vazio)');
                     }
 
                     if (qrPlaceholder) {
-                        const qrImg = data.qr_image || data.qr_code_url || data.qrCodeImage;
-                        qrPlaceholder.innerHTML = `<img src="${qrImg}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
+                        const img = data.qr_image || data.qr_code_url || "";
+                        qrPlaceholder.innerHTML = `<img src="${img}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
                     }
 
                     // Mostrar modal
@@ -131,11 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         modalQr.classList.remove('hidden');
                         modalQr.style.display = 'flex';
                     }
-
-                    // Forçar atualização do histórico silenciosamente após um pequeno delay
-                    setTimeout(() => {
-                        console.log('Dica: Recarregue a página se a nova transação não aparecer na tabela.');
-                    }, 2000);
 
                     startPixPolling(data.pix_id);
                 }
@@ -239,20 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
         };
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.onclick = () => {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            };
-        });
     }
 
     // --- AÇÕES DO HISTÓRICO ---
 
     window.initHistoryActions = () => {
-        // Ver Pix Existente
         document.querySelectorAll('.btn-view-qr').forEach(btn => {
             btn.onclick = function () {
                 const qr = this.getAttribute('data-qr');
@@ -274,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // Copiar da Tabela
         document.querySelectorAll('.btn-copy-pix-row').forEach(btn => {
             btn.onclick = async function () {
                 const code = this.getAttribute('data-code');
@@ -284,11 +266,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.className = 'fas fa-check';
                     this.style.color = '#22c55e';
                     setTimeout(() => { icon.className = old; this.style.color = ''; }, 2000);
-                } else alert('Código não disponível.');
+                }
             };
         });
 
-        // Deletar da Tabela
         document.querySelectorAll('.btn-delete-row').forEach(btn => {
             btn.onclick = async function () {
                 if (!confirm('Excluir transação?')) return;
@@ -305,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         row.style.opacity = '0';
                         row.style.transform = 'scale(0.9)';
                         setTimeout(() => row.remove(), 300);
-                    } else alert(d.error);
+                    }
                 } catch (e) { alert("Erro de conexão"); }
             };
         });

@@ -214,6 +214,6 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=3.2"></script>
+    <script src="script.js?v=3.3"></script>
 </body>
 </html>

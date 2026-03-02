@@ -119,7 +119,9 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
 
     // Salvar transação no banco (Produção)
     try {
-        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? '');
+        // Tentar encontrar o código Copia e Cola em várias chaves comuns
+        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
+        
         $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
         $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
 
@@ -128,7 +130,9 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
             'pix_id' => $pixId,
             'qr_image' => $qrImage,
             'pix_code' => $pixCode,
-            'amount' => $amount
+            'qr_code' => $pixCode, // Campo extra para compatibilidade
+            'amount' => $amount,
+            'debug_raw' => $pixData // Retornar dados para debug se necessário
         ]);
     } catch (PDOException $e) {
         echo json_encode(['error' => 'Erro ao salvar: ' . $e->getMessage()]);
