@@ -92,6 +92,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <a href="../index.php" class="nav-item">📊 Dashboard</a>
                 <a href="../sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="../perfil.php" class="nav-item">👤 Perfil</a>
+                <a href="../suporte.php" class="nav-item">🎧 Suporte</a>
                 <a href="#" class="nav-item active">🛡️ Admin</a>
                 <a href="../auth/logout.php" class="nav-item">🚪 Sair</a>
             </nav>
@@ -204,6 +205,6 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
         </div>
     </main>
     </div>
-    <script src="../script.js?v=1.5"></script>
+    <script src="../script.js?v=4.0"></script>
 </body>
 </html>

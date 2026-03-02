@@ -41,6 +41,7 @@ $user = $stmt->fetch();
                 <a href="sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item active">👤 Perfil</a>
                 <a href="suporte.php" class="nav-item">🎧 Suporte</a>
+                <a href="suporte.php" class="nav-item">🎧 Suporte</a>
                 <?php if(isAdmin()): ?>
                     <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
                 <?php endif; ?>
@@ -135,5 +136,6 @@ $user = $stmt->fetch();
         }
     });
     </script>
+    <script src="script.js?v=4.0"></script>
 </body>
 </html>

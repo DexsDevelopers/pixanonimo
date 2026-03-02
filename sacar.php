@@ -46,6 +46,7 @@ try {
                 <a href="sacar.php" class="nav-item active">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item">👤 Perfil</a>
                 <a href="suporte.php" class="nav-item">🎧 Suporte</a>
+                <a href="suporte.php" class="nav-item">🎧 Suporte</a>
                 <?php if(isAdmin()): ?>
                     <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
                 <?php endif; ?>
@@ -166,6 +167,6 @@ try {
         }
     });
     </script>
-    <script src="script.js?v=2.0"></script>
+    <script src="script.js?v=4.0"></script>
 </body>
 </html>
