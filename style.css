@@ -1640,6 +1640,7 @@ input:-webkit-autofill:focus {
     .lp-navbar {
         height: 70px;
         padding: 0 15px;
+        background: rgba(0, 0, 0, 0.95);
     }
 
     .lp-nav-links {
@@ -1647,26 +1648,66 @@ input:-webkit-autofill:focus {
     }
 
     .lp-auth-buttons {
-        gap: 8px;
+        gap: 10px;
+    }
+
+    /* Fix for "Ugly" buttons reported by user */
+    .btn-lp-outline-sm,
+    .btn-lp-primary-sm {
+        text-decoration: none !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        font-size: 0.7rem !important;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-lp-outline-sm {
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-lp-primary-sm {
+        background: #4ade80 !important;
+        color: #000 !important;
+        font-weight: 800 !important;
     }
 
     .logo-text {
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
     }
 
     .logo-img {
-        width: 32px !important;
-        height: 32px !important;
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .lp-hero {
+        padding-top: 120px !important;
     }
 
     .lp-hero h1 {
-        font-size: 2.5rem !important;
-        margin-top: 2rem;
+        font-size: 2.2rem !important;
+        margin-top: 1.5rem;
     }
 
     .lp-social-proof-wrapper {
-        display: block !important;
-        margin-top: 100px;
+        display: flex !important;
+        justify-content: center;
+        margin-top: 85px;
+        /* Right below fixed navbar */
+        position: relative;
+        z-index: 99;
+    }
+
+    .lp-social-proof {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 8px 16px;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 }
 

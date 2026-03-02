@@ -69,7 +69,7 @@ require_once 'includes/db.php';
     </nav>
 
     <!-- Social Proof Badge -->
-    <div class="lp-social-proof-wrapper">
+    <div class="lp-social-proof-wrapper" data-aos="fade-down">
         <div class="lp-social-proof">
             <div class="lp-avatar-group">
                 <img src="assets/user1.png" alt="User 1">
@@ -77,7 +77,7 @@ require_once 'includes/db.php';
                 <img src="assets/user3.png" alt="User 3">
                 <div class="lp-avatar-more">+</div>
             </div>
-            <span class="lp-social-text">+2.000 usuários ativos</span>
+            <span class="lp-social-text">+2.348 usuários online agora</span>
         </div>
     </div>
 
