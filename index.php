@@ -108,25 +108,25 @@ $rows = $transactions->fetchAll();
 
             <!-- Analytics Cards -->
             <div class="analytics-grid">
-                <div class="card glass" style="padding: 1.2rem;">
-                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Hoje</span>
-                    <div id="stat-today" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
-                    <div style="font-size: 0.7rem; color: var(--primary); margin-top: 0.3rem;"><i class="fas fa-arrow-up"></i> últimas 24h</div>
+                <div class="card glass">
+                    <span class="stat-label">Volume Hoje</span>
+                    <div class="stat-value" id="stat-today">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
-                <div class="card glass" style="padding: 1.2rem;">
-                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Volume Mensal</span>
-                    <div id="stat-month" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
-                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Mês atual</div>
+                <div class="card glass">
+                    <span class="stat-label">Volume Mensal</span>
+                    <div class="stat-value" id="stat-month">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub">Mês atual</div>
                 </div>
-                <div class="card glass" style="padding: 1.2rem;">
-                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Total Transacionado</span>
-                    <div id="stat-total" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
-                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Vitalício</div>
+                <div class="card glass">
+                    <span class="stat-label">Total Transacionado</span>
+                    <div class="stat-value" id="stat-total">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub">Vitalício</div>
                 </div>
-                <div class="card glass" style="padding: 1.2rem;">
-                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Pendentes</span>
-                    <div id="stat-pending" style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
-                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem;">Aguardando pagamento</div>
+                <div class="card glass">
+                    <span class="stat-label">Pendentes</span>
+                    <div class="stat-value" id="stat-pending" style="color: #f59e0b;"><?php echo $stats['pending_count']; ?></div>
+                    <div class="stat-sub">Aguardando pagamento</div>
                 </div>
             </div>
 
