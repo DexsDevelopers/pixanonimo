@@ -14,11 +14,27 @@ require_once 'includes/db.php';
         /* Force dark theme even if CSS is cached */
         .lp-body { background: #000 !important; color: #fff !important; }
         .lp-hero-bg { display: none !important; }
+        #canvas-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
     </style>
+    <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    
+    <!-- Structured Data (SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FinancialService",
+      "name": "Ghost Pix",
+      "description": "Receba com total blindagem e privacidade através de tecnologia PIX anônima.",
+      "url": "https://pixghost.site/",
+      "logo": "https://pixghost.site/assets/logo.png"
+    }
+    </script>
 </head>
 <body class="lp-body">
+    <canvas id="canvas-3d"></canvas>
     <div class="lp-hero-bg" style="display: none;"></div>
 
     <!-- Navbar -->
@@ -202,6 +218,57 @@ require_once 'includes/db.php';
                     behavior: 'smooth'
                 });
             });
+        });
+    </script>
+    <!-- Scripts: Three.js, GSAP, AOS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    
+    <script>
+        // AOS Initialization
+        AOS.init({ duration: 1000, once: true });
+
+        // Three.js Abstract Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-3d'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const counts = 1500;
+        const positions = new Float32Array(counts * 3);
+
+        for(let i = 0; i < counts * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 10;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.015, color: 0x4ade80, transparent: true, opacity: 0.8 });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+
+        camera.position.z = 3;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.001;
+            particles.rotation.x += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Mouse interaction
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            const y = (e.clientY / window.innerHeight - 0.5) * 0.5;
+            gsap.to(particles.rotation, { y: x, x: y, duration: 2 });
         });
     </script>
 </body>
