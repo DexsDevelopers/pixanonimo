@@ -246,8 +246,8 @@ require_once 'includes/db.php';
                 <div class="lp-faq-a">Após o pagamento do cliente, o saldo cai no seu painel Ghost Pix. Você pode solicitar o saque para qualquer chave Pix de sua preferência. O saque é processado via nossas contas blindadas.</div>
             </div>
             <div class="lp-faq-item">
-                <div class="lp-faq-q">É legal usar o Ghost Pix? <i class="fas fa-chevron-down"></i></div>
-                <div class="lp-faq-a">Sim, operamos como um intermediário de pagamentos tecnológico. Providenciamos as ferramentas para que você tenha privacidade, um direito fundamental. Recomendamos sempre consultar seu contador para obrigações fiscais.</div>
+                <div class="lp-faq-q">Quanto tempo leva o saque? <i class="fas fa-chevron-down"></i></div>
+                <div class="lp-faq-a">Os saques são prioridade absoluta no Ghost Pix. Após a solicitação, o valor é liquidado na sua chave PIX cadastrada em até 2 horas.</div>
             </div>
         </div>
     </section>
