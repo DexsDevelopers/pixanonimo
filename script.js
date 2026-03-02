@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Ghost Pix Dashboard Loaded v3.0');
+    console.log('Ghost Pix Dashboard Loaded v3.1');
 
     // --- ELEMENTOS GLOBAIS ---
     const btnGenerate = document.getElementById('btn-generate');
@@ -105,14 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const data = await response.json();
+                console.log('Dados do Pix Recebidos:', data);
+
                 if (data.error) {
                     alert('Erro: ' + data.error);
-                } else if (data.success || data.status === 'success') {
-                    // Preencher modal
-                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(data.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-                    if (pixCodeText) pixCodeText.value = data.pix_code || "";
+                } else if (data.success || data.status === 'success' || data.pix_id) {
+                    // Preencher modal de forma robusta
+                    const displayAmount = data.amount || val;
+                    if (modalAmount) modalAmount.innerText = `R$ ${parseFloat(displayAmount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+                    // Tentar várias chaves possíveis para o código Copia e Cola
+                    const code = data.pix_code || data.payload || data.qr_code || data.qrCode || "";
+                    if (pixCodeText) {
+                        pixCodeText.value = code;
+                        console.log('Código Pix atribuído ao textarea:', code ? 'SIM' : 'NÃO (Vazio)');
+                    }
+
                     if (qrPlaceholder) {
-                        qrPlaceholder.innerHTML = `<img src="${data.qr_image}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
+                        const qrImg = data.qr_image || data.qr_code_url || data.qrCodeImage;
+                        qrPlaceholder.innerHTML = `<img src="${qrImg}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
                     }
 
                     // Mostrar modal
@@ -120,6 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         modalQr.classList.remove('hidden');
                         modalQr.style.display = 'flex';
                     }
+
+                    // Forçar atualização do histórico silenciosamente após um pequeno delay
+                    setTimeout(() => {
+                        console.log('Dica: Recarregue a página se a nova transação não aparecer na tabela.');
+                    }, 2000);
 
                     startPixPolling(data.pix_id);
                 }
