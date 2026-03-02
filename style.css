@@ -497,3 +497,9 @@ input {
 .sidebar-overlay.active {
     display: block;
 }
+/* Botões de Ação no Histórico */
+.btn-history-action { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem; }
+.btn-history-action:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); border-color: var(--primary); }
+.btn-view-qr:hover { color: var(--primary); }
+.btn-copy-pix-row:hover { color: #22c55e; }
+.btn-delete-row:hover { color: var(--danger); border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
