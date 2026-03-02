@@ -73,6 +73,7 @@ $rows = $transactions->fetchAll();
                 <a href="#" class="nav-item active">📊 Dashboard</a>
                 <a href="sacar.php" class="nav-item">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item">👤 Perfil</a>
+                <a href="suporte.php" class="nav-item">🎧 Suporte</a>
                 <?php if(isAdmin()): ?>
                     <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
                 <?php endif; ?>
