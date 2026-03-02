@@ -143,7 +143,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     <tr>
                         <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
                         <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
-                        <td style="padding: 1rem;"><small><?php echo $w['liquid_address']; ?></small></td>
+                        <td style="padding: 1rem;"><small><?php echo $w['pix_key']; ?></small></td>
                         <td style="padding: 1rem;"><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
                         <td style="padding: 1rem;">
                             <form method="POST" style="display:inline-flex; align-items:center; gap:5px;">

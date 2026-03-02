@@ -13,7 +13,7 @@ $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
 $amount = (float)($input['amount'] ?? 0);
 
-$stmt = $pdo->prepare("SELECT balance, liquid_address FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT balance, pix_key FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -22,8 +22,8 @@ if ($amount <= 0 || $amount > $user['balance']) {
     exit;
 }
 
-if (!$user['liquid_address']) {
-    echo json_encode(['error' => 'Configure seu endereço Liquid antes de sacar.']);
+if (!$user['pix_key']) {
+    echo json_encode(['error' => 'Configure sua chave PIX antes de sacar.']);
     exit;
 }
 
@@ -35,8 +35,8 @@ try {
     $stmt->execute([$amount, $userId]);
 
     // 2. Registrar pedido de saque
-    $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, liquid_address, status) VALUES (?, ?, ?, 'pending')");
-    $stmt->execute([$userId, $amount, $user['liquid_address']]);
+    $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, status) VALUES (?, ?, ?, 'pending')");
+    $stmt->execute([$userId, $amount, $user['pix_key']]);
 
     $pdo->commit();
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
