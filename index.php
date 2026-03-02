@@ -112,6 +112,43 @@ require_once 'includes/db.php';
         <?php endif; ?>
     </header>
 
+    <!-- FAQ Section -->
+    <section class="lp-section" id="faq">
+        <div class="lp-section-title" data-aos="fade-up">
+            <h2>Perguntas Frequentes</h2>
+            <p>Tire suas dúvidas sobre o funcionamento da nossa tecnologia.</p>
+        </div>
+        <div class="lp-faq-container" style="max-width: 800px; margin: 0 auto;">
+            <div class="lp-faq-item glass-card" data-aos="fade-up" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0;">Como funciona o anonimato?</h4>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
+                    O Ghost Pix utiliza uma camada de "proxy financeiro". Quando alguém te paga, o PIX cai em uma conta blindada e o saldo é creditado instantaneamente na sua carteira Ghost, sem expor seu CPF ou dados bancários ao pagador.
+                </div>
+            </div>
+            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="100" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0;">O sistema é legal?</h4>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
+                    Sim. Operamos dentro das normas de intermediação de pagamentos. Nossa tecnologia foca em privacidade de dados, um direito fundamental, sem descumprir regulamentações vigentes.
+                </div>
+            </div>
+            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0;">Quanto tempo leva o saque?</h4>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
+                    Os saques são prioritários e geralmente liquidados em até 2 horas para sua chave PIX cadastrada, garantindo que seu dinheiro esteja sempre à mão.
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section class="lp-section">
         <div class="lp-section-title">
@@ -138,8 +175,45 @@ require_once 'includes/db.php';
     </section>
 
 
-    <!-- FAQ Section -->
-    <section class="lp-section" id="faq">
+    <!-- Benefits Section -->
+    <section class="lp-section" id="beneficios">
+        <div class="lp-section-title" data-aos="fade-up">
+            <h2>Por que escolher o <span class="lp-gradient-text">Ghost Pix</span>?</h2>
+            <p>Nossa tecnologia foi desenhada para quem não abre mão da liberdade financeira.</p>
+        </div>
+        <div class="lp-analytics-grid">
+            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="lp-card-icon"><i class="fas fa-user-secret"></i></div>
+                <h3>Anonimato Total</h3>
+                <p>Suas transações são processadas através de camadas de proteção que ocultam seus dados reais de terceiros.</p>
+            </div>
+            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="lp-card-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Blindagem Anti-Bacen</h3>
+                <p>Arquitetura financeira resiliente projetada para manter seu patrimônio protegido e sempre disponível.</p>
+            </div>
+            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="300">
+                <div class="lp-card-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Liquidação Instantânea</h3>
+                <p>Receba via PIX e converta para saldo Ghost em milissegundos. Rapidez absoluta no seu fluxo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Badges Section -->
+    <div class="lp-section" style="padding: 2rem 0; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="lp-container" style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 2rem; opacity: 0.6;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+                <i class="fas fa-lock" style="color: #4ade80;"></i> SSL SECURE 256-BIT
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+                <i class="fas fa-shield-virus" style="color: #4ade80;"></i> ANTI-FRAUD SYSTEM
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+                <i class="fas fa-check-circle" style="color: #4ade80;"></i> VERIFIED PIX GATEWAY
+            </div>
+        </div>
+    </div>
         <div class="lp-section-title">
             <h2>Dúvidas Frequentes</h2>
         </div>
@@ -269,6 +343,24 @@ require_once 'includes/db.php';
             const x = (e.clientX / window.innerWidth - 0.5) * 0.5;
             const y = (e.clientY / window.innerHeight - 0.5) * 0.5;
             gsap.to(particles.rotation, { y: x, x: y, duration: 2 });
+        });
+
+        // FAQ Toggle Logic
+        document.querySelectorAll('.lp-faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.querySelector('.lp-faq-answer');
+                const icon = item.querySelector('i.fa-chevron-down');
+                const isOpen = answer.style.display === 'block';
+                
+                // Close all others
+                document.querySelectorAll('.lp-faq-answer').forEach(a => a.style.display = 'none');
+                document.querySelectorAll('.lp-faq-item i.fa-chevron-down').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                if (!isOpen) {
+                    answer.style.display = 'block';
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
         });
     </script>
 </body>
