@@ -10,7 +10,7 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-$transactions = $pdo->prepare("SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
+$transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
 ?>
@@ -140,10 +140,9 @@ $rows = $transactions->fetchAll();
                                     $displayStatus = ucfirst($status);
                                     
                                     if ($status == 'pending') {
-                                        $createdAt = strtotime($t['created_at']);
-                                        if (time() - $createdAt > (20 * 60)) {
+                                        if ($t['seconds_old'] > (20 * 60)) {
                                             $displayStatus = 'Expirado';
-                                            $badgeClass = 'sent'; // Cinza/Neutro
+                                            $badgeClass = 'sent';
                                         }
                                     }
                                     ?>
