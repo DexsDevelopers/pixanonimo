@@ -1401,23 +1401,17 @@ input:-webkit-autofill:focus {
    LANDING PAGE (VSL) SYSTEM v8.0
 ══════════════════════════════════════════════════════ */
 .lp-body {
-    background-image:
-        radial-gradient(circle at 50% -20%, rgba(99, 102, 241, .15) 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, .08) 0%, transparent 40%);
-    background-size: 100% 100%, 100% 100%;
+    background: radial-gradient(circle at 0% 0%, #18181b 0%, #000000 50%),
+        radial-gradient(circle at 100% 100%, #18181b 0%, #000000 50%);
+    background-attachment: fixed;
+    color: var(--text);
 }
 
 .lp-hero-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100vh;
-    background: url('hero_vsl.png') no-repeat center top;
-    background-size: cover;
-    opacity: 0.4;
-    z-index: -1;
-    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    display: none !important;
+}
+
+mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }
 
 .lp-navbar {
