@@ -75,17 +75,23 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
     
     // Salvar transação no banco
-    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
-    $ins->execute([$userId, $amount, $netAmount, $pixId, '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD', $qrImage]);
+    try {
+        $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+        $ins->execute([$userId, $amount, $netAmount, $pixId, '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD', $qrImage]);
 
-    echo json_encode([
-        'status' => 'success',
-        'qr_image' => $qrImage,
-        'pix_code' => '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD',
-        'amount' => $amount,
-        'message' => 'Simulação ativa. Configure a API KEY real para processar.'
-    ]);
-    exit;
+        echo json_encode([
+            'status' => 'success',
+            'qr_image' => $qrImage,
+            'pix_code' => '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD',
+            'amount' => $amount,
+            'pix_id' => $pixId,
+            'message' => 'Simulação ativa.'
+        ]);
+        exit;
+    } catch (PDOException $e) {
+        echo json_encode(['error' => 'Erro ao salvar no banco: ' . $e->getMessage()]);
+        exit;
+    }
 }
 
 // Chamada Real via CURL para API V1
@@ -110,17 +116,21 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
     $qrImage = $pixData['qr_image_url'] ?? '';
 
     // Salvar transação no banco (Produção)
-    $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? '');
-    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
-    $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
+    try {
+        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? '');
+        $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+        $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
 
-    echo json_encode([
-        'success' => true,
-        'pix_id' => $pixId,
-        'qr_image' => $qrImage,
-        'pix_code' => $pixData['pix_code'] ?? ($pixData['payload'] ?? ''),
-        'amount' => $amount
-    ]);
+        echo json_encode([
+            'success' => true,
+            'pix_id' => $pixId,
+            'qr_image' => $qrImage,
+            'pix_code' => $pixCode,
+            'amount' => $amount
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['error' => 'Erro ao salvar: ' . $e->getMessage()]);
+    }
 } else {
     echo json_encode([
         'error' => 'Erro na API PixGo',
