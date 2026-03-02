@@ -50,7 +50,6 @@ try {
     $pdo->commit();
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) $pdo->rollBack();
     echo json_encode(['error' => 'Erro ao processar saque: ' . $e->getMessage()]);
 }
-?>

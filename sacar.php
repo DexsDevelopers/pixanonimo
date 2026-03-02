@@ -12,7 +12,6 @@ try {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
 } catch (PDOException $e) {
-    // Caso a migração não tenha sido feita ou as colunas faltem
     die("Erro no Banco de Dados: As colunas necessárias não foram encontradas. <br>Certifique-se de acessar <b>" . (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/migrate_v2.php</b> para atualizar o sistema.");
 }
 ?>
@@ -22,7 +21,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Saque - PixAnônimo</title>
-    <link rel="stylesheet" href="style.css?v=1.5">
+    <link rel="stylesheet" href="style.css?v=1.6">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -44,7 +43,7 @@ try {
             </div>
             <nav class="nav-menu">
                 <a href="index.php" class="nav-item">📊 Dashboard</a>
-                <a href="#" class="nav-item active">💸 Sacar</a>
+                <a href="sacar.php" class="nav-item active">💸 Sacar</a>
                 <a href="perfil.php" class="nav-item">👤 Perfil</a>
                 <?php if(isAdmin()): ?>
                     <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
@@ -128,6 +127,6 @@ try {
         }
     });
     </script>
-    <script src="script.js?v=1.5"></script>
+    <script src="script.js?v=1.6"></script>
 </body>
 </html>
