@@ -75,8 +75,8 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
     
     // Salvar transação no banco
-    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) VALUES (?, ?, ?, ?, 'pending')");
-    $ins->execute([$userId, $amount, $netAmount, $pixId]);
+    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+    $ins->execute([$userId, $amount, $netAmount, $pixId, '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD', $qrImage]);
 
     echo json_encode([
         'status' => 'success',
@@ -110,8 +110,9 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['succe
     $qrImage = $pixData['qr_image_url'] ?? '';
 
     // Salvar transação no banco (Produção)
-    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) VALUES (?, ?, ?, ?, 'pending')");
-    $ins->execute([$userId, $amount, $netAmount, $pixId]);
+    $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? '');
+    $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+    $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
 
     echo json_encode([
         'success' => true,

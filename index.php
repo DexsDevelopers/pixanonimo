@@ -20,7 +20,7 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2.6">
+    <link rel="stylesheet" href="style.css?v=2.7">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -126,6 +126,7 @@ $rows = $transactions->fetchAll();
                                 <th>Valor Bruto</th>
                                 <th>Líquido (DEPIX)</th>
                                 <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,6 +153,21 @@ $rows = $transactions->fetchAll();
                                     }
                                     ?>
                                     <span class="badge <?php echo $badgeClass; ?>"><?php echo $displayStatus; ?></span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                        <button class="btn-history-action btn-view-qr" 
+                                                data-qr="<?php echo htmlspecialchars($t['qr_image'] ?? ''); ?>" 
+                                                data-code="<?php echo htmlspecialchars($t['pix_code'] ?? ''); ?>"
+                                                data-amount="<?php echo number_format($t['amount_brl'], 2, ',', '.'); ?>"
+                                                title="Ver QR Code">👁️</button>
+                                        <button class="btn-history-action btn-copy-pix-row" 
+                                                data-code="<?php echo htmlspecialchars($t['pix_code'] ?? ''); ?>"
+                                                title="Copiar Pix">📋</button>
+                                        <button class="btn-history-action btn-delete-row" 
+                                                data-id="<?php echo $t['id']; ?>"
+                                                title="Excluir">🗑️</button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

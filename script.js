@@ -221,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.remove('active');
         });
 
-        // Close menu when clicking on nav items (on mobile)
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -232,4 +231,131 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // --- NOVAS FUNÇÕES E CORREÇÕES ---
+
+    // Função Robusta de Cópia
+    async function copyToClipboard(text) {
+        if (!text) return false;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } else {
+                // Fallback para contextos não-seguros ou navegadores antigos
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return successful;
+            }
+        } catch (err) {
+            console.error('Falha ao copiar:', err);
+            return false;
+        }
+    }
+
+    // Botão de Cópia do Modal
+    if (btnCopyPix && pixCodeText) {
+        btnCopyPix.addEventListener('click', async () => {
+            const code = pixCodeText.value;
+            if (code) {
+                const success = await copyToClipboard(code);
+                if (success) {
+                    const originalText = btnCopyPix.innerText;
+                    btnCopyPix.innerText = 'Copiado!';
+                    const originalBg = btnCopyPix.style.background;
+                    btnCopyPix.style.background = '#22c55e';
+                    setTimeout(() => {
+                        btnCopyPix.innerText = originalText;
+                        btnCopyPix.style.background = originalBg;
+                    }, 2000);
+                } else {
+                    alert('Erro ao copiar. Selecione o texto manualmente.');
+                }
+            }
+        });
+    }
+
+    // Copiar Chave de Destino (Wallet)
+    if (btnCopyWallet && walletInput) {
+        btnCopyWallet.addEventListener('click', async () => {
+            const addr = walletInput.value;
+            if (addr) {
+                const success = await copyToClipboard(addr);
+                if (success) alert('Chave PIX copiada!');
+            }
+        });
+    }
+
+    // Ações do Histórico: Ver QR
+    document.querySelectorAll('.btn-view-qr').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const qr = btn.getAttribute('data-qr');
+            const code = btn.getAttribute('data-code');
+            const amount = btn.getAttribute('data-amount');
+
+            if (qr && qrPlaceholder) {
+                qrPlaceholder.innerHTML = `<img src="${qr}" alt="QR Code Pix" style="width:100%">`;
+            } else if (qrPlaceholder) {
+                qrPlaceholder.innerHTML = '<p style="padding: 2rem;">QR no disponível para esta transação.</p>';
+            }
+
+            if (pixCodeText) pixCodeText.value = code || "";
+            if (modalAmount) modalAmount.innerText = `R$ ${amount}`;
+            if (modalQr) modalQr.classList.remove('hidden');
+        });
+    });
+
+    // Ações do Histórico: Copiar Pix
+    document.querySelectorAll('.btn-copy-pix-row').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const code = btn.getAttribute('data-code');
+            if (code) {
+                const success = await copyToClipboard(code);
+                if (success) {
+                    const originalIcon = btn.innerText;
+                    btn.innerText = '✅';
+                    setTimeout(() => btn.innerText = originalIcon, 2000);
+                }
+            } else {
+                alert('Código PIX não disponível.');
+            }
+        });
+    });
+
+    // Ações do Histórico: Excluir
+    document.querySelectorAll('.btn-delete-row').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (!confirm('Tem certeza que deseja excluir esta transação do histórico?')) return;
+
+            const id = btn.getAttribute('data-id');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('delete_transaction.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.closest('tr').remove();
+                } else {
+                    alert(data.error || 'Erro ao excluir');
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                alert('Erro de conexão');
+                btn.disabled = false;
+            }
+        });
+    });
 });
