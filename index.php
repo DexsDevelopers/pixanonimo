@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'includes/db.php';
 
 if (!isLoggedIn()) {
@@ -72,13 +71,20 @@ $rows = $transactions->fetchAll();
                 </div>
 
                 <div class="card wallet-card glass">
-                    <h3>Sua Carteira Liquid</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Sua Carteira Liquid</h3>
+                        <button id="btn-edit-wallet" class="badge sent" style="border:none; cursor:pointer; font-size: 0.7rem;">Editar</button>
+                    </div>
                     <div class="wallet-address-box">
-                        <span id="wallet-address"><?php echo $user['liquid_address'] ?: 'Não configurada'; ?></span>
-                        <button class="btn-icon">📋</button>
+                        <input type="text" id="wallet-input" value="<?php echo $user['liquid_address']; ?>" 
+                               placeholder="Endereço Liquid (lq1...)" 
+                               style="background: transparent; border: none; color: white; width: 100%; font-family: inherit; font-size: 0.9rem;" 
+                               readonly>
+                        <button id="btn-copy-wallet" class="btn-icon" title="Copiar">📋</button>
+                        <button id="btn-save-wallet" class="btn-icon hidden" title="Salvar" style="color: var(--primary);">💾</button>
                     </div>
                     <?php if($user['status'] == 'pending'): ?>
-                        <p style="color: var(--accent);">Aguardando aprovação do admin para gerar Pix.</p>
+                        <p style="color: var(--accent); font-size: 0.8rem; margin-top: 10px;">Aguardando aprovação do admin para gerar Pix.</p>
                     <?php endif; ?>
                 </div>
 

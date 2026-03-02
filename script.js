@@ -59,10 +59,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Lógica de "Copiar Endereço"
-    document.querySelector('.btn-icon').addEventListener('click', () => {
-        const addr = document.getElementById('wallet-address').innerText;
-        navigator.clipboard.writeText(addr);
-        alert('Endereço copiado!');
-    });
+    // Lógica de Edição de Carteira
+    const btnEditWallet = document.getElementById('btn-edit-wallet');
+    const btnSaveWallet = document.getElementById('btn-save-wallet');
+    const btnCopyWallet = document.getElementById('btn-copy-wallet');
+    const walletInput = document.getElementById('wallet-input');
+
+    if (btnEditWallet) {
+        btnEditWallet.addEventListener('click', () => {
+            walletInput.readOnly = false;
+            walletInput.focus();
+            walletInput.style.borderBottom = "1px solid var(--primary)";
+            btnEditWallet.classList.add('hidden');
+            btnSaveWallet.classList.remove('hidden');
+        });
+    }
+
+    if (btnSaveWallet) {
+        btnSaveWallet.addEventListener('click', async () => {
+            const newWallet = walletInput.value.trim();
+            if (!newWallet) return alert("Endereço não pode ser vazio");
+
+            try {
+                const res = await fetch('update_wallet.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wallet: newWallet })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert("Carteira atualizada!");
+                    walletInput.readOnly = true;
+                    walletInput.style.borderBottom = "none";
+                    btnEditWallet.classList.remove('hidden');
+                    btnSaveWallet.classList.add('hidden');
+                } else {
+                    alert(data.error || "Erro ao salvar");
+                }
+            } catch (err) {
+                alert("Erro ao conectar ao servidor");
+            }
+        });
+    }
+
+    if (btnCopyWallet) {
+        btnCopyWallet.addEventListener('click', () => {
+            const addr = walletInput.value;
+            if (addr) {
+                navigator.clipboard.writeText(addr);
+                alert('Endereço copiado!');
+            }
+        });
+    }
 });
