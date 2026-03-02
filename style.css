@@ -1697,17 +1697,24 @@ input:-webkit-autofill:focus {
     .lp-social-proof-wrapper {
         display: flex !important;
         justify-content: center;
-        margin-top: 85px;
-        /* Right below fixed navbar */
+        margin-top: 110px !important;
+        /* Salto para limpar navbar de 70px */
         position: relative;
-        z-index: 99;
+        z-index: 100;
+        width: 100%;
+        overflow: visible !important;
     }
 
     .lp-social-proof {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.07) !important;
+        backdrop-filter: blur(15px);
+        padding: 10px 20px !important;
         border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -2077,7 +2084,7 @@ input:-webkit-autofill:focus {
 .lp-social-proof-wrapper {
     display: flex;
     justify-content: center;
-    margin: 2rem 0 1rem;
+    margin: 3rem 0 1rem;
     animation: fadeIn 1s var(--ease);
 }
 
