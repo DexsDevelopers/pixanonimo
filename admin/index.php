@@ -83,6 +83,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <table class="transaction-table">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Email</th>
                             <th>Chave PIX</th>
                             <th>Status</th>
@@ -94,6 +95,7 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     <tbody>
                         <?php foreach($users as $u): ?>
                         <tr>
+                            <td>#<?php echo $u['id']; ?></td>
                             <td><?php echo $u['email']; ?></td>
                             <td><code><?php echo $u['pix_key']; ?></code></td>
                             <td>
