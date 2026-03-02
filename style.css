@@ -10,20 +10,20 @@
 /* ──────────────────────────────────────────────────── */
 :root {
     /* Colors */
-    --bg: #080808;
-    --bg-card: rgba(255, 255, 255, .038);
-    --bg-card-h: rgba(255, 255, 255, .06);
-    --border: rgba(255, 255, 255, .07);
-    --border-h: rgba(255, 255, 255, .15);
-    --text: #f5f5f5;
-    --text-2: #6b7280;
-    --text-3: #9ca3af;
+    --bg: #000000;
+    --bg-card: rgba(255, 255, 255, .05);
+    --bg-card-h: rgba(255, 255, 255, .1);
+    --border: rgba(255, 255, 255, .1);
+    --border-h: rgba(255, 255, 255, .2);
+    --text: #ffffff;
+    --text-2: #a1a1aa;
+    --text-3: #d4d4d8;
 
-    /* Accent system */
-    --green: #10b981;
-    --amber: #f59e0b;
-    --red: #ef4444;
-    --blue: #6366f1;
+    /* Accent system - Neutralized for B&W theme */
+    --green: #ffffff;
+    --amber: #a1a1aa;
+    --red: #52525b;
+    --blue: #71717a;
 
     /* Radii */
     --r-sm: 12px;
@@ -105,7 +105,7 @@
     }
 
     50% {
-        box-shadow: 0 0 20px 2px rgba(255, 255, 255, .04);
+        box-shadow: 0 0 20px 2px rgba(255, 255, 255, .08);
     }
 }
 
@@ -135,10 +135,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
-    /* Subtle ambient texture */
-    background-image:
-        radial-gradient(ellipse 90% 55% at 5% 0%, rgba(99, 102, 241, .05) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 40% at 95% 100%, rgba(16, 185, 129, .04) 0%, transparent 65%);
+    /* Pure black background */
+    background-image: none;
 }
 
 /* Prevent 16px font-size issue → no zoom on iOS (mobile-design) */
@@ -218,8 +216,9 @@ a,
     font-weight: 800;
     color: var(--text);
     letter-spacing: -0.5px;
-    background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+    background: linear-gradient(180deg, #fff 0%, #71717a 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -496,7 +495,7 @@ a,
 
 .card:hover {
     border-color: var(--border-h);
-    box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .55);
+    box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .8);
     transform: translateY(-3px);
 }
 

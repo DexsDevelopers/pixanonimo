@@ -9,24 +9,24 @@ require_once 'includes/db.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=9.0">
+    <link rel="stylesheet" href="style.css?v=10.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="lp-body">
-    <div class="lp-hero-bg"></div>
+    <div class="lp-hero-bg" style="display: none;"></div>
 
     <!-- Navbar -->
     <nav class="lp-navbar">
         <div class="logo">
             <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
-            <span class="logo-text">Ghost<span> Pix</span></span>
+            <span class="logo-text">GHOST<span> PIX</span></span>
         </div>
         <div class="lp-nav-links">
-            <a href="#vsl" class="lp-nav-link">Como Funciona</a>
-            <a href="#taxas" class="lp-nav-link">Taxas</a>
-            <a href="#faq" class="lp-nav-link">Dúvidas</a>
-            <a href="suporte.php" class="lp-nav-link">Suporte</a>
+            <a href="#vsl" class="lp-nav-link">O SISTEMA</a>
+            <a href="#taxas" class="lp-nav-link">PLANOS</a>
+            <a href="#faq" class="lp-nav-link">FAQ</a>
+            <a href="suporte.php" class="lp-nav-link">CONTATO</a>
         </div>
         <div class="lp-auth-buttons">
             <?php if(isLoggedIn()): ?>
