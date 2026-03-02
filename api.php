@@ -12,6 +12,11 @@ $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
 $amount = (float)($input['amount'] ?? 0);
 
+if ($amount < 10) {
+    echo json_encode(['error' => 'O valor mínimo para gerar Pix é R$ 10,00.']);
+    exit;
+}
+
 // Buscar dados do usuário (wallet e comissão)
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);

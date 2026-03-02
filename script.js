@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (!value || parseFloat(value) <= 0) {
-                alert('Por favor, insira um valor válido.');
+            if (!value || parseFloat(value) < 10) {
+                alert('O valor mínimo para gerar um Pix é R$ 10,00.');
                 return;
             }
 

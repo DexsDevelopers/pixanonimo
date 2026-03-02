@@ -20,7 +20,7 @@ $rows = $transactions->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost Pix - Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2.4">
+    <link rel="stylesheet" href="style.css?v=2.6">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -106,7 +106,8 @@ $rows = $transactions->fetchAll();
                     <h3>Gerar Nova Cobrança</h3>
                     <div class="input-group">
                         <label>Valor (BRL)</label>
-                        <input type="number" id="amount" placeholder="0,00" step="0.01" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
+                        <input type="number" id="amount" placeholder="0,00" step="0.01" min="10" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
+                        <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">Mínimo: R$ 10,00</p>
                     </div>
                     <button id="btn-generate" class="btn-primary" <?php echo $user['status'] != 'approved' ? 'disabled' : ''; ?>>
                         <?php echo $user['status'] == 'approved' ? 'Gerar QR Code Pix' : 'Conta Pendente'; ?>
@@ -170,9 +171,9 @@ $rows = $transactions->fetchAll();
             
             <div class="pix-copy-area" style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
                 <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; text-align: left;">Copia e Cola:</p>
-                <div style="display: flex; gap: 0.5rem;">
-                    <textarea id="pix-code-text" readonly style="flex-grow: 1; background: transparent; border: none; color: white; font-size: 0.8rem; resize: none; height: 45px; font-family: monospace;"></textarea>
-                    <button id="btn-copy-pix" class="btn-primary" style="padding: 0 1rem; font-size: 0.8rem;">Copiar</button>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <textarea id="pix-code-text" readonly style="flex: 1 1 200px; background: rgba(0,0,0,0.2); border: none; color: white; font-size: 0.75rem; resize: none; height: 60px; font-family: monospace; padding: 0.5rem; border-radius: 8px;"></textarea>
+                    <button id="btn-copy-pix" class="btn-primary" style="flex: 1 1 100px; padding: 0.8rem; font-size: 0.8rem; white-space: nowrap;">Copiar</button>
                 </div>
             </div>
 
