@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Ghost Pix Dashboard Loaded v3.1');
+    console.log('Ghost Pix Dashboard Loaded v3.2');
 
     // --- ELEMENTOS GLOBAIS ---
     const btnGenerate = document.getElementById('btn-generate');
