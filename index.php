@@ -1,4 +1,14 @@
 <?php
+// Security Headers
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+header("X-XSS-Protection: 1; mode=block");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+header("Content-Security-Policy: default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; font-src 'self' https: data:;");
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start();
 require_once 'includes/db.php';
 // Removemos o redirecionamento automático para permitir que usuários logados vejam a VSL se desejarem.
 ?>
@@ -178,8 +188,12 @@ require_once 'includes/db.php';
     <!-- Benefits Section -->
     <section class="lp-section" id="beneficios">
         <div class="lp-section-title" data-aos="fade-up">
-            <h2>Por que escolher o <span class="lp-gradient-text">Ghost Pix</span>?</h2>
-            <p>Nossa tecnologia foi desenhada para quem não abre mão da liberdade financeira.</p>
+            <h1>RECEBA COM <span class="lp-gradient-text">BLINDAGEM MILITAR</span> E PRIVACIDADE</h1>
+            <p>A única tecnologia PIX com criptografia de ponta a ponta e anonimato garantido por protocolo Ghost.</p>
+            <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.85rem; color: #4ade80; font-weight: 600;">
+                <span style="display: inline-block; width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                SISTEMA OPERANDO EM CAPACIDADE MÁXIMA PARA PRIVACIDADE
+            </div>
         </div>
         <div class="lp-analytics-grid">
             <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="100">
@@ -306,11 +320,17 @@ require_once 'includes/db.php';
         // Three.js Abstract Background
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-3d'), alpha: true, antialias: true });
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('canvas-3d'), 
+            alpha: true, 
+            antialias: false, // Performance optimization
+            powerPreference: "high-performance"
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performance optimization
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         const particlesGeometry = new THREE.BufferGeometry();
-        const counts = 1500;
+        const counts = 1000; // Reduced for performance
         const positions = new Float32Array(counts * 3);
 
         for(let i = 0; i < counts * 3; i++) {
