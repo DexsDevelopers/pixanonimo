@@ -70,86 +70,82 @@ $rows = $transactions->fetchAll();
                 </div>
             </header>
 
-            <!-- Analytics Cards -->
+            <!-- Bento Analytics Grid -->
             <div class="analytics-grid">
-                <div class="stat-card accent-green">
+                <!-- Main Balance (Bento Large) -->
+                <div class="stat-card accent-green bento-large">
+                    <div class="stat-icon" style="font-size: 3rem; opacity: 0.1;"><i class="fas fa-wallet"></i></div>
+                    <span class="stat-label">Saldo Disponível</span>
+                    <div class="stat-value" id="stat-balance" style="font-size: 3.5rem; margin: 1rem 0;">
+                        <span style="font-size: 1.5rem; vertical-align: middle; opacity: 0.6;">R$</span> <?php echo number_format($user['balance'], 2, ',', '.'); ?>
+                    </div>
+                    <div class="stat-sub positive" style="font-size: 0.9rem;">
+                        <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
+                    </div>
+                    
+                    <div style="margin-top: auto; display: flex; gap: 1rem;">
+                        <?php if($user['balance'] > 0): ?>
+                            <a href="sacar.php" class="btn-primary" style="padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 700; background: var(--green); color: #000;">
+                                <i class="fas fa-arrow-up-right-from-square"></i> Sacar Agora
+                            </a>
+                        <?php endif; ?>
+                        <div class="wallet-status" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                            <span class="status-indicator"></span>
+                            Taxa: <?php echo $user['commission_rate']; ?>%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volume Hoje (Bento Medium) -->
+                <div class="stat-card accent-blue bento-medium">
                     <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
                     <span class="stat-label">Volume Hoje</span>
-                    <div class="stat-value" id="stat-today">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
+                    <div class="stat-value">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
                     <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
-                <div class="stat-card accent-blue">
+
+                <!-- Volume Mensal (Bento Small) -->
+                <div class="stat-card accent-purple bento-small">
                     <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                    <span class="stat-label">Volume Mensal</span>
-                    <div class="stat-value" id="stat-month">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub">Mês atual</div>
+                    <span class="stat-label">Mensal</span>
+                    <div class="stat-value" style="font-size: 1.4rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
                 </div>
-                <div class="stat-card accent-purple">
+
+                <!-- Total Vitalício (Bento Small) -->
+                <div class="stat-card accent-blue bento-small">
                     <div class="stat-icon"><i class="fas fa-coins"></i></div>
-                    <span class="stat-label">Total Vitalício</span>
-                    <div class="stat-value" id="stat-total">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub">Acumulado</div>
+                    <span class="stat-label">Vitalício</span>
+                    <div class="stat-value" style="font-size: 1.4rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
                 </div>
-                <div class="stat-card accent-amber">
+
+                <!-- Pendentes (Bento Small) -->
+                <div class="stat-card accent-amber bento-small">
                     <div class="stat-icon"><i class="fas fa-clock-rotate-left"></i></div>
                     <span class="stat-label">Pendentes</span>
-                    <div class="stat-value" id="stat-pending" style="color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
-                    <div class="stat-sub">Aguardando pagamento</div>
+                    <div class="stat-value" style="font-size: 1.4rem; color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
                 </div>
             </div>
 
-            <div class="dashboard-grid">
-                <!-- Balance Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title-group">
-                            <div class="card-icon"><i class="fas fa-wallet"></i></div>
-                            <h3 class="card-title">Saldo Disponível</h3>
-                        </div>
-                    </div>
-                    <div class="balance-display" id="stat-balance">
-                        <span class="currency">R$</span><?php echo number_format($user['balance'], 2, ',', '.'); ?>
-                    </div>
-                    <p class="card-hint" style="color:var(--green); font-weight:600; margin-bottom:1rem;">
-                        <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
-                    </p>
-                    <?php if($user['balance'] > 0): ?>
-                        <a href="sacar.php" class="btn-primary btn-withdraw">
-                            <i class="fas fa-arrow-up-right-from-square"></i> Solicitar Saque
-                        </a>
-                        <p class="card-hint">
-                            <i class="fas fa-bolt"></i> Pagamento Identificado em Segundos
-                        </p>
-                    <?php else: ?>
-                        <p class="card-hint" style="margin-top:.5rem;">
-                            <i class="fas fa-info-circle"></i> Gere cobranças para acumular saldo
-                        </p>
-                    <?php endif; ?>
-                </div>
-
+            <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 1.25rem;">
                 <!-- PIX Key Card -->
-                <div class="card">
+                <div class="card" style="padding: 1.5rem;">
                     <div class="card-header">
                         <div class="card-title-group">
                             <div class="card-icon"><i class="fas fa-key"></i></div>
-                            <h3 class="card-title">Chave PIX</h3>
+                            <h3 class="card-title">Chave PIX para Recebimento</h3>
                         </div>
                         <button id="btn-edit-wallet" class="btn-edit">
                             <i class="fas fa-pen"></i> Editar
                         </button>
                     </div>
-                    <div class="pix-key-box">
+                    <div class="pix-key-box" style="margin-top: 1rem;">
                         <input type="text" id="wallet-input"
                                value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>"
                                placeholder="Sua Chave PIX"
                                class="pix-key-input"
                                readonly>
                         <button id="btn-copy-wallet" class="btn-icon-sm" title="Copiar"><i class="far fa-copy"></i></button>
-                        <button id="btn-save-wallet" class="btn-icon-sm hidden" title="Salvar"><i class="far fa-save"></i></button>
                     </div>
-                    <?php if($user['status'] == 'pending'): ?>
-                        <p class="card-warning"><i class="fas fa-clock"></i> Aguardando aprovação do admin.</p>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Generate Card -->

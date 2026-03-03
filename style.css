@@ -8,47 +8,48 @@
 /* ──────────────────────────────────────────────────── */
 /*  DESIGN TOKENS                                       */
 /* ──────────────────────────────────────────────────── */
-:root {
-    /* Colors - Luxury Dark Palette */
-    --bg: #050505;
-    --bg-card: rgba(15, 15, 15, 0.6);
-    --bg-card-h: rgba(25, 25, 25, 0.8);
-    --border: rgba(255, 255, 255, 0.08);
-    --border-h: rgba(255, 255, 255, 0.15);
-    --text: #F8FAFC;
-    --text-2: #94A3B8;
-    --text-3: #64748B;
-    --glass-border: rgba(255, 255, 255, 0.05);
+/* Glassmorphism V2 + Mesh System */
+--noise: url('data:image/svg+xml;filter=url(%23n);<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" stitchTiles="stitch" /></filter></svg>');
+--glass: rgba(255, 255, 255, 0.03);
+--mesh-green: radial-gradient(at 0% 0%, rgba(74, 222, 128, 0.25) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(5, 5, 5, 1) 0px, transparent 50%);
+--mesh-blue: radial-gradient(at 0% 0%, rgba(96, 165, 250, 0.25) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(5, 5, 5, 1) 0px, transparent 50%);
+--mesh-purple: radial-gradient(at 0% 0%, rgba(167, 139, 250, 0.25) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(5, 5, 5, 1) 0px, transparent 50%);
+--mesh-amber: radial-gradient(at 0% 0%, rgba(251, 191, 36, 0.25) 0px, transparent 50%),
+radial-gradient(at 100% 100%, rgba(5, 5, 5, 1) 0px, transparent 50%);
 
-    /* Accent system - Verified Accents */
-    --green: #4ADE80;
-    --amber: #FBBF24;
-    --red: #F87171;
-    --blue: #60A5FA;
-    --purple: #A78BFA;
-    --primary: #FFFFFF;
+--glow-green: rgba(74, 222, 128, 0.5);
+--glow-blue: rgba(96, 165, 250, 0.5);
+}
 
-    /* Radii */
-    --r-sm: 14px;
-    --r-md: 20px;
-    --r-lg: 32px;
+@keyframes meshRotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
 
-    /* Typography */
-    --font: 'Outfit', system-ui, sans-serif;
+    50% {
+        transform: rotate(180deg) scale(1.3);
+    }
 
-    /* Easing */
-    --ease: cubic-bezier(.22, 1, .36, 1);
-    --spring: cubic-bezier(.34, 1.56, .64, 1);
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
 
-    /* Z-index scale (ui-ux-pro-max) */
-    --z-10: 10;
-    /* cards */
-    --z-20: 20;
-    /* dropdowns */
-    --z-30: 30;
-    /* modals */
-    --z-50: 50;
-    /* nav/header */
+@keyframes borderFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* ──────────────────────────────────────────────────── */
@@ -410,9 +411,24 @@ a,
 ══════════════════════════════════════════════════════ */
 .analytics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: .85rem;
-    margin-bottom: 1.75rem;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(160px, auto);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* Bento Spans */
+.bento-large {
+    grid-column: span 3;
+    grid-row: span 2;
+}
+
+.bento-medium {
+    grid-column: span 3;
+}
+
+.bento-small {
+    grid-column: span 2;
 }
 
 /* scroll-experience: CSS native scroll reveal */
@@ -464,18 +480,45 @@ a,
 
 .stat-card.accent-green::before {
     background: var(--mesh-green);
+    animation: meshRotate 20s linear infinite;
 }
 
 .stat-card.accent-blue::before {
     background: var(--mesh-blue);
+    animation: meshRotate 25s linear infinite;
 }
 
 .stat-card.accent-purple::before {
     background: var(--mesh-purple);
+    animation: meshRotate 15s linear infinite;
 }
 
 .stat-card.accent-amber::before {
     background: var(--mesh-amber);
+    animation: meshRotate 30s linear infinite;
+}
+
+/* Border Glow Effect */
+.stat-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background-size: 200% 100%;
+    animation: borderFlow 3s linear infinite;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+}
+
+.stat-card:hover::after {
+    opacity: 1;
 }
 
 .stat-label {
@@ -574,10 +617,20 @@ a,
 }
 
 @media (max-width: 968px) {
-    .lp-analytics-grid {
+    .analytics-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding: 0 1rem;
+        grid-auto-rows: auto;
+    }
+
+    .bento-large,
+    .bento-medium,
+    .bento-small {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
