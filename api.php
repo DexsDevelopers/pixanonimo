@@ -3,18 +3,43 @@ require_once 'includes/db.php';
 
 header('Content-Type: application/json');
 
-if (!isLoggedIn()) {
-    echo json_encode(['error' => 'Não autorizado']);
+// Autenticação Híbrida (Sessão ou API Key)
+$userId = null;
+$externalRequest = false;
+
+if (isLoggedIn()) {
+    $userId = $_SESSION['user_id'];
+    
+    // Se for via Painel (Sessão), exige CSRF
+    $headers = getallheaders();
+    $csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+    check_csrf($csrfToken);
+} else {
+    // Tenta autenticar via Header Bearer Token
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
+    
+    if (preg_match('/Bearer\s+(ghost_\S+)/', $authHeader, $matches)) {
+        $apiKey = $matches[1];
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE api_key = ? AND status = 'approved'");
+        $stmt->execute([$apiKey]);
+        $userAuth = $stmt->fetch();
+        
+        if ($userAuth) {
+            $userId = $userAuth['id'];
+            $externalRequest = true;
+        }
+    }
+}
+
+if (!$userId) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Não autorizado. Use Bearer <API_KEY> ou faça login.']);
     exit;
 }
 
-$userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
-
-// Validação CSRF
-$headers = getallheaders();
-$csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
-check_csrf($csrfToken);
+$callbackUrl = $input['callback_url'] ?? null;
 
 $amount = (float)($input['amount'] ?? 0);
 
@@ -83,8 +108,8 @@ if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
     // Salvar transação no banco
     try {
         $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
-        $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
-        $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
+        $ins = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)");
+        $ins->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
 
         echo json_encode([
             'status' => 'success',

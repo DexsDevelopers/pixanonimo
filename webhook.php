@@ -49,6 +49,35 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
             $pdo->commit();
             write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
             notify_new_payment($transaction['amount_brl'], $transaction['user_id']);
+
+            // 4. Disparar Webhook Externo para o Lojista (se houver)
+            if (!empty($transaction['callback_url'])) {
+                $externalPayload = [
+                    'event' => 'payment.completed',
+                    'transaction_id' => $transaction['id'],
+                    'pix_id' => $transaction['pix_id'],
+                    'amount' => $transaction['amount_brl'],
+                    'status' => 'paid',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+
+                $ch = curl_init($transaction['callback_url']);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($externalPayload));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                
+                $out = curl_exec($ch);
+                $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                write_log('INFO', 'Webhook Externo Disparado', [
+                    'url' => $transaction['callback_url'],
+                    'http_code' => $code,
+                    'response' => $out
+                ]);
+            }
         } catch (Exception $e) {
             $pdo->rollBack();
             write_log('ERROR', 'Falha no processamento Webhook', ['error' => $e->getMessage(), 'pix_id' => $pixId]);
