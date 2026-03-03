@@ -80,6 +80,7 @@ require_once 'includes/db.php';
         </div>
         <div class="lp-nav-links">
             <a href="#vsl" class="lp-nav-link">O SISTEMA</a>
+            <a href="api-docs.php" class="lp-nav-link" style="color: var(--green); font-weight: 700;">API & DEV</a>
             <a href="#faq" class="lp-nav-link">FAQ</a>
             <a href="suporte.php" class="lp-nav-link">CONTATO</a>
         </div>
