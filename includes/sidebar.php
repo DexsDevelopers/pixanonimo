@@ -43,3 +43,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
     </div>
 </aside>
+
+<div class="app-container">

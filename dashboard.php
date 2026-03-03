@@ -307,12 +307,25 @@ $rows = $transactions->fetchAll();
             <div style="font-size: 3rem; margin-bottom: 1rem;">🗑️</div>
             <h2 style="margin-bottom: 0.5rem;">Confirmação</h2>
             <p style="color: var(--text-dim); margin-bottom: 2rem;">Deseja realmente excluir esta transação? Esta ação não pode ser desfeita.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="modal-confirm" class="modal hidden">
+        <div class="modal-content glass" style="max-width: 400px; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--danger);">⚠️</div>
+            <h3 style="margin-bottom: 1rem;">Confirmar Exclusão?</h3>
+            <p style="color: var(--text-2); margin-bottom: 2rem;">Esta ação não pode ser desfeita. A transação será removida permanentemente do histórico.</p>
             <div style="display: flex; gap: 1rem;">
                 <button id="btn-confirm-cancel" class="btn-primary" style="background: rgba(255,255,255,0.1); flex: 1;">Cancelar</button>
                 <button id="btn-confirm-delete" class="btn-primary" style="background: var(--danger); flex: 1;">Excluir</button>
             </div>
         </div>
     </div>
+
+        </main>
+    </div> <!-- Fechamento app-container do sidebar.php -->
 
     <script src="script.js?v=5.1"></script>
     <script>

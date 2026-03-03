@@ -184,6 +184,9 @@ try {
         }
     });
     </script>
+        </main>
+    </div> <!-- Fechamento app-container do sidebar.php -->
+
     <script src="script.js?v=5.1"></script>
 </body>
 </html>

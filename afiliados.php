@@ -134,6 +134,9 @@ $referrals = $stmt->fetchAll();
                 alert('✓ Link copiado para a área de transferência!');
             });
         }
-    </script>
+        </main>
+    </div> <!-- Fechamento app-container do sidebar.php -->
+
+    <script src="script.js?v=5.1"></script>
 </body>
 </html>
