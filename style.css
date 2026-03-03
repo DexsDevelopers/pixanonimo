@@ -1378,8 +1378,42 @@ input:-webkit-autofill:focus {
         flex-direction: column;
     }
 
+    /* Sidebar as Drawer (mobile-design) */
     .sidebar {
-        display: none !important;
+        display: flex !important;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+        width: 280px;
+        z-index: 1001;
+        /* Higher than header */
+        transform: translateX(-100%);
+        transition: transform 0.4s var(--spring);
+        background: rgba(10, 10, 10, 0.98);
+        backdrop-filter: blur(25px);
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.8);
+        border-right: 1px solid var(--border);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    /* Overlay for mobile drawer */
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        display: none;
+        backdrop-filter: blur(8px);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
     }
 
     /* Fixed header — 60px (safe) */
@@ -1389,7 +1423,7 @@ input:-webkit-autofill:focus {
         justify-content: space-between;
         padding: 0 1.15rem;
         height: 60px;
-        background: rgba(5, 5, 5, .94) !important;
+        background: rgba(5, 5, 5, 0.94) !important;
         backdrop-filter: blur(28px);
         -webkit-backdrop-filter: blur(28px);
         position: fixed;
@@ -1400,16 +1434,60 @@ input:-webkit-autofill:focus {
         border-bottom: 1px solid var(--border);
     }
 
+    .menu-toggle {
+        display: flex !important;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
     .mobile-header .logo {
         margin-bottom: 0 !important;
     }
 
+    /* Sidebar Close Button */
+    .sidebar-close {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 2002;
+    }
+
+    .sidebar-close:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--red);
+        border-color: var(--red);
+    }
+
     /* Main area */
     .main-content {
-        padding: 1rem 0.9rem 100px 0.9rem !important;
+        padding: 1.5rem 1rem 40px 1rem !important;
         margin-top: 60px !important;
         width: 100% !important;
         overflow-x: hidden;
+    }
+
+    /* Hide the old bottom nav */
+    .mobile-nav {
+        display: none !important;
     }
 
     /* Top header */
@@ -1433,7 +1511,7 @@ input:-webkit-autofill:focus {
         padding: .35rem .75rem;
     }
 
-    /* Analytics → always 2×2 (never 1 col) */
+    /* Analytics → always 2×2 */
     .analytics-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: .55rem !important;
@@ -1470,7 +1548,7 @@ input:-webkit-autofill:focus {
         box-sizing: border-box;
     }
 
-    /* Disable hover lift on touch (scroll-experience: no desktop patterns) */
+    /* Disable hover lift on touch */
     .card:hover {
         transform: none !important;
         box-shadow: none !important;
@@ -1511,7 +1589,7 @@ input:-webkit-autofill:focus {
         font-size: .82rem !important;
     }
 
-    /* buttons — min 52px on mobile (mobile-design: >48px) */
+    /* buttons */
     .btn-primary {
         min-height: 52px !important;
         font-size: .92rem !important;
@@ -1532,14 +1610,6 @@ input:-webkit-autofill:focus {
         font-size: .78rem !important;
     }
 
-    .card-hint {
-        font-size: .67rem;
-    }
-
-    .card-warning {
-        font-size: .72rem;
-    }
-
     /* table */
     .transaction-table th {
         font-size: .62rem !important;
@@ -1555,25 +1625,6 @@ input:-webkit-autofill:focus {
         width: 30px;
         height: 30px;
         font-size: .73rem;
-    }
-
-    /* ── BOTTOM NAV (thumb zone - mobile-design) ── */
-    .mobile-nav {
-        display: flex !important;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 72px;
-        /* generous thumb target */
-        padding-bottom: env(safe-area-inset-bottom, 6px);
-        background: rgba(5, 5, 5, .97);
-        backdrop-filter: blur(28px);
-        -webkit-backdrop-filter: blur(28px);
-        border-top: 1px solid var(--border);
-        z-index: var(--z-50);
-        justify-content: space-around;
-        align-items: center;
     }
 
     .mobile-nav-item {
