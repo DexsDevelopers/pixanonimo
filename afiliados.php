@@ -37,50 +37,77 @@ $referrals = $stmt->fetchAll();
                 </div>
             </header>
 
-            <!-- Stats Grid -->
+            <!-- Compact Analytics Grid -->
             <div class="analytics-grid">
+                <!-- Indicações Diretas -->
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(74, 222, 128, 0.1); color: var(--green);">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Indicações Diretas</h3>
-                        <p><?php echo count($referrals); ?></p>
-                    </div>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <span class="stat-label">Indicações Diretas</span>
+                    <div class="stat-value"><?php echo count($referrals); ?></div>
+                    <div class="stat-sub">Usuários registrados</div>
                 </div>
 
+                <!-- Comissão Atual -->
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                        <i class="fas fa-percentage"></i>
+                    <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                    <span class="stat-label">Sua Comissão</span>
+                    <div class="stat-value">
+                        <?php 
+                        $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
+                        $affRate = $affRateStmt->fetchColumn();
+                        echo $affRate ? $affRate : '10';
+                        ?>%
                     </div>
-                    <div class="stat-info">
-                        <h3>Comissão</h3>
-                        <p>10% s/ Lucro</p>
-                    </div>
+                    <div class="stat-sub">Sobre o lucro da taxa</div>
                 </div>
             </div>
 
-            <section class="api-section" style="margin-top: 2rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px; border: 1px solid var(--border);">
-                <h2>Seu Link de Indicação</h2>
-                <p style="color: var(--text-2); margin-top: 0.5rem;">Copie o link abaixo e convide novos membros para a plataforma.</p>
-                
-                <div style="margin-top: 1.5rem; display: flex; gap: 10px; background: #000; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-h);">
-                    <code id="refLink" style="color: var(--green); word-break: break-all; flex: 1;"><?php echo $ref_link; ?></code>
-                    <button onclick="copyRefLink()" style="background: var(--green); color: #000; border: none; padding: 0 1rem; border-radius: 8px; font-weight: 700; cursor: pointer;">
-                        COPIAR
-                    </button>
+            <div class="dashboard-grid">
+                <!-- Referral Link Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-share-nodes"></i></div>
+                            <h3 class="card-title">Seu Link de Indicação</h3>
+                        </div>
+                    </div>
+                    
+                    <p class="card-hint" style="margin: 1rem 0 0.5rem;">Compartilhe este link para ganhar comissões:</p>
+                    <div class="pix-key-box">
+                        <input type="text" id="refLink" value="<?php echo $ref_link; ?>" readonly class="pix-key-input" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
+                        <button onclick="copyRefLink()" class="btn-icon-sm" title="Copiar"><i class="far fa-copy"></i></button>
+                    </div>
+                    <p class="card-hint" style="margin-top: 1rem; color: var(--green);">
+                        <i class="fas fa-circle-check"></i> Pagamentos automáticos em tempo real
+                    </p>
                 </div>
-            </section>
+
+                <!-- Info Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-circle-info"></i></div>
+                            <h3 class="card-title">Como funciona?</h3>
+                        </div>
+                    </div>
+                    <ul style="margin: 1rem 0; padding-left: 1.2rem; color: var(--text-2); font-size: 0.9rem; line-height: 1.6;">
+                        <li>Indique novos usuários pelo seu link exclusivo.</li>
+                        <li>Eles se cadastram e começam a transacionar.</li>
+                        <li>Você ganha uma porcentagem do lucro da plataforma.</li>
+                        <li>O saldo é creditado instantaneamente na sua conta.</li>
+                    </ul>
+                </div>
+            </div>
 
             <section style="margin-top: 2.5rem;">
-                <h2>Registros de Indicações</h2>
-                <div class="table-container shadow-v2" style="margin-top: 1.5rem;">
-                    <table class="modern-table">
+                <h3 style="margin-bottom: 1.25rem; font-weight: 600;">Registros de Indicações</h3>
+                <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--border);">
+                    <table class="transaction-table">
                         <thead>
                             <tr>
-                                <th>NOME DO INDICADO</th>
-                                <th>DATA DE REGISTRO</th>
-                                <th>STATUS</th>
+                                <th>Nome do Indicado</th>
+                                <th>Data de Registro</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,20 +115,26 @@ $referrals = $stmt->fetchAll();
                                 <?php foreach ($referrals as $ref): ?>
                                     <tr>
                                         <td>
-                                            <div class="user-cell">
-                                                <div class="avatar-sm" style="background: var(--border-h);"><?php echo strtoupper(substr($ref['full_name'], 0, 1)); ?></div>
-                                                <span><?php echo htmlspecialchars($ref['full_name']); ?></span>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border);">
+                                                    <?php echo strtoupper(substr($ref['full_name'], 0, 1)); ?>
+                                                </div>
+                                                <span style="font-weight: 500;"><?php echo htmlspecialchars($ref['full_name']); ?></span>
                                             </div>
                                         </td>
-                                        <td><?php echo date('d/m/Y H:i', strtotime($ref['created_at'])); ?></td>
-                                        <td><span class="badge badge-success"><?php echo ucfirst($ref['status']); ?></span></td>
+                                        <td style="color: var(--text-3); font-size: 0.85rem;"><?php echo date('d/m/Y H:i', strtotime($ref['created_at'])); ?></td>
+                                        <td>
+                                            <span class="badge <?php echo $ref['status'] == 'approved' ? 'paid' : 'pending'; ?>" style="font-size: 0.7rem;">
+                                                <?php echo $ref['status'] == 'approved' ? 'Ativo' : 'Pendente'; ?>
+                                            </span>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="3" style="text-align: center; padding: 4rem; color: var(--text-3);">
-                                        <i class="fas fa-users-slash" style="font-size: 2rem; display: block; margin-bottom: 1rem; opacity: 0.5;"></i>
-                                        Nenhuma indicação ainda. Compartilhe seu link!
+                                    <td colspan="3" style="text-align: center; padding: 3rem; color: var(--text-3);">
+                                        <i class="fas fa-users-slash" style="font-size: 1.5rem; display: block; margin-bottom: 0.75rem; opacity: 0.5;"></i>
+                                        Nenhuma indicação ainda.
                                     </td>
                                 </tr>
                             <?php endif; ?>

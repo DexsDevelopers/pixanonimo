@@ -103,17 +103,44 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                 <h1>Painel Administrativo</h1>
                 <div style="display: flex; gap: 1rem; align-items: center;">
                     <?php
+                    // Lógica de Configurações Globais
+                    if (isset($_POST['update_settings'])) {
+                        $aff_rate = (float)$_POST['affiliate_rate'];
+                        
+                        // Verificar se a chave existe
+                        $check = $pdo->prepare("SELECT id FROM settings WHERE `key` = 'affiliate_commission_rate'");
+                        $check->execute();
+                        if ($check->fetch()) {
+                            $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'affiliate_commission_rate'")->execute([$aff_rate]);
+                        } else {
+                            $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('affiliate_commission_rate', ?)")->execute([$aff_rate]);
+                        }
+                        echo "<script>window.location.href='index.php?success=1';</script>";
+                        exit;
+                    }
+
+                    // Buscar taxa atual
+                    $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
+                    $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
+
                     // Calcular Lucro Real Acumulado
-                    // Lucro = Soma(Bruto - Líquido - 2% do Bruto)
                     $profitStmt = $pdo->query("SELECT SUM(amount_brl - amount_net_brl - (amount_brl * 0.02)) as total_profit FROM transactions WHERE status = 'paid'");
                     $profitData = $profitStmt->fetch();
                     $totalProfit = (float)$profitData['total_profit'];
                     ?>
-                    <div class="card glass" style="padding: 0.8rem 1.5rem; margin-bottom: 0; min-width: 200px; border-left: 4px solid var(--primary);">
-                        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px;">💰 Lucro Total (Comissões)</p>
-                        <h2 style="margin: 0; color: #fff;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></h2>
+
+                    <div class="card glass" style="padding: 0.8rem; margin: 0; min-width: 150px; border: 1px solid var(--border);">
+                        <p style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Lucro Plataforma</p>
+                        <h3 style="margin: 0; color: var(--green); font-size: 1.1rem;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></h3>
                     </div>
-                    <a href="../dashboard.php" class="badge sent" style="text-decoration:none; padding: 10px 15px;">Voltar ao App</a>
+
+                    <form method="POST" class="card glass" style="padding: 0.8rem; margin: 0; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border);">
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase;">Comissão Afiliados (%)</label>
+                            <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 60px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1rem; outline: none;">
+                        </div>
+                        <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; height: 30px;">Salvar</button>
+                    </form>
                 </div>
             </header>
 
