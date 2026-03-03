@@ -231,27 +231,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarClose = document.getElementById('sidebar-close');
 
     if (menuToggle && sidebar && overlay) {
-        const toggleMenu = () => {
+        const closeMenu = () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        menuToggle.onclick = () => {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
             document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
         };
 
-        menuToggle.onclick = toggleMenu;
-
         if (sidebarClose) {
-            sidebarClose.onclick = () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            };
+            sidebarClose.onclick = closeMenu;
         }
 
-        overlay.onclick = () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        };
+        // Delegação de evento como backup para o botão de fechar
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#sidebar-close')) {
+                closeMenu();
+            }
+        });
+
+        overlay.onclick = closeMenu;
     }
 
     // --- AÇÕES DO HISTÓRICO ---
