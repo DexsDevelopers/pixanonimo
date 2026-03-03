@@ -78,13 +78,16 @@ require_once 'includes/db.php';
             <img src="logo_premium.png?v=9.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">GHOST<span> PIX</span></span>
         </div>
-        <div class="lp-nav-links">
+        
+        <!-- Desktop Links -->
+        <div class="lp-nav-links desktop-only">
             <a href="#vsl" class="lp-nav-link">O SISTEMA</a>
             <a href="api-docs.php" class="lp-nav-link" style="color: var(--green); font-weight: 700;">API & DEV</a>
             <a href="#faq" class="lp-nav-link">FAQ</a>
             <a href="suporte.php" class="lp-nav-link">CONTATO</a>
         </div>
-        <div class="lp-auth-buttons mobile-hide-links">
+
+        <div class="lp-auth-buttons desktop-only">
             <?php if(isLoggedIn()): ?>
                 <a href="dashboard.php" class="btn-lp-primary">PAINEL</a>
             <?php else: ?>
@@ -92,7 +95,45 @@ require_once 'includes/db.php';
                 <a href="auth/register.php" class="btn-lp-primary-sm">CRIAR CONTA</a>
             <?php endif; ?>
         </div>
+
+        <!-- Mobile Toggle -->
+        <button class="lp-menu-toggle mobile-only" id="menuToggle" aria-label="Abrir Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="lp-mobile-menu" id="mobileMenu">
+        <div class="lp-mobile-menu-content">
+            <div class="lp-mobile-menu-header">
+                <div class="logo">
+                    <span class="logo-text">GHOST<span> PIX</span></span>
+                </div>
+                <button class="lp-menu-close" id="menuClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="lp-mobile-nav">
+                <a href="index.php" class="mobile-nav-link"><i class="fas fa-home"></i> INÍCIO</a>
+                <a href="#vsl" class="mobile-nav-link"><i class="fas fa-rocket"></i> O SISTEMA</a>
+                <a href="api-docs.php" class="mobile-nav-link" style="color: var(--green);"><i class="fas fa-code"></i> API & DEV</a>
+                <a href="#faq" class="mobile-nav-link"><i class="fas fa-question-circle"></i> FAQ</a>
+                <a href="suporte.php" class="mobile-nav-link"><i class="fas fa-headset"></i> SUPORTE</a>
+            </nav>
+
+            <div class="lp-mobile-auth">
+                <?php if(isLoggedIn()): ?>
+                    <a href="dashboard.php" class="btn-lp-primary" style="width: 100%;">ACESSAR MEU PAINEL</a>
+                <?php else: ?>
+                    <a href="auth/login.php" class="btn-lp-outline" style="width: 100%; margin-bottom: 1rem;">ENTRAR</a>
+                    <a href="auth/register.php" class="btn-lp-primary" style="width: 100%;">CRIAR MINHA CONTA</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 
     <!-- Social Proof Badge -->
     <div class="lp-social-proof-wrapper" data-aos="fade-down">
@@ -321,6 +362,27 @@ require_once 'includes/db.php';
     </footer>
 
     <script>
+        // Mobile Menu Logic
+        const menuToggle = document.getElementById('menuToggle');
+        const menuClose = document.getElementById('menuClose');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+        function toggleMenu() {
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        menuClose.addEventListener('click', toggleMenu);
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        });
+
         // FAQ Toggle
         document.querySelectorAll('.lp-faq-q').forEach(q => {
             q.onclick = () => {
