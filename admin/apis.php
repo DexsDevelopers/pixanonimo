@@ -41,7 +41,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     }
 }
 
-$apis = $pdo->query("SELECT * FROM pixgo_apis ORDER BY created_at DESC")->fetchAll();
+try {
+    $apis = $pdo->query("SELECT * FROM pixgo_apis ORDER BY created_at DESC")->fetchAll();
+} catch (PDOException $e) {
+    // Se a tabela não existir, vamos tentar criar
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pixgo_apis (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        api_key VARCHAR(255) NOT NULL,
+        status ENUM('active', 'inactive') DEFAULT 'active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // Migrar chave atual se estiver vazia
+    $stmt = $pdo->query("SELECT COUNT(*) FROM pixgo_apis");
+    if ($stmt->fetchColumn() == 0 && defined('PIXGO_API_KEY')) {
+        $stmt = $pdo->prepare("INSERT INTO pixgo_apis (name, api_key, status) VALUES (?, ?, 'active')");
+        $stmt->execute(['Chave Principal (Backup)', PIXGO_API_KEY]);
+    }
+    
+    // Tenta buscar novamente
+    $apis = $pdo->query("SELECT * FROM pixgo_apis ORDER BY created_at DESC")->fetchAll();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
