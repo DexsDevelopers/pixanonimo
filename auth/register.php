@@ -29,8 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status) VALUES (?, ?, ?, ?, 'pending')");
-    $stmt->execute([$email, $hash, $full_name, $pix_key]);
+    // Check for affiliate cookie
+    $affiliateId = null;
+    if (isset($_COOKIE['ghost_pix_ref'])) {
+        $refToken = $_COOKIE['ghost_pix_ref'];
+        $stmtRef = $pdo->prepare("SELECT id FROM users WHERE referral_token = ?");
+        $stmtRef->execute([$refToken]);
+        $ref = $stmtRef->fetch();
+        if ($ref) {
+            $affiliateId = $ref['id'];
+        }
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+    $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8))]);
 
     header("Location: login.php?registered=1");
     exit;

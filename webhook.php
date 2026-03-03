@@ -31,18 +31,40 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
             $balanceUpd = $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
             $balanceUpd->execute([$transaction['amount_net_brl'], $transaction['user_id']]);
 
-            // 3. Calcular e Credit lucro do Admin
+            // 3. Calcular e Credit lucro do Admin e Afiliado
             // Lucro plataforma = Valor Bruto - Valor Líquido - Taxa PixGo (2%)
             $pixgoFee = $transaction['amount_brl'] * 0.02;
-            $adminProfit = $transaction['amount_brl'] - $transaction['amount_net_brl'] - $pixgoFee;
+            $platformGrossProfit = $transaction['amount_brl'] - $transaction['amount_net_brl'] - $pixgoFee;
             
-            if ($adminProfit > 0) {
-                // Creditar ao primeiro admin encontrado
-                $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
-                $admin = $adminStmt->fetch();
-                if ($admin) {
-                    $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$adminProfit, $admin['id']]);
-                    write_log('INFO', 'Lucro Admin Creditado', ['profit' => $adminProfit, 'admin_id' => $admin['id']]);
+            if ($platformGrossProfit > 0) {
+                // Verificar se o usuário da transação possui um afiliado
+                $userAffStmt = $pdo->prepare("SELECT affiliate_id FROM users WHERE id = ?");
+                $userAffStmt->execute([$transaction['user_id']]);
+                $userAff = $userAffStmt->fetch();
+
+                $affiliateCommission = 0;
+                if ($userAff && !empty($userAff['affiliate_id'])) {
+                    // Buscar taxa de comissão de afiliados
+                    $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
+                    $affRate = (float)$affRateStmt->fetchColumn();
+                    
+                    $affiliateCommission = $platformGrossProfit * ($affRate / 100);
+                    
+                    // Creditar ao afiliado
+                    $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$affiliateCommission, $userAff['affiliate_id']]);
+                    write_log('INFO', 'Comissão de Afiliado Creditada', ['amount' => $affiliateCommission, 'affiliate_id' => $userAff['affiliate_id']]);
+                }
+
+                $adminProfit = $platformGrossProfit - $affiliateCommission;
+                
+                if ($adminProfit > 0) {
+                    // Creditar ao primeiro admin encontrado
+                    $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+                    $admin = $adminStmt->fetch();
+                    if ($admin) {
+                        $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$adminProfit, $admin['id']]);
+                        write_log('INFO', 'Lucro Admin Creditado', ['profit' => $adminProfit, 'admin_id' => $admin['id']]);
+                    }
                 }
             }
 

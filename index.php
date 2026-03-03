@@ -10,6 +10,18 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 require_once 'includes/db.php';
+
+// affiliate tracking logic
+if (isset($_GET['ref'])) {
+    $refToken = substr(strip_tags($_GET['ref']), 0, 32);
+    // Verificar se o token existe no banco
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE referral_token = ?");
+    $stmt->execute([$refToken]);
+    if ($stmt->fetch()) {
+        setcookie('ghost_pix_ref', $refToken, time() + (86400 * 30), "/"); // 30 dias
+    }
+}
+
 // Removemos o redirecionamento automático para permitir que usuários logados vejam a VSL se desejarem.
 ?>
 <!DOCTYPE html>
@@ -19,7 +31,7 @@ require_once 'includes/db.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=17.0">
+    <link rel="stylesheet" href="style.css?v=18.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=1.0">
     <style>
         /* Force dark theme even if CSS is cached */
