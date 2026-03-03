@@ -6,7 +6,7 @@ define('DB_PASS', 'Lucastav8012@');
 define('DB_NAME', 'u853242961_pixgo');
 
 // Configurações do PixGo.org
-define('PIXGO_API_KEY', 'pk_c8e1450b597c3a1cd95b5e6856ca2dde7637a7fbe8abde58ae3eadb06135f7d6');
+define('PIXGO_API_KEY', 'pk_547e08af6d0616ed26000a6d9e2fa69448a1e6470f54e79ed8dd1799ec89ccb1');
 define('PIXGO_PROJECT_ID', ''); 
 
 // Telegram Bot Configuration (Skill: @telegram-bot-builder)
