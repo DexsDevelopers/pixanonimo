@@ -73,21 +73,25 @@ $rows = $transactions->fetchAll();
             <!-- Analytics Cards -->
             <div class="analytics-grid">
                 <div class="stat-card accent-green">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
                     <span class="stat-label">Volume Hoje</span>
                     <div class="stat-value" id="stat-today">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
                     <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> últimas 24h</div>
                 </div>
                 <div class="stat-card accent-blue">
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                     <span class="stat-label">Volume Mensal</span>
                     <div class="stat-value" id="stat-month">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
                     <div class="stat-sub">Mês atual</div>
                 </div>
                 <div class="stat-card accent-purple">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
                     <span class="stat-label">Total Vitalício</span>
                     <div class="stat-value" id="stat-total">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
                     <div class="stat-sub">Acumulado</div>
                 </div>
                 <div class="stat-card accent-amber">
+                    <div class="stat-icon"><i class="fas fa-clock-rotate-left"></i></div>
                     <span class="stat-label">Pendentes</span>
                     <div class="stat-value" id="stat-pending" style="color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
                     <div class="stat-sub">Aguardando pagamento</div>
