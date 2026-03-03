@@ -31,7 +31,7 @@ if (isset($_GET['ref'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=18.0">
+    <link rel="stylesheet" href="style.css?v=31.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=1.0">
     <style>
         /* Force dark theme even if CSS is cached */
