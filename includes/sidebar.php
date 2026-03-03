@@ -22,15 +22,29 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <nav class="nav-menu">
-            <a href="dashboard.php" class="nav-item <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">📊 Dashboard</a>
-            <a href="sacar.php" class="nav-item <?php echo $current_page == 'sacar.php' ? 'active' : ''; ?>">💸 Sacar</a>
-            <a href="afiliados.php" class="nav-item <?php echo $current_page == 'afiliados.php' ? 'active' : ''; ?>">📢 Afiliados</a>
-            <a href="perfil.php" class="nav-item <?php echo $current_page == 'perfil.php' ? 'active' : ''; ?>">👤 Perfil</a>
-            <a href="suporte.php" class="nav-item <?php echo $current_page == 'suporte.php' ? 'active' : ''; ?>">🎧 Suporte</a>
+            <a href="dashboard.php" class="nav-item <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="sacar.php" class="nav-item <?php echo $current_page == 'sacar.php' ? 'active' : ''; ?>">
+                <i class="fas fa-hand-holding-dollar"></i> Sacar
+            </a>
+            <a href="afiliados.php" class="nav-item <?php echo $current_page == 'afiliados.php' ? 'active' : ''; ?>">
+                <i class="fas fa-users-gear"></i> Afiliados
+            </a>
+            <a href="perfil.php" class="nav-item <?php echo $current_page == 'perfil.php' ? 'active' : ''; ?>">
+                <i class="fas fa-user-shield"></i> Perfil
+            </a>
+            <a href="suporte.php" class="nav-item <?php echo $current_page == 'suporte.php' ? 'active' : ''; ?>">
+                <i class="fas fa-headset"></i> Suporte
+            </a>
             <?php if(isAdmin()): ?>
-                <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
+                <a href="admin/index.php" class="nav-item">
+                    <i class="fas fa-user-lock"></i> Admin
+                </a>
             <?php endif; ?>
-            <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
+            <a href="auth/logout.php" class="nav-item" style="color: var(--red);">
+                <i class="fas fa-power-off"></i> Sair
+            </a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
