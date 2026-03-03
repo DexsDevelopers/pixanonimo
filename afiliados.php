@@ -22,7 +22,7 @@ $referrals = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#000000">
     <title>Ghost Pix - Afiliados</title>
-    <link rel="stylesheet" href="style.css?v=18.0">
+    <link rel="stylesheet" href="style.css?v=25.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -137,6 +137,6 @@ $referrals = $stmt->fetchAll();
         </main>
     </div> <!-- Fechamento app-container do sidebar.php -->
 
-    <script src="script.js?v=5.1"></script>
+    <script src="script.js?v=25.0"></script>
 </body>
 </html>
