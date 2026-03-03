@@ -228,15 +228,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- MENU MOBILE ---
+    const sidebarClose = document.getElementById('sidebar-close');
 
     if (menuToggle && sidebar && overlay) {
-        menuToggle.onclick = () => {
+        const toggleMenu = () => {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
         };
+
+        menuToggle.onclick = toggleMenu;
+
+        if (sidebarClose) {
+            sidebarClose.onclick = () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+        }
+
         overlay.onclick = () => {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
+            document.body.style.overflow = '';
         };
     }
 
