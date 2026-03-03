@@ -31,7 +31,7 @@ if (isset($_GET['ref'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=33.0">
+    <link rel="stylesheet" href="style.css?v=34.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=1.0">
     <style>
         /* Force dark theme even if CSS is cached */
@@ -346,7 +346,7 @@ if (isset($_GET['ref'])) {
         <div class="lp-footer-container">
             <div class="lp-footer-brand">
                 <div class="logo">
-                    <img src="logo_premium.png?v=33.0" class="logo-img" alt="Ghost Logo">
+                    <img src="logo_premium.png?v=34.0" class="logo-img" alt="Ghost Logo">
                     <span class="logo-text">GHOST<span> PIX</span></span>
                 </div>
                 <p class="lp-brand-tagline">Feito por uma comunidade para uma comunidade.</p>

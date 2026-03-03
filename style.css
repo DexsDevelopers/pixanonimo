@@ -1289,6 +1289,198 @@ a,
 
 .close-modal:hover {
     color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ══════════════════════════════════════════════════════
+   MODERN PREMIUM MODAL SYSTEM
+   v34.0 - Glassmorphism & Micro-animations
+══════════════════════════════════════════════════════ */
+
+.glass-premium {
+    background: rgba(10, 10, 10, 0.95) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(255, 215, 0, 0.03) !important;
+}
+
+.modal-header-v2 {
+    margin-bottom: 2rem;
+}
+
+.pix-logo-badge {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pix-img-status {
+    width: 35px;
+    height: auto;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--amber);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 1rem;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--amber);
+    border-radius: 50%;
+    position: relative;
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    }
+
+    70% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    }
+}
+
+.modal-amount-v2 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.timer-value {
+    color: var(--red);
+    font-weight: 700;
+    font-family: 'Outfit', monospace;
+    font-size: 1rem;
+}
+
+.qr-wrapper-v2 {
+    background: white;
+    padding: 1rem;
+    border-radius: 20px;
+    width: fit-content;
+    margin: 0 auto 2.5rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transform: perspective(1000px) rotateX(2deg);
+    transition: transform 0.3s var(--spring);
+}
+
+.qr-wrapper-v2:hover {
+    transform: perspective(1000px) rotateX(0deg) scale(1.02);
+}
+
+.qr-placeholder img {
+    width: 220px !important;
+    height: 220px !important;
+    display: block;
+}
+
+.copy-section-v2 {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.input-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.copy-input-group {
+    position: relative;
+    display: flex;
+    gap: 10px;
+}
+
+.copy-input-group input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.btn-copy-v2 {
+    width: 54px;
+    background: var(--primary);
+    color: black;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.btn-copy-v2:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.modal-footer-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-footer-v2 p {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-footer-v2 p i {
+    color: var(--green);
 }
 
 /* ══════════════════════════════════════════════════════

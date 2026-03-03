@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalQr) {
                         modalQr.classList.remove('hidden');
                         modalQr.style.display = 'flex';
+                        startCountdown(20 * 60); // 20 minutos
                     }
 
                     startPixPolling(data.pix_id);
@@ -152,6 +153,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnGenerate.disabled = false;
             }
         };
+    }
+
+    function startCountdown(duration) {
+        if (countdownInterval) clearInterval(countdownInterval);
+        const display = document.getElementById('pix-countdown');
+        if (!display) return;
+
+        let timer = duration, minutes, seconds;
+        const update = () => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(countdownInterval);
+                display.textContent = "EXPIRADO";
+                display.style.color = "#ef4444";
+            }
+        };
+        update();
+        countdownInterval = setInterval(update, 1000);
     }
 
     // --- MODAL CLOSE ---
@@ -277,9 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const amount = this.getAttribute('data-amount');
 
                 if (qr && qr !== "") {
-                    qrPlaceholder.innerHTML = `<img src="${qr}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
-                } else {
-                    qrPlaceholder.innerHTML = `<div style="padding: 2rem; color: var(--text-dim); text-align: center;">QR indisponível (Legado)</div>`;
+                    const place = document.getElementById('qr-placeholder-v2') || qrPlaceholder;
+                    if (place) place.innerHTML = `<img src="${qr}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
                 }
 
                 if (pixCodeText) pixCodeText.value = code || "";
@@ -287,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modalQr) {
                     modalQr.classList.remove('hidden');
                     modalQr.style.display = 'flex';
+                    startCountdown(20 * 60);
                 }
             };
         });
@@ -296,10 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const code = this.getAttribute('data-code');
                 if (code && await copyToClipboard(code)) {
                     const icon = this.querySelector('i');
-                    const old = icon.className;
-                    icon.className = 'fas fa-check';
-                    this.style.color = '#22c55e';
-                    setTimeout(() => { icon.className = old; this.style.color = ''; }, 2000);
+                    if (icon) {
+                        const old = icon.className;
+                        icon.className = 'fas fa-check';
+                        this.style.color = '#22c55e';
+                        setTimeout(() => { icon.className = old; this.style.color = ''; }, 2000);
+                    }
                 }
             };
         });
@@ -309,8 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const id = this.getAttribute('data-id');
                 const row = this.closest('tr');
-                console.log('Solicitando exclusão, ID:', id);
-
                 deleteTarget = { id, row };
                 if (modalConfirm) {
                     modalConfirm.classList.remove('hidden');

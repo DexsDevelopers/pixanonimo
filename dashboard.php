@@ -50,7 +50,7 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=33.0">
+    <link rel="stylesheet" href="style.css?v=34.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
@@ -276,30 +276,49 @@ $rows = $transactions->fetchAll();
         </main>
     </div>
 
-    <!-- MODAIS -->
+    <!-- MODAIS MODERNOS v34.0 -->
     <div id="modal-qr" class="modal hidden">
-        <div class="modal-content glass">
-            <button class="close-modal">&times;</button>
-            <div class="modal-header-qr">
-                <i class="fas fa-qrcode"></i>
+        <div class="modal-content glass-premium">
+            <button class="close-modal"><i class="fas fa-times"></i></button>
+            
+            <div class="modal-header-v2">
+                <div class="pix-logo-badge">
+                    <img src="https://logopng.com.br/logos/pix-106.png" alt="Pix" class="pix-img-status">
+                </div>
                 <h3>Pagamento via Pix</h3>
-            </div>
-            
-            <div id="modal-amount" class="modal-pix-amount">R$ 0,00</div>
-            
-            <div class="qr-placeholder">
-                <div class="spinner"></div>
-            </div>
-            
-            <div class="copy-box">
-                <p>Copia e Cola:</p>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="pix-code-text" readonly value="Gere um Pix primeiro...">
-                    <button id="btn-copy-pix" class="btn-icon-sm"><i class="far fa-copy"></i></button>
+                <div class="status-badge pending-pulse">
+                    <span class="pulse-dot"></span>
+                    Aguardando Pagamento
                 </div>
             </div>
             
-            <p class="modal-hint"><i class="fas fa-info-circle"></i> O saldo será creditado imediatamente após o pagamento.</p>
+            <div id="modal-amount" class="modal-amount-v2">R$ 0,00</div>
+            
+            <div class="timer-container">
+                <div class="timer-label">Expira em:</div>
+                <div id="pix-countdown" class="timer-value">20:00</div>
+            </div>
+
+            <div class="qr-wrapper-v2">
+                <div class="qr-placeholder" id="qr-placeholder-v2">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            
+            <div class="copy-section-v2">
+                <label class="input-label">Copia e Cola:</label>
+                <div class="copy-input-group">
+                    <input type="text" id="pix-code-text" readonly value="Carregando...">
+                    <button id="btn-copy-pix" class="btn-copy-v2" title="Copiar código">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-footer-v2">
+                <p><i class="fas fa-shield-alt"></i> Pagamento 100% Seguro</p>
+                <p><i class="fas fa-bolt"></i> Saldo liberado na hora</p>
+            </div>
         </div>
     </div>
 
@@ -315,7 +334,7 @@ $rows = $transactions->fetchAll();
         </div>
     </div>
 
-    <script src="script.js?v=33.0"></script>
+    <script src="script.js?v=34.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
