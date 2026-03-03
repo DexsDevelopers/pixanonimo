@@ -108,7 +108,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ amount: val })
                 });
 
-                const data = await response.json();
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Resposta não-JSON:', text);
+                    return alert('Erro interno do servidor. Verifique os logs.');
+                }
+
                 console.log('Dados do Pix Recebidos:', data);
 
                 if (data.error) {
@@ -138,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error(err);
-                alert('Erro ao gerar PIX. Verifique sua conexão.');
+                alert('Falha na requisição. Verifique sua conexão ou console.');
             } finally {
                 btnGenerate.innerText = 'Gerar QR Code Pix';
                 btnGenerate.disabled = false;
