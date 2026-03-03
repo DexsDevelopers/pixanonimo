@@ -39,6 +39,42 @@ require_once 'includes/db.php';
             gap: 2rem;
             margin: 4rem 0;
         }
+        .nav-link-side {
+            padding: 0.8rem 1.2rem;
+            color: var(--text-2);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+        .nav-link-side:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+        .nav-link-side.active {
+            color: var(--green);
+            background: rgba(74, 222, 128, 0.05);
+            border-left: 2px solid var(--green);
+        }
+        .mobile-hide {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .mobile-hide { display: none; }
+            .lp-container { padding: 0 1.5rem; }
+            main > div { grid-template-columns: 1fr !important; }
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        table td, table th {
+            font-size: 0.85rem;
+            color: var(--text);
+        }
     </style>
 </head>
 <body class="lp-body">
@@ -66,71 +102,139 @@ require_once 'includes/db.php';
     <main class="lp-container">
         <section class="api-hero" data-aos="fade-up">
             <div class="lp-hero-tag" style="margin-bottom: 1rem;">PARA DESENVOLVEDORES E LOJISTAS</div>
-            <h1 class="lp-responsive-title">INTEGRE A <span class="lp-gradient-text">GHOST API</span> <br>EM SEU CHECKOUT</h1>
-            <p style="max-width: 700px; margin: 1.5rem auto;">Processe pagamentos Pix com total anonimato, webhooks em tempo real e blindagem contra bloqueios judiciais.</p>
-            <div style="margin-top: 3rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="auth/register.php" class="btn-lp-primary">Começar agora</a>
-                <a href="#docs" class="btn-lp-outline-sm" style="padding: 1rem 2rem;">Ver Documentação</a>
-            </div>
+            <h1 class="lp-responsive-title">DOCUMENTAÇÃO <span class="lp-gradient-text">GHOST API</span></h1>
+            <p style="max-width: 700px; margin: 1.5rem auto;">Tudo o que você precisa para integrar pagamentos blindados em seu checkout.</p>
         </section>
 
-        <section class="api-grid">
-            <div class="lp-card glass-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="lp-card-icon" style="color: var(--green);"><i class="fas fa-key"></i></div>
-                <h3>Chaves Privadas</h3>
-                <p>Gere Ghost Keys únicas para cada site ou checkout que você gerenciar.</p>
-            </div>
-            <div class="lp-card glass-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="lp-card-icon" style="color: var(--blue);"><i class="fas fa-satellite-dish"></i></div>
-                <h3>Webhooks Externos</h3>
-                <p>Notificações instantâneas via POST JSON direto para o seu servidor.</p>
-            </div>
-            <div class="lp-card glass-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="lp-card-icon" style="color: var(--amber);"><i class="fas fa-shield-halved"></i></div>
-                <h3>Anti-Bacen Logic</h3>
-                <p>Nossa arquitetura interna evita rastreios e protege seu fluxo de caixa.</p>
-            </div>
-        </section>
+        <div style="display: grid; grid-template-columns: 250px 1fr; gap: 3rem; margin: 4rem 0;">
+            <!-- Sidebar Docs -->
+            <aside style="position: sticky; top: 100px; height: fit-content;" class="mobile-hide">
+                <nav style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <a href="#autenticacao" class="nav-link-side active">Autenticação</a>
+                    <a href="#gerar-pix" class="nav-link-side">Gerar Pix</a>
+                    <a href="#status-check" class="nav-link-side">Consultar Status</a>
+                    <a href="#webhooks" class="nav-link-side">Webhooks</a>
+                    <a href="#erros" class="nav-link-side">Erros Comuns</a>
+                </nav>
+            </aside>
 
-        <section id="docs" style="margin: 6rem 0;" data-aos="fade-up">
-            <div class="lp-section-title">
-                <h2>Guia de Integração Rápida</h2>
-                <p>Tudo o que você precisa em menos de 5 minutos.</p>
-            </div>
+            <!-- Main Docs Content -->
+            <div class="docs-content">
+                <!-- Autenticação -->
+                <section id="autenticacao" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">1. Autenticação</h2>
+                    <p>Todas as chamadas à API devem incluir sua <strong>Ghost Key</strong> no header da requisição através do protocolo Bearer Auth.</p>
+                    <div class="code-block">
+                        Authorization: Bearer <span class="code-string">ghost_f2146406f1be1789ad472403...</span>
+                    </div>
+                </section>
 
-            <div style="max-width: 900px; margin: 0 auto;">
-                <h3>1. Gerar Cobrança (Pix)</h3>
-                <p>Envie um POST para o endpoint de API com sua Ghost Key no Header.</p>
-                
-                <div class="code-block">
-                    <span class="code-comment"># Exemplo em cURL</span><br>
-                    curl -X <span class="code-keyword">POST</span> https://pixghost.site/api.php \<br>
-                    &nbsp;&nbsp;-H <span class="code-string">"Authorization: Bearer ghost_sua_chave_secreta"</span> \<br>
-                    &nbsp;&nbsp;-H <span class="code-string">"Content-Type: application/json"</span> \<br>
-                    &nbsp;&nbsp;-d '{<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">"amount"</span>: <span class="code-string">50.00</span>,<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">"callback_url"</span>: <span class="code-string">"https://seu-site.com/webhook"</span><br>
-                    &nbsp;&nbsp;}'
+                <!-- Gerar Pix -->
+                <section id="gerar-pix" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">2. Gerar Cobrança (Pix)</h2>
+                    <p>Endpoint para criar uma nova ordem de pagamento.</p>
+                    <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                        <span class="badge" style="background: var(--green); color: #000; font-weight: 800;">POST</span>
+                        <code>/api.php</code>
+                    </div>
+
+                    <h4 style="margin-top: 2rem;">Parâmetros (Body JSON)</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-2);">
+                            <th style="padding: 1rem;">Campo</th>
+                            <th style="padding: 1rem;">Tipo</th>
+                            <th style="padding: 1rem;">Obrigatório</th>
+                            <th style="padding: 1rem;">Descrição</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>amount</code></td>
+                            <td style="padding: 1rem;">float</td>
+                            <td style="padding: 1rem;">Sim</td>
+                            <td style="padding: 1rem;">Valor em BRL (Mínimo 10.00)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>callback_url</code></td>
+                            <td style="padding: 1rem;">string</td>
+                            <td style="padding: 1rem;">Não</td>
+                            <td style="padding: 1rem;">Sua URL para receber o Webhook</td>
+                        </tr>
+                    </table>
+
+                    <div class="code-block">
+                        <span class="code-comment">// Resposta de Sucesso</span><br>
+                        {<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"success"</span>: <span class="code-keyword">true</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"pix_id"</span>: <span class="code-string">"px_123..."</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"pix_code"</span>: <span class="code-string">"000201..."</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"qr_image"</span>: <span class="code-string">"https://..."</span><br>
+                        }
+                    </div>
+                </section>
+
+                <!-- Consultar Status -->
+                <section id="status-check" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">3. Consultar Status</h2>
+                    <p>Caso prefira fazer polling manual do status da transação.</p>
+                    <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                        <span class="badge" style="background: var(--blue); color: #fff; font-weight: 800;">GET</span>
+                        <code>/check_status.php?pix_id=ID_AQUI</code>
+                    </div>
+                    <div class="code-block">
+                        { <span class="code-keyword">"status"</span>: <span class="code-string">"paid"</span> | <span class="code-string">"pending"</span> }
+                    </div>
+                </section>
+
+                <!-- Webhooks -->
+                <section id="webhooks" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">4. Webhooks (Callbacks)</h2>
+                    <p>O Ghost Pix enviará um POST JSON para a sua <code>callback_url</code> assim que a liquidação for confirmada.</p>
+                    <div class="code-block">
+                        <span class="code-comment">// Payload enviado ao seu servidor</span><br>
+                        {<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"event"</span>: <span class="code-string">"payment.completed"</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"pix_id"</span>: <span class="code-string">"px_123..."</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"amount"</span>: <span class="code-string">50.00</span>,<br>
+                        &nbsp;&nbsp;<span class="code-keyword">"status"</span>: <span class="code-string">"paid"</span><br>
+                        }
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-3);"><i class="fas fa-info-circle"></i> Recomendamos retornar o código HTTP 200 para confirmar o recebimento.</p>
+                </section>
+
+                <!-- Erros -->
+                <section id="erros" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--red);">5. Códigos de Erro</h2>
+                    <p>Lista de erros que a API pode retornar.</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-2);">
+                            <th style="padding: 1rem;">HTTP</th>
+                            <th style="padding: 1rem;">Código</th>
+                            <th style="padding: 1rem;">Descrição</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>401</code></td>
+                            <td style="padding: 1rem;">Não autorizado</td>
+                            <td style="padding: 1rem;">Ghost Key vazia ou inválida.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>400</code></td>
+                            <td style="padding: 1rem;">Valor mínimo</td>
+                            <td style="padding: 1rem;">O montante enviado é menor que R$ 10,00.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>403</code></td>
+                            <td style="padding: 1rem;">CSRF Error</td>
+                            <td style="padding: 1rem;">Chamada via browser sem token de segurança.</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <div class="card glass-card" style="padding: 2rem; margin-top: 4rem;">
+                    <h3>Dúvidas Técnicas?</h3>
+                    <p>Nossa equipe de engenharia está disponível via Telegram para apoiar sua implementação.</p>
+                    <a href="suporte.php" class="btn-lp-primary" style="margin-top: 1rem;">Falar com Desenvolvedor</a>
                 </div>
-
-                <h3>2. Resposta da API</h3>
-                <p>Você receberá o QR Code e o ID da transação instantaneamente.</p>
-                <div class="code-block">
-                    {<br>
-                    &nbsp;&nbsp;<span class="code-keyword">"status"</span>: <span class="code-string">"success"</span>,<br>
-                    &nbsp;&nbsp;<span class="code-keyword">"pix_id"</span>: <span class="code-string">"px_123..."</span>,<br>
-                    &nbsp;&nbsp;<span class="code-keyword">"pix_code"</span>: <span class="code-string">"000201..."</span>,<br>
-                    &nbsp;&nbsp;<span class="code-keyword">"qr_image"</span>: <span class="code-string">"https://..."</span><br>
-                    }
-                </div>
-
-                <div class="card glass-card" style="margin-top: 4rem; padding: 2rem;">
-                    <h3>Pronto para escalar?</h3>
-                    <p>Milhares de transações são processadas diariamente com total segurança. Não deixe seu capital exposto.</p>
-                    <a href="auth/register.php" class="btn-lp-primary" style="margin-top: 1.5rem;">Registrar-se como Desenvolvedor</a>
-                </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer class="lp-footer-v2">
