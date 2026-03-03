@@ -9,26 +9,29 @@
 /*  DESIGN TOKENS                                       */
 /* ──────────────────────────────────────────────────── */
 :root {
-    /* Colors */
-    --bg: #000000;
-    --bg-card: rgba(255, 255, 255, .05);
-    --bg-card-h: rgba(255, 255, 255, .1);
-    --border: rgba(255, 255, 255, .1);
-    --border-h: rgba(255, 255, 255, .2);
-    --text: #ffffff;
-    --text-2: #a1a1aa;
-    --text-3: #d4d4d8;
+    /* Colors - Luxury Dark Palette */
+    --bg: #050505;
+    --bg-card: rgba(15, 15, 15, 0.6);
+    --bg-card-h: rgba(25, 25, 25, 0.8);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-h: rgba(255, 255, 255, 0.15);
+    --text: #F8FAFC;
+    --text-2: #94A3B8;
+    --text-3: #64748B;
+    --glass-border: rgba(255, 255, 255, 0.05);
 
-    /* Accent system - Neutralized for B&W theme */
-    --green: #ffffff;
-    --amber: #a1a1aa;
-    --red: #52525b;
-    --blue: #71717a;
+    /* Accent system - Verified Accents */
+    --green: #4ADE80;
+    --amber: #FBBF24;
+    --red: #F87171;
+    --blue: #60A5FA;
+    --purple: #A78BFA;
+    --primary: #FFFFFF;
 
     /* Radii */
-    --r-sm: 12px;
-    --r-md: 18px;
-    --r-lg: 26px;
+    --r-sm: 14px;
+    --r-md: 20px;
+    --r-lg: 32px;
 
     /* Typography */
     --font: 'Outfit', system-ui, sans-serif;
@@ -482,16 +485,17 @@ a,
    CARD
 ══════════════════════════════════════════════════════ */
 .card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-card);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--border);
     border-radius: var(--r-md);
-    padding: 1.7rem;
+    padding: 1.8rem;
     position: relative;
     overflow: hidden;
     transition: all 0.4s var(--ease);
     animation: fadeInUp .55s var(--ease) both;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .glass-card {
@@ -531,13 +535,23 @@ a,
 
 .lp-card {
     padding: 3rem 2rem;
-    border-radius: 32px;
+    border-radius: var(--r-lg);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
     height: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    transition: all 0.4s var(--ease);
+}
+
+.lp-card:hover {
+    background: var(--bg-card-h);
+    border-color: var(--green);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(74, 222, 128, 0.1);
 }
 
 .lp-card-icon {
@@ -794,27 +808,33 @@ a,
 .btn-primary {
     width: 100%;
     min-height: 52px;
-    /* mobile-design: generous touch target */
-    background: var(--text);
+    background: var(--primary);
     color: #000;
     border: none;
-    padding: 1rem;
-    border-radius: 11px;
+    border-radius: var(--r-sm);
     font-weight: 700;
-    font-size: .93rem;
-    letter-spacing: .15px;
-    cursor: pointer;
-    /* ui-ux-pro-max */
-    font-family: var(--font);
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: .5rem;
+    gap: 0.6rem;
+    transition: all 0.3s var(--ease);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
     text-decoration: none;
+    font-family: var(--font);
+    cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: background .25s var(--ease), transform .2s var(--ease), box-shadow .25s var(--ease);
-    margin-top: .85rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+    filter: brightness(1.1);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
 }
 
 /* shimmer (frontend-design: memorable element) */

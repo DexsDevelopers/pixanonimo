@@ -1,12 +1,11 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/notify.php';
 
-// Registrar log para debug (remover em produção se desejar)
-$logFile = 'webhook_log.txt';
 $input = file_get_contents('php://input');
-file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] Payload: " . $input . PHP_EOL, FILE_APPEND);
-
 $data = json_decode($input, true);
+
+write_log('INFO', 'Webhook PixGo Recebido', ['payload' => $data]);
 
 // O PixGo V1 envia um campo 'event' e os dados em 'data'
 if (isset($data['event']) && $data['event'] === 'payment.completed') {
@@ -43,15 +42,16 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
                 $admin = $adminStmt->fetch();
                 if ($admin) {
                     $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$adminProfit, $admin['id']]);
-                    file_put_contents($logFile, "[PROFIT] Lucro de R$ " . number_format($adminProfit, 2) . " creditado ao admin " . $admin['id'] . PHP_EOL, FILE_APPEND);
+                    write_log('INFO', 'Lucro Admin Creditado', ['profit' => $adminProfit, 'admin_id' => $admin['id']]);
                 }
             }
 
             $pdo->commit();
-            file_put_contents($logFile, "[SUCCESS] Transação " . $transaction['id'] . " processada." . PHP_EOL, FILE_APPEND);
+            write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
+            notify_new_payment($transaction['amount_brl'], $transaction['user_id']);
         } catch (Exception $e) {
             $pdo->rollBack();
-            file_put_contents($logFile, "[ERROR] Falha ao processar: " . $e->getMessage() . PHP_EOL, FILE_APPEND);
+            write_log('ERROR', 'Falha no processamento Webhook', ['error' => $e->getMessage(), 'pix_id' => $pixId]);
         }
         }
     }

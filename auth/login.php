@@ -3,7 +3,11 @@ session_start();
 require_once '../includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'] ?? '';
+    // Validação CSRF
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    check_csrf($csrfToken);
+
+    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
@@ -56,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
         <form action="login.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
             <div style="margin-bottom: 1.25rem;">
                 <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-2); margin-bottom: 0.6rem; margin-left: 0.2rem;">Email</label>
                 <div style="position: relative;">

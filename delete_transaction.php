@@ -10,6 +10,12 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
+
+// Validação CSRF
+$headers = getallheaders();
+$csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+check_csrf($csrfToken);
+
 $transactionId = $input['id'] ?? 0;
 
 if (!$transactionId) {

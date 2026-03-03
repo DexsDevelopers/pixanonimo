@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/notify.php';
 
 header('Content-Type: application/json');
 
@@ -10,6 +11,12 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
+
+// Validação CSRF
+$headers = getallheaders();
+$csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+check_csrf($csrfToken);
+
 $amount = (float)($input['amount'] ?? 0);
 
 try {
@@ -48,8 +55,12 @@ try {
     $stmt->execute([$userId, $amount, $user['pix_key']]);
 
     $pdo->commit();
+    write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount]);
+    notify_new_withdrawal($amount, $userId);
+    
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
+    write_log('ERROR', 'Erro ao processar saque', ['error' => $e->getMessage(), 'user_id' => $userId]);
     echo json_encode(['error' => 'Erro ao processar saque: ' . $e->getMessage()]);
 }

@@ -10,10 +10,14 @@ if (isLoggedIn()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'] ?? '';
+    // Validação CSRF
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    check_csrf($csrfToken);
+
+    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
-    $full_name = $_POST['full_name'] ?? '';
-    $pix_key = $_POST['pix_key'] ?? '';
+    $full_name = strip_tags(trim($_POST['full_name'] ?? ''));
+    $pix_key = strip_tags(trim($_POST['pix_key'] ?? ''));
 
     // Verificar se o email já existe
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
@@ -63,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
         <form action="register.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
             <div style="margin-bottom: 1.2rem;">
                 <label style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-2); margin-bottom: 0.5rem; margin-left: 0.2rem;">Nome Completo</label>
                 <div style="position: relative;">

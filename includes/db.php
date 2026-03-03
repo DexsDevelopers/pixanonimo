@@ -26,4 +26,41 @@ function redirect($path) {
     header("Location: $path");
     exit;
 }
+
+// CSRF Protection Functions
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function check_csrf($token) {
+    if (!isset($_SESSION['csrf_token']) || $token !== $_SESSION['csrf_token']) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Erro de segurança: Token CSRF inválido. Recarregue a página.']);
+        exit;
+    }
+    return true;
+}
+
+// Structured Logging Function
+function write_log($level, $message, $data = []) {
+    $logDir = __DIR__ . '/../logs';
+    if (!is_dir($logDir)) {
+        @mkdir($logDir, 0777, true);
+    }
+    
+    $file = $logDir . '/' . date('Y-m-d') . '.log';
+    $logEntry = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'level' => strtoupper($level), // INFO, ERROR, WARNING, SECURITY
+        'message' => $message,
+        'user_id' => $_SESSION['user_id'] ?? 'GUEST',
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+        'data' => $data
+    ];
+    
+    file_put_contents($file, json_encode($logEntry) . PHP_EOL, FILE_APPEND);
+}
 ?>

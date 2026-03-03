@@ -53,6 +53,7 @@ $rows = $transactions->fetchAll();
     <link rel="stylesheet" href="style.css?v=9.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>

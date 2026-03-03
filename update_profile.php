@@ -11,8 +11,14 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
 
-$fullName = $input['full_name'] ?? '';
-$pixKey = $input['pix_key'] ?? '';
+// Validação CSRF
+$headers = getallheaders();
+$csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+check_csrf($csrfToken);
+
+// Sanitização de Entradas
+$fullName = strip_tags(trim($input['full_name'] ?? ''));
+$pixKey = strip_tags(trim($input['pix_key'] ?? ''));
 $currentPassword = $input['current_password'] ?? '';
 $newPassword = $input['new_password'] ?? '';
 

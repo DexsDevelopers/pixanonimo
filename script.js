@@ -101,7 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('api.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({ amount: val })
                 });
 
@@ -205,7 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch('update_wallet.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({ wallet })
                 });
                 const data = await res.json();
@@ -306,7 +312,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch('delete_transaction.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({ id })
                 });
                 const d = await res.json();
