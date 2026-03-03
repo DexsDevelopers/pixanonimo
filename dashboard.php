@@ -70,6 +70,29 @@ $rows = $transactions->fetchAll();
                 </div>
             </header>
 
+            <?php if ($user['status'] == 'pending'): ?>
+            <!-- Pending Approval Alert -->
+            <div class="card" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); margin-bottom: 2rem; padding: 1.25rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            <i class="fas fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <h3 style="color: #f59e0b; font-size: 1rem; margin-bottom: 2px;">Sua conta está aguardando aprovação</h3>
+                            <p style="color: var(--text-2); font-size: 0.85rem;">Para começar a movimentar e gerar cobranças, sua conta precisa ser verificada.</p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/5551996148568?text=Ol%C3%A1%2C%20gostaria%20de%20ativar%20minha%20conta%20na%20Ghost%20Pix!%20Meu%20email%3A%20<?php echo urlencode($user['email']); ?>" 
+                       target="_blank" 
+                       class="badge paid" 
+                       style="display: flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 18px; font-weight: 600; background: #25d366; color: #000; border: none; font-size: 0.85rem;">
+                        <i class="fab fa-whatsapp" style="font-size: 1.1rem;"></i> ATIVAR VIA WHATSAPP
+                    </a>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Compact Analytics Grid -->
             <div class="analytics-grid">
                 <!-- Volume Hoje -->
