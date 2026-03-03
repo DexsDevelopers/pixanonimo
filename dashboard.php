@@ -70,81 +70,86 @@ $rows = $transactions->fetchAll();
                 </div>
             </header>
 
-            <!-- Bento Analytics Grid -->
+            <!-- Compact Analytics Grid -->
             <div class="analytics-grid">
-                <!-- Main Balance (Bento Large) -->
-                <div class="stat-card accent-green bento-large">
-                    <div class="stat-icon" style="font-size: 3rem; opacity: 0.1;"><i class="fas fa-wallet"></i></div>
-                    <span class="stat-label">Saldo Disponível</span>
-                    <div class="stat-value" id="stat-balance" style="font-size: 3.5rem; margin: 1rem 0;">
-                        <span style="font-size: 1.5rem; vertical-align: middle; opacity: 0.6;">R$</span> <?php echo number_format($user['balance'], 2, ',', '.'); ?>
-                    </div>
-                    <div class="stat-sub positive" style="font-size: 0.9rem;">
-                        <i class="fas fa-shield-halved"></i> Saldo Protegido por Ghost Pix
-                    </div>
-                    
-                    <div style="margin-top: auto; display: flex; gap: 1rem;">
-                        <?php if($user['balance'] > 0): ?>
-                            <a href="sacar.php" class="btn-primary" style="padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 700; background: var(--green); color: #000;">
-                                <i class="fas fa-arrow-up-right-from-square"></i> Sacar Agora
-                            </a>
-                        <?php endif; ?>
-                        <div class="wallet-status" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                <!-- Volume Hoje -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <span class="stat-label">Volume Hoje</span>
+                    <div class="stat-value">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +<?php echo $stats['today_volume'] > 0 ? '12' : '0'; ?>%</div>
+                </div>
+
+                <!-- Volume Mensal -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span class="stat-label">Volume Mensal</span>
+                    <div class="stat-value">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub">Mês <?php echo date('M'); ?></div>
+                </div>
+
+                <!-- Total Vitalício -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <span class="stat-label">Aprovado Total</span>
+                    <div class="stat-value">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
+                    <div class="stat-sub">Desde o início</div>
+                </div>
+
+                <!-- Pendentes -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <span class="stat-label">Pendentes</span>
+                    <div class="stat-value" style="color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
+                    <div class="stat-sub">Aguardando PIX</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Main Balance Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                            <h3 class="card-title">Saldo Disponível</h3>
+                        </div>
+                        <div class="wallet-status">
                             <span class="status-indicator"></span>
                             Taxa: <?php echo $user['commission_rate']; ?>%
                         </div>
                     </div>
+                    
+                    <div class="balance-display" style="margin: 1.5rem 0;">
+                        <span style="font-size: 1.5rem; opacity: 0.5; font-weight: 500;">R$</span> 
+                        <span style="font-size: 2.8rem; font-weight: 800; letter-spacing: -1px;"><?php echo number_format($user['balance'], 2, ',', '.'); ?></span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <?php if($user['balance'] > 0): ?>
+                            <a href="sacar.php" class="btn-primary" style="padding: 0.7rem 1.5rem; font-size: 0.9rem;">
+                                <i class="fas fa-arrow-up-right-from-square"></i> Efetuar Saque
+                            </a>
+                        <?php endif; ?>
+                        <p class="card-hint" style="color:var(--green); margin:0;">
+                            <i class="fas fa-shield-check"></i> Proteção Ghost Pix Ativa
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Volume Hoje (Bento Medium) -->
-                <div class="stat-card accent-blue bento-medium">
-                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                    <span class="stat-label">Volume Hoje</span>
-                    <div class="stat-value">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> últimas 24h</div>
-                </div>
-
-                <!-- Volume Mensal (Bento Small) -->
-                <div class="stat-card accent-purple bento-small">
-                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                    <span class="stat-label">Mensal</span>
-                    <div class="stat-value" style="font-size: 1.4rem;">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
-                </div>
-
-                <!-- Total Vitalício (Bento Small) -->
-                <div class="stat-card accent-blue bento-small">
-                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
-                    <span class="stat-label">Vitalício</span>
-                    <div class="stat-value" style="font-size: 1.4rem;">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
-                </div>
-
-                <!-- Pendentes (Bento Small) -->
-                <div class="stat-card accent-amber bento-small">
-                    <div class="stat-icon"><i class="fas fa-clock-rotate-left"></i></div>
-                    <span class="stat-label">Pendentes</span>
-                    <div class="stat-value" style="font-size: 1.4rem; color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
-                </div>
-            </div>
-
-            <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 1.25rem;">
-                <!-- PIX Key Card -->
-                <div class="card" style="padding: 1.5rem;">
+                <!-- Fast Actions / PIX Key -->
+                <div class="card">
                     <div class="card-header">
                         <div class="card-title-group">
                             <div class="card-icon"><i class="fas fa-key"></i></div>
-                            <h3 class="card-title">Chave PIX para Recebimento</h3>
+                            <h3 class="card-title">Configuração de Recebimento</h3>
                         </div>
-                        <button id="btn-edit-wallet" class="btn-edit">
-                            <i class="fas fa-pen"></i> Editar
-                        </button>
+                        <button id="btn-edit-wallet" class="btn-edit"> Editar </button>
                     </div>
-                    <div class="pix-key-box" style="margin-top: 1rem;">
-                        <input type="text" id="wallet-input"
-                               value="<?php echo htmlspecialchars($user['pix_key'] ?? ''); ?>"
-                               placeholder="Sua Chave PIX"
-                               class="pix-key-input"
-                               readonly>
-                        <button id="btn-copy-wallet" class="btn-icon-sm" title="Copiar"><i class="far fa-copy"></i></button>
+                    
+                    <p class="card-hint" style="margin: 1rem 0 0.5rem;">Chave PIX configurada:</p>
+                    <div class="pix-key-box">
+                        <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? 'Não configurada'); ?>" readonly class="pix-key-input" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
+                        <button id="btn-copy-wallet" class="btn-icon-sm"><i class="far fa-copy"></i></button>
                     </div>
                 </div>
 

@@ -411,9 +411,8 @@ a,
 ══════════════════════════════════════════════════════ */
 .analytics-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-auto-rows: minmax(160px, auto);
-    gap: 1.25rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
