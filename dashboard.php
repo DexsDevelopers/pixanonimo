@@ -50,7 +50,7 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=32.0">
+    <link rel="stylesheet" href="style.css?v=33.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
@@ -276,7 +276,46 @@ $rows = $transactions->fetchAll();
         </main>
     </div>
 
-    <script src="script.js?v=32.0"></script>
+    <!-- MODAIS -->
+    <div id="modal-qr" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-modal">&times;</button>
+            <div class="modal-header-qr">
+                <i class="fas fa-qrcode"></i>
+                <h3>Pagamento via Pix</h3>
+            </div>
+            
+            <div id="modal-amount" class="modal-pix-amount">R$ 0,00</div>
+            
+            <div class="qr-placeholder">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="copy-box">
+                <p>Copia e Cola:</p>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="pix-code-text" readonly value="Gere um Pix primeiro...">
+                    <button id="btn-copy-pix" class="btn-icon-sm"><i class="far fa-copy"></i></button>
+                </div>
+            </div>
+            
+            <p class="modal-hint"><i class="fas fa-info-circle"></i> O saldo será creditado imediatamente após o pagamento.</p>
+        </div>
+    </div>
+
+    <div id="modal-confirm" class="modal hidden">
+        <div class="modal-content glass" style="max-width: 400px; text-align: center;">
+            <div style="font-size: 3rem; color: var(--danger); margin-bottom: 1.5rem;"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 style="margin-bottom: 1rem;">Confirmar Exclusão</h3>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Tem certeza que deseja excluir esta transação do seu histórico? Esta ação é irreversível.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button id="btn-confirm-cancel" class="btn-lp-outline" style="border-radius: 12px; height: 48px;">Cancelar</button>
+                <button id="btn-confirm-delete" class="btn-primary" style="background: var(--danger); color: white; border-radius: 12px; height: 48px;">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=33.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
