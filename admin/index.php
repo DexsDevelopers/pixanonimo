@@ -67,7 +67,7 @@ if (isset($_POST['update_settings'])) {
     $aff_rate = (float)$_POST['affiliate_rate'];
     
     // Verificar se a chave existe
-    $check = $pdo->prepare("SELECT id FROM settings WHERE `key` = 'affiliate_commission_rate'");
+    $check = $pdo->prepare("SELECT `key` FROM settings WHERE `key` = 'affiliate_commission_rate'");
     $check->execute();
     if ($check->fetch()) {
         $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'affiliate_commission_rate'")->execute([$aff_rate]);
