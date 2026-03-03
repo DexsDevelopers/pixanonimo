@@ -473,5 +473,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
+    // --- FAQ TOGGLE ---
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.onclick = () => {
+            const item = q.parentElement;
+            item.classList.toggle('active');
+        };
+    });
+
     initHistoryActions();
 });

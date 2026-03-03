@@ -276,86 +276,7 @@ $rows = $transactions->fetchAll();
         </main>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav">
-        <a href="dashboard.php" class="mobile-nav-item active">
-            <i class="fas fa-th-large"></i>
-            <span>Home</span>
-        </a>
-        <a href="sacar.php" class="mobile-nav-item">
-            <i class="fas fa-wallet"></i>
-            <span>Sacar</span>
-        </a>
-        <a href="perfil.php" class="mobile-nav-item">
-            <i class="fas fa-user-circle"></i>
-            <span>Perfil</span>
-        </a>
-        <a href="suporte.php" class="mobile-nav-item">
-            <i class="fas fa-headset"></i>
-            <span>Suporte</span>
-        </a>
-        <a href="auth/logout.php" class="mobile-nav-item">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sair</span>
-        </a>
-    </nav>
-
-    <!-- Modal QR Code -->
-    <div id="modal-qr" class="modal hidden">
-        <div class="modal-content glass">
-            <span class="close-modal">&times;</span>
-            <h2>Escaneie o Pix</h2>
-            <div class="qr-placeholder"></div>
-            
-            <div class="pix-copy-area" style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
-                <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; text-align: left;">Copia e Cola:</p>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <textarea id="pix-code-text" readonly style="flex: 1 1 200px; background: rgba(0,0,0,0.2); border: none; color: white; font-size: 0.75rem; resize: none; height: 60px; font-family: monospace; padding: 0.5rem; border-radius: 8px;"></textarea>
-                    <button id="btn-copy-pix" class="btn-primary" style="flex: 1 1 100px; padding: 0.8rem; font-size: 0.8rem; white-space: nowrap;">Copiar</button>
-                </div>
-            </div>
-
-            <div class="pix-warning" style="margin-top: 1.5rem; background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2); text-align: left;">
-                <p style="font-size: 0.8rem; color: #f59e0b; font-weight: 600; margin-bottom: 0.4rem;">⚠️ Atenção: Evite valores repetidos</p>
-                <p style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.4;">
-                    Para sua segurança, não gere dois Pix com o mesmo valor exato em menos de 20 min. 
-                    <strong>Altere os centavos</strong> se precisar de uma nova cobrança. <br>
-                    <em>Exemplo: R$ 50,00 e R$ 50,01</em>
-                </p>
-            </div>
-
-            <p class="qr-value" style="margin-top: 1.5rem;">Valor: <strong id="modal-amount">R$ 0,00</strong></p>
-            <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 10px;">O DEPIX será enviado para sua carteira após o pagamento.</p>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação Customizado -->
-    <div id="modal-confirm" class="modal hidden">
-        <div class="modal-content glass" style="max-width: 400px; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🗑️</div>
-            <h2 style="margin-bottom: 0.5rem;">Confirmação</h2>
-            <p style="color: var(--text-dim); margin-bottom: 2rem;">Deseja realmente excluir esta transação? Esta ação não pode ser desfeita.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação de Exclusão -->
-    <div id="modal-confirm" class="modal hidden">
-        <div class="modal-content glass" style="max-width: 400px; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--danger);">⚠️</div>
-            <h3 style="margin-bottom: 1rem;">Confirmar Exclusão?</h3>
-            <p style="color: var(--text-2); margin-bottom: 2rem;">Esta ação não pode ser desfeita. A transação será removida permanentemente do histórico.</p>
-            <div style="display: flex; gap: 1rem;">
-                <button id="btn-confirm-cancel" class="btn-primary" style="background: rgba(255,255,255,0.1); flex: 1;">Cancelar</button>
-                <button id="btn-confirm-delete" class="btn-primary" style="background: var(--danger); flex: 1;">Excluir</button>
-            </div>
-        </div>
-    </div>
-
-        </main>
-    </div> <!-- Fechamento app-container do sidebar.php -->
-
-    <script src="script.js?v=30.0"></script>
+    <script src="script.js?v=31.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -365,6 +286,5 @@ $rows = $transactions->fetchAll();
             });
         }
     </script>
-
 </body>
 </html>

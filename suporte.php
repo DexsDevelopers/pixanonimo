@@ -122,15 +122,6 @@ $user = $stmt->fetch();
         </main>
     </div>
 
-    <script src="script.js?v=8.0"></script>
-    <script>
-        // Toggle FAQ
-        document.querySelectorAll('.faq-question').forEach(q => {
-            q.addEventListener('click', () => {
-                const item = q.parentElement;
-                item.classList.toggle('active');
-            });
-        });
-    </script>
+    <script src="script.js?v=31.0"></script>
 </body>
 </html>

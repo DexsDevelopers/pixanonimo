@@ -84,29 +84,7 @@ try {
         </main>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav">
-        <a href="dashboard.php" class="mobile-nav-item">
-            <i class="fas fa-th-large"></i>
-            <span>Home</span>
-        </a>
-        <a href="sacar.php" class="mobile-nav-item active">
-            <i class="fas fa-wallet"></i>
-            <span>Sacar</span>
-        </a>
-        <a href="perfil.php" class="mobile-nav-item">
-            <i class="fas fa-user"></i>
-            <span>Perfil</span>
-        </a>
-        <a href="suporte.php" class="mobile-nav-item">
-            <i class="fas fa-headset"></i>
-            <span>Suporte</span>
-        </a>
-        <a href="auth/logout.php" class="mobile-nav-item">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sair</span>
-        </a>
-    </nav>
+    <script src="script.js?v=31.0"></script>
 
     <!-- Modal de Sucesso -->
     <div class="modal hidden" id="modal-success">
@@ -184,9 +162,6 @@ try {
         }
     });
     </script>
-        </main>
-    </div> <!-- Fechamento app-container do sidebar.php -->
-
-    <script src="script.js?v=25.0"></script>
+    <script src="script.js?v=31.0"></script>
 </body>
 </html>

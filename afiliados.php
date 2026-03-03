@@ -146,30 +146,19 @@ $referrals = $stmt->fetchAll();
     </div>
 
     <script>
-        // Sidebar Toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const sidebar = document.querySelector('.sidebar');
-
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            sidebarOverlay.classList.add('active');
-        });
-
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        });
-
         function copyRefLink() {
-            const link = document.getElementById('refLink').innerText;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('✓ Link copiado para a área de transferência!');
+            const linkInput = document.getElementById('refLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                const btn = document.querySelector('.btn-icon-sm');
+                const oldIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check" style="color: var(--green);"></i>';
+                setTimeout(() => { btn.innerHTML = oldIcon; }, 2000);
             });
         }
-        </main>
-    </div> <!-- Fechamento app-container do sidebar.php -->
+    </script>
 
-    <script src="script.js?v=25.0"></script>
+    <script src="script.js?v=31.0"></script>
 </body>
 </html>
