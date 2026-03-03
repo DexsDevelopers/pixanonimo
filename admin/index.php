@@ -61,6 +61,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at DESC")->fetchAll();
+
+// Lógica de Configurações Globais (Processamento no topo para redirecionamento limpo)
+if (isset($_POST['update_settings'])) {
+    $aff_rate = (float)$_POST['affiliate_rate'];
+    
+    // Verificar se a chave existe
+    $check = $pdo->prepare("SELECT id FROM settings WHERE `key` = 'affiliate_commission_rate'");
+    $check->execute();
+    if ($check->fetch()) {
+        $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'affiliate_commission_rate'")->execute([$aff_rate]);
+    } else {
+        $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('affiliate_commission_rate', ?)")->execute([$aff_rate]);
+    }
+    header("Location: index.php?success=1");
+    exit;
+}
+
+// Buscar taxa atual para o formulário
+$affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
+$currentAffRate = $affRateStmt->fetchColumn() ?: '10';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -79,27 +99,11 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
             <header class="top-header">
                 <h1>Painel Administrativo</h1>
                 <div style="display: flex; gap: 1rem; align-items: center;">
+                    <?php if (isset($_GET['success'])): ?>
+                        <div class="badge paid" style="padding: 5px 10px; font-size: 0.75rem;">✓ Salvo com sucesso</div>
+                    <?php endif; ?>
+
                     <?php
-                    // Lógica de Configurações Globais
-                    if (isset($_POST['update_settings'])) {
-                        $aff_rate = (float)$_POST['affiliate_rate'];
-                        
-                        // Verificar se a chave existe
-                        $check = $pdo->prepare("SELECT id FROM settings WHERE `key` = 'affiliate_commission_rate'");
-                        $check->execute();
-                        if ($check->fetch()) {
-                            $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'affiliate_commission_rate'")->execute([$aff_rate]);
-                        } else {
-                            $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('affiliate_commission_rate', ?)")->execute([$aff_rate]);
-                        }
-                        echo "<script>window.location.href='index.php?success=1';</script>";
-                        exit;
-                    }
-
-                    // Buscar taxa atual
-                    $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
-                    $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
-
                     // Calcular Lucro Real Acumulado
                     $profitStmt = $pdo->query("SELECT SUM(amount_brl - amount_net_brl - (amount_brl * 0.02)) as total_profit FROM transactions WHERE status = 'paid'");
                     $profitData = $profitStmt->fetch();
@@ -206,7 +210,8 @@ $users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at
                     <?php endwhile; ?>
                 </tbody>
             </table>
-        </div>
+        </main>
+    </div> <!-- Final app-container vindo da sidebar.php -->
     <script src="../script.js?v=30.0"></script>
 </body>
 </html>
