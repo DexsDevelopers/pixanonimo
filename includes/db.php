@@ -73,12 +73,10 @@ function getUser($userId) {
 
 /**
  * Retorna uma chave de API PixGo ativa aleatoriamente do banco de dados.
- * Se não houver chaves no banco, retorna a chave padrão do config.php.
  */
 function getActivePixGoKey() {
     global $pdo;
     try {
-        // Tenta buscar chaves ativas (ordenadas aleatoriamente)
         $stmt = $pdo->query("SELECT api_key FROM pixgo_apis WHERE status = 'active' ORDER BY RAND() LIMIT 1");
         $key = $stmt->fetchColumn();
         
@@ -86,12 +84,33 @@ function getActivePixGoKey() {
             return $key;
         }
     } catch (PDOException $e) {
-        // Se a tabela não existir ainda ou houver erro, log e fallback
         write_log('error', 'Erro ao buscar chaves de API: ' . $e->getMessage());
     }
     
-    // Fallback para a constante definida no config.php
     return defined('PIXGO_API_KEY') ? PIXGO_API_KEY : '';
+}
+
+/**
+ * Salva transação com fallback se a coluna callback_url não existir
+ */
+function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null) {
+    global $pdo;
+    try {
+        // Tenta com callback_url
+        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)");
+        $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
+        return true;
+    } catch (PDOException $e) {
+        // Se falhar (ex: coluna inexistente), tenta sem callback_url
+        try {
+            $stmt = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+            $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
+            return true;
+        } catch (PDOException $e2) {
+            write_log('error', 'Falha total ao salvar transação: ' . $e2->getMessage());
+            return false;
+        }
+    }
 }
 ?>
 
