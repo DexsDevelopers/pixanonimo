@@ -13,3 +13,4 @@ define('PIXGO_PROJECT_ID', '');
 define('TELEGRAM_BOT_TOKEN', ''); // Insira o token do seu bot aqui
 define('TELEGRAM_CHAT_ID', '');   // Insira o seu Chat ID aqui
 ?>
+

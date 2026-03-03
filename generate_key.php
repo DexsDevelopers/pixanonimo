@@ -38,3 +38,4 @@ if (isset($input['action']) && $input['action'] === 'generate') {
     echo json_encode(['error' => 'Ação inválida']);
 }
 ?>
+

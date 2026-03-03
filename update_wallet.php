@@ -29,3 +29,4 @@ if ($stmt->execute([$wallet, $userId])) {
     echo json_encode(['error' => 'Erro ao atualizar chave PIX.']);
 }
 ?>
+

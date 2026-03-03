@@ -112,3 +112,4 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
 http_response_code(200);
 echo json_encode(['status' => 'received']);
 ?>
+

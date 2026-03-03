@@ -36,3 +36,4 @@ try {
     echo "<p style='color:red;'>❌ Erro na migração: " . $e->getMessage() . "</p>";
 }
 ?>
+

@@ -22,3 +22,4 @@ try {
     echo "<p style='color: red;'>❌ Erro: " . $e->getMessage() . "</p>";
 }
 ?>
+

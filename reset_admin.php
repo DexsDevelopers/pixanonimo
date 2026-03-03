@@ -32,3 +32,4 @@ try {
     echo "<h2>❌ Erro: " . $e->getMessage() . "</h2>";
 }
 ?>
+

@@ -64,3 +64,4 @@ try {
     write_log('ERROR', 'Erro ao processar saque', ['error' => $e->getMessage(), 'user_id' => $userId]);
     echo json_encode(['error' => 'Erro ao processar saque: ' . $e->getMessage()]);
 }
+

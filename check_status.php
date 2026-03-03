@@ -24,3 +24,4 @@ if ($transaction) {
 } else {
     echo json_encode(['status' => 'not_found']);
 }
+

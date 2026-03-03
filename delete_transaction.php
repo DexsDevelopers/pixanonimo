@@ -33,3 +33,4 @@ if ($result) {
     echo json_encode(['error' => 'Não foi possível excluir a transação']);
 }
 ?>
+

@@ -241,7 +241,7 @@ require_once 'includes/db.php';
         <div class="lp-footer-container">
             <div class="lp-footer-brand">
                 <div class="logo">
-                    <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
+                    <img src="logo_premium.png?v=32.0" class="logo-img" alt="Ghost Logo">
                     <span class="logo-text">GHOST<span> PIX</span></span>
                 </div>
                 <p class="lp-brand-tagline">Privacidade é um direito, não um privilégio.</p>
@@ -298,3 +298,4 @@ require_once 'includes/db.php';
     </script>
 </body>
 </html>
+

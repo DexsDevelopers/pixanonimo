@@ -81,3 +81,4 @@ try {
     error_log("Erro no perfil (User ID: $userId): " . $e->getMessage());
     echo json_encode(['error' => 'Erro ao salvar no banco: ' . $e->getMessage()]);
 }
+

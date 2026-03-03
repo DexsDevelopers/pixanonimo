@@ -91,3 +91,4 @@ echo json_encode([
     'stats' => $stats,
     'transactions' => $formattedRows
 ]);
+
