@@ -19,7 +19,8 @@ require_once 'includes/db.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=16.0">
+    <link rel="stylesheet" href="style.css?v=17.0">
+    <link rel="stylesheet" href="css/mobile-menu.css?v=1.0">
     <style>
         /* Force dark theme even if CSS is cached */
         .lp-body { background: #000 !important; color: #fff !important; }
@@ -126,11 +127,20 @@ require_once 'includes/db.php';
 
             <div class="lp-mobile-auth">
                 <?php if(isLoggedIn()): ?>
-                    <a href="dashboard.php" class="btn-lp-primary" style="width: 100%;">ACESSAR MEU PAINEL</a>
+                    <a href="dashboard.php" class="btn-lp-primary-full">
+                        <i class="fas fa-th-large"></i> ACESSAR MEU PAINEL
+                    </a>
                 <?php else: ?>
-                    <a href="auth/login.php" class="btn-lp-outline" style="width: 100%; margin-bottom: 1rem;">ENTRAR</a>
-                    <a href="auth/register.php" class="btn-lp-primary" style="width: 100%;">CRIAR MINHA CONTA</a>
+                    <a href="auth/login.php" class="mobile-nav-link" style="justify-content: center; background: transparent;">
+                        Fazer Login
+                    </a>
+                    <a href="auth/register.php" class="btn-lp-primary-full">
+                        CRIAR MINHA CONTA BLINDADA
+                    </a>
                 <?php endif; ?>
+                <p style="text-align: center; font-size: 0.75rem; color: var(--text-3); margin-top: 1.5rem; opacity: 0.7;">
+                    <i class="fas fa-shield-alt"></i> Ambiente 100% Criptografado
+                </p>
             </div>
         </div>
     </div>
