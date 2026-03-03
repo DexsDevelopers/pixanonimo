@@ -44,10 +44,13 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
                 <i class="fas fa-headset"></i> Suporte
             </a>
             <?php if(isAdmin()): ?>
-                <a href="<?php echo $base_path; ?>admin/index.php" class="nav-item <?php echo strpos($_SERVER['PHP_SELF'], '/admin/') !== false ? 'active' : ''; ?>">
+                <a href="<?php echo $base_path; ?>admin/index.php" class="nav-item <?php echo $current_page == 'index.php' && strpos($_SERVER['PHP_SELF'], '/admin/') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-user-lock"></i> Admin
                 </a>
-            <?php endif; ?>
+                <a href="<?php echo $base_path; ?>admin/apis.php" class="nav-item <?php echo $current_page == 'apis.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-plug"></i> APIs PixGo
+                </a>
+<?php endif; ?>
             <a href="<?php echo $base_path; ?>auth/logout.php" class="nav-item" style="color: var(--red);">
                 <i class="fas fa-power-off"></i> Sair
             </a>

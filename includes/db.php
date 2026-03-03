@@ -70,5 +70,28 @@ function getUser($userId) {
     $stmt->execute([$userId]);
     return $stmt->fetch();
 }
+
+/**
+ * Retorna uma chave de API PixGo ativa aleatoriamente do banco de dados.
+ * Se não houver chaves no banco, retorna a chave padrão do config.php.
+ */
+function getActivePixGoKey() {
+    global $pdo;
+    try {
+        // Tenta buscar chaves ativas (ordenadas aleatoriamente)
+        $stmt = $pdo->query("SELECT api_key FROM pixgo_apis WHERE status = 'active' ORDER BY RAND() LIMIT 1");
+        $key = $stmt->fetchColumn();
+        
+        if ($key) {
+            return $key;
+        }
+    } catch (PDOException $e) {
+        // Se a tabela não existir ainda ou houver erro, log e fallback
+        write_log('error', 'Erro ao buscar chaves de API: ' . $e->getMessage());
+    }
+    
+    // Fallback para a constante definida no config.php
+    return defined('PIXGO_API_KEY') ? PIXGO_API_KEY : '';
+}
 ?>
 

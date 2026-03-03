@@ -99,8 +99,11 @@ $data = [
     'external_id' => 'user_' . $userId . '_' . time()
 ];
 
+// Obter chave de API ativa (Rotação)
+$currentPixGoKey = getActivePixGoKey();
+
 // Simulação de resposta se não houver API KEY
-if (PIXGO_API_KEY === 'SUA_API_KEY_AQUI') {
+if ($currentPixGoKey === 'SUA_API_KEY_AQUI' || empty($currentPixGoKey)) {
     $pixId = 'sim_' . time();
     $qrCode = '000201...';
     $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
@@ -133,7 +136,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'x-api-key: ' . PIXGO_API_KEY,
+    'x-api-key: ' . $currentPixGoKey,
     'Content-Type: application/json'
 ]);
 
