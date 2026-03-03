@@ -23,50 +23,13 @@ try {
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Solicitar Saque - Ghost Pix</title>
-    <link rel="stylesheet" href="style.css?v=9.0">
+    <link rel="stylesheet" href="style.css?v=18.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
 </head>
 <body>
-    <div class="sidebar-overlay" id="sidebar-overlay"></div>
-    <div class="mobile-header">
-        <div class="logo">
-            <img src="logo_premium.png?v=8.0" class="logo-img" style="height: 24px;" alt="Ghost Logo">
-            <span class="logo-text">Ghost<span> Pix</span></span>
-        </div>
-        <button class="menu-toggle" id="menu-toggle">☰</button>
-    </div>
-
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="logo_premium.png?v=8.0" class="logo-img" alt="Ghost Logo">
-                <span class="logo-text">Ghost<span> Pix</span></span>
-            </div>
-            <nav class="nav-menu">
-                <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
-                <a href="sacar.php" class="nav-item active">💸 Sacar</a>
-                <a href="perfil.php" class="nav-item">👤 Perfil</a>
-                <a href="suporte.php" class="nav-item">🎧 Suporte</a>
-                <?php if(isAdmin()): ?>
-                    <a href="admin/index.php" class="nav-item">🛡️ Admin</a>
-                <?php endif; ?>
-                <a href="auth/logout.php" class="nav-item">🚪 Sair</a>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
-                        <img src="logo_premium.png?v=8.0" class="avatar-img" alt="Avatar">
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
-                        <span class="user-status">Conta Ativa</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
+    <?php include 'includes/sidebar.php'; ?>
 
         <main class="main-content">
             <header class="top-header">
