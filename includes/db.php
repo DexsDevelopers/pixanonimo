@@ -91,25 +91,48 @@ function getActivePixGoKey() {
 }
 
 /**
- * Salva transação com fallback se a coluna callback_url não existir
+ * Salva transação de forma resiliente, adaptando-se às colunas existentes.
  */
 function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null) {
     global $pdo;
+    
+    // Lista de colunas úteis (em ordem de importância)
+    $all_cols = [
+        'user_id' => $userId,
+        'amount_brl' => $amount,
+        'amount_net_brl' => $netAmount,
+        'pix_id' => $pixId,
+        'status' => 'pending',
+        'pix_code' => $pixCode,
+        'qr_image' => $qrImage,
+        'callback_url' => $callbackUrl
+    ];
+
     try {
-        // Tenta com callback_url
-        $stmt = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)");
-        $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
-        return true;
-    } catch (PDOException $e) {
-        // Se falhar (ex: coluna inexistente), tenta sem callback_url
-        try {
-            $stmt = $pdo->prepare("INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
-            $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
-            return true;
-        } catch (PDOException $e2) {
-            write_log('error', 'Falha total ao salvar transação: ' . $e2->getMessage());
-            return false;
+        // Tenta buscar as colunas reais da tabela para não chutar
+        $stmt = $pdo->query("DESCRIBE transactions");
+        $db_cols = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        $final_cols = [];
+        $final_vals = [];
+        
+        foreach($all_cols as $col => $val) {
+            if (in_array($col, $db_cols)) {
+                $final_cols[] = $col;
+                $final_vals[] = $val;
+            }
         }
+        
+        if (empty($final_cols)) return false;
+
+        $placeholders = implode(',', array_fill(0, count($final_cols), '?'));
+        $sql = "INSERT INTO transactions (" . implode(',', $final_cols) . ") VALUES ($placeholders)";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute($final_vals);
+        
+    } catch (PDOException $e) {
+        write_log('error', 'Falha ao salvar transação de forma resiliente: ' . $e->getMessage());
+        return false;
     }
 }
 ?>
