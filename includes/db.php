@@ -63,4 +63,11 @@ function write_log($level, $message, $data = []) {
     
     file_put_contents($file, json_encode($logEntry) . PHP_EOL, FILE_APPEND);
 }
+
+function getUser($userId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetch();
+}
 ?>
