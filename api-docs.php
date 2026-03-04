@@ -8,7 +8,7 @@ require_once 'includes/db.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix - API de Pagamentos Blindada</title>
-    <link rel="stylesheet" href="style.css?v=101.0">
+    <link rel="stylesheet" href="style.css?v=102.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
@@ -82,7 +82,7 @@ require_once 'includes/db.php';
 
     <nav class="lp-navbar">
         <div class="logo">
-            <img src="logo_premium.png?v=101.0" class="logo-img" alt="Ghost Logo">
+            <img src="logo_premium.png?v=102.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">GHOST<span> PIX</span></span>
         </div>
         <div class="lp-nav-links">
@@ -241,7 +241,7 @@ require_once 'includes/db.php';
         <div class="lp-footer-container">
             <div class="lp-footer-brand">
                 <div class="logo">
-                    <img src="logo_premium.png?v=101.0" class="logo-img" alt="Ghost Logo">
+                    <img src="logo_premium.png?v=102.0" class="logo-img" alt="Ghost Logo">
                     <span class="logo-text">GHOST<span> PIX</span></span>
                 </div>
                 <p class="lp-brand-tagline">Privacidade é um direito, não um privilégio.</p>
