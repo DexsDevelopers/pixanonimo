@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('sidebar-overlay');
 
     let statusInterval = null;
+    let countdownInterval = null;
     let deleteTarget = null; // Guardar ID e Linha para exclusão
 
     // --- FUNÇÕES AUXILIARES ---
