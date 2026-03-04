@@ -36,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../style.css?v=35.0">
+    <link rel="stylesheet" href="../style.css?v=100.0">
     <title>Ghost Pix - Login</title>
 </head>
 <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background-color: var(--bg); background-image: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%);">
     <div class="card" style="width: 100%; max-width: 420px; padding: 3rem 2rem; border: 1px solid var(--border); background: var(--bg-card); backdrop-filter: blur(24px); border-radius: var(--r-lg); animation: fadeInUp 0.6s var(--ease);">
         <div style="text-align: center; margin-bottom: 2.5rem;">
-            <img src="../logo_premium.png?v=35.0" style="width: 90px; height: 90px; border-radius: 22px; margin-bottom: 1.5rem; object-fit: cover; border: 1px solid var(--border-h); box-shadow: 0 12px 40px rgba(0,0,0,0.6);">
+            <img src="../logo_premium.png?v=100.0" style="width: 90px; height: 90px; border-radius: 22px; margin-bottom: 1.5rem; object-fit: cover; border: 1px solid var(--border-h); box-shadow: 0 12px 40px rgba(0,0,0,0.6);">
             <h2 style="font-size: 2.4rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.2rem;">Ghost Pix</h2>
             <p style="color: var(--text-2); font-size: 0.95rem; font-weight: 500;">Acesse sua carteira blindada</p>
         </div>

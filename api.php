@@ -1,5 +1,6 @@
 <?php
 ob_start();
+set_time_limit(60);
 require_once 'includes/db.php';
 
 header('Content-Type: application/json');

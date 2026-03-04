@@ -108,16 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ amount: val })
                 });
 
-                const text = await response.text();
+                const text = (await response.text()).trim();
+                console.log('API Raw Response:', text);
+
                 let data;
                 try {
                     data = JSON.parse(text);
                 } catch (e) {
-                    console.error('Resposta não-JSON:', text);
-                    return alert('Erro interno do servidor. Verifique os logs.');
+                    console.error('JSON Parse Error:', e, 'Raw:', text);
+                    return alert('Erro na resposta do servidor. Tente novamente.');
                 }
-
-                console.log('Dados do Pix Recebidos:', data);
 
                 if (data.error) {
                     alert('Erro: ' + data.error);
@@ -129,26 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (pixCodeText) {
                         pixCodeText.value = code;
                         pixCodeText.style.color = "white";
-                        console.log('Código Pix atribuído:', code ? 'SIM' : 'NÃO');
                     }
 
                     if (qrPlaceholder) {
                         const img = data.qr_image || data.qr_code_url || "";
-                        qrPlaceholder.innerHTML = `<img src="${img}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
+                        const place = document.getElementById('qr-placeholder-v2') || qrPlaceholder;
+                        place.innerHTML = `<img src="${img}" alt="QR" style="width:100%; display:block; border-radius: 8px;">`;
                     }
 
                     if (modalQr) {
                         modalQr.classList.remove('hidden');
                         modalQr.style.display = 'flex';
-                        startCountdown(20 * 60); // 20 minutos
+                        startCountdown(20 * 60);
                     }
 
-                    startPixPolling(data.pix_id);
+                    if (data.pix_id) startPixPolling(data.pix_id);
                 }
             } catch (err) {
-                console.error('Erro na geração:', err);
-                alert('Falha na requisição: ' + err.message);
-            } finally {
+                console.error('Fetch Error:', err);
+                // Só mostra o alert se o modal não tiver carregado nada
+                if (!modalQr || modalQr.classList.contains('hidden')) {
+                    alert('Falha na conexão: ' + err.message);
+                }
+            }
+            finally {
                 btnGenerate.innerText = 'Gerar QR Code Pix';
                 btnGenerate.disabled = false;
             }
