@@ -72,10 +72,16 @@ try {
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $currentPixGoKey, 'Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // 30 segundos de timeout
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
+
+    if ($response === false) {
+        throw new Exception("Falha na conexão com PixGo: " . $curlError);
+    }
 
     $res = json_decode($response, true);
     if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['success']) {
@@ -89,7 +95,8 @@ try {
         ob_clean();
         echo json_encode(['success' => true, 'pix_id' => $pixId, 'qr_image' => $qrImage, 'pix_code' => $pixCode, 'amount' => $amount]);
     } else {
-        throw new Exception('Erro PixGo: ' . ($res['message'] ?? 'Resposta inválida') . ' (CS: ' . $httpCode . ')');
+        write_log('error', 'Resposta Inválida PixGo: ' . $response);
+        throw new Exception('Erro PixGo: ' . ($res['message'] ?? 'Resposta inesperada') . ' (CS: ' . $httpCode . ')');
     }
 
 } catch (Exception $e) {

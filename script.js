@@ -146,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     startPixPolling(data.pix_id);
                 }
             } catch (err) {
-                console.error(err);
-                alert('Falha na requisição. Verifique sua conexão ou console.');
+                console.error('Erro na geração:', err);
+                alert('Falha na requisição: ' + err.message);
             } finally {
                 btnGenerate.innerText = 'Gerar QR Code Pix';
                 btnGenerate.disabled = false;

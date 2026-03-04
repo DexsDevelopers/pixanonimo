@@ -91,48 +91,36 @@ function getActivePixGoKey() {
 }
 
 /**
- * Salva transação de forma resiliente, adaptando-se às colunas existentes.
+ * Salva transação de forma resiliente e performática.
  */
 function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null) {
     global $pdo;
     
-    // Lista de colunas úteis (em ordem de importância)
-    $all_cols = [
-        'user_id' => $userId,
-        'amount_brl' => $amount,
-        'amount_net_brl' => $netAmount,
-        'pix_id' => $pixId,
-        'status' => 'pending',
-        'pix_code' => $pixCode,
-        'qr_image' => $qrImage,
-        'callback_url' => $callbackUrl
-    ];
-
+    // Tenta o insert completo primeiro (padrão atual)
     try {
-        // Tenta buscar as colunas reais da tabela para não chutar
-        $stmt = $pdo->query("DESCRIBE transactions");
-        $db_cols = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        
-        $final_cols = [];
-        $final_vals = [];
-        
-        foreach($all_cols as $col => $val) {
-            if (in_array($col, $db_cols)) {
-                $final_cols[] = $col;
-                $final_vals[] = $val;
+        $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
+                VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
+    } catch (PDOException $e) {
+        // Se falhar (provavelmente coluna callback_url ausente), tenta o fallback v2
+        try {
+            $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) 
+                    VALUES (?, ?, ?, ?, 'pending', ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
+        } catch (PDOException $e2) {
+            // Se falhar de novo (provavelmente colunas pix_code/qr_image ausentes no legado extremo)
+            try {
+                $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) 
+                        VALUES (?, ?, ?, ?, 'pending')";
+                $stmt = $pdo->prepare($sql);
+                return $stmt->execute([$userId, $amount, $netAmount, $pixId]);
+            } catch (PDOException $e3) {
+                write_log('error', 'Falha crítica ao salvar transação: ' . $e3->getMessage());
+                return false;
             }
         }
-        
-        if (empty($final_cols)) return false;
-
-        $placeholders = implode(',', array_fill(0, count($final_cols), '?'));
-        $sql = "INSERT INTO transactions (" . implode(',', $final_cols) . ") VALUES ($placeholders)";
-        $stmt = $pdo->prepare($sql);
-        return $stmt->execute($final_vals);
-        
-    } catch (PDOException $e) {
-        write_log('error', 'Falha ao salvar transação de forma resiliente: ' . $e->getMessage());
-        return false;
     }
 }
 ?>
