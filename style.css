@@ -1818,6 +1818,29 @@ input:-webkit-autofill:focus {
         height: 30px;
         font-size: .73rem;
     }
+
+    /* Admin Responsiveness */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        border-radius: var(--r-sm);
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+        height: auto !important;
+        padding-bottom: 1rem;
+    }
+
+    .top-header div,
+    .top-header form {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 /* ══════════════════════════════════════════════════════

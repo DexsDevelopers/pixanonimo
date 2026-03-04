@@ -88,7 +88,7 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=102.0">
+    <link rel="stylesheet" href="../style.css?v=103.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -96,9 +96,9 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
     <?php include '../includes/sidebar.php'; ?>
 
         <main class="main-content">
-            <header class="top-header">
+            <header class="top-header admin-header">
                 <h1>Painel Administrativo</h1>
-                <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="header-actions" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <?php if (isset($_GET['success'])): ?>
                         <div class="badge paid" style="padding: 5px 10px; font-size: 0.75rem;">✓ Salvo com sucesso</div>
                     <?php endif; ?>
@@ -128,7 +128,8 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
             <div class="card glass full-width">
             <h3>Gerenciar Usuários</h3>
             <form method="POST">
-                <table class="transaction-table">
+                <div class="table-responsive">
+                    <table class="transaction-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -168,7 +169,8 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
-                </table>
+                    </table>
+                </div>
                 <button type="submit" name="update_comm" class="btn-primary" style="margin-top: 2rem; width: auto; padding: 0.5rem 2rem;">Salvar Alterações</button>
             </form>
         </div>
@@ -176,7 +178,8 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
         <!-- Seção de Saques -->
         <div class="card glass full-width" style="margin-top: 2rem;">
             <h3>Solicitações de Saque</h3>
-            <table class="transaction-table">
+            <div class="table-responsive">
+                <table class="transaction-table">
                 <thead>
                     <tr style="text-align: left;">
                         <th style="padding: 1rem;">Nome</th>
@@ -210,9 +213,9 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
                     <?php endwhile; ?>
                 </tbody>
             </table>
+        </div>
         </main>
     </div> <!-- Final app-container vindo da sidebar.php -->
-    <script src="../script.js?v=102.0"></script>
+    <script src="../script.js?v=103.0"></script>
 </body>
 </html>
-
