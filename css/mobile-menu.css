@@ -88,12 +88,15 @@
     height: 100%;
     background: #050505;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 3rem 2rem;
+    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
     transition: all 0.6s var(--spring);
     box-shadow: -30px 0 60px rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
+    /* Permite rolar se o conteúdo for maior que a tela */
+    -webkit-overflow-scrolling: touch;
 }
 
 .lp-mobile-menu.active .lp-mobile-menu-content {
@@ -104,7 +107,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
+    /* Reduzido de 4rem para ganhar espaço */
 }
 
 .lp-menu-close {
@@ -136,17 +140,17 @@
 }
 
 .mobile-nav-link {
-    font-size: 1.15rem !important;
+    font-size: 1rem !important;
     font-weight: 600 !important;
     color: #fff !important;
     text-decoration: none !important;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 1.25rem 1.5rem;
+    gap: 12px;
+    padding: 0.8rem 1.2rem;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
+    border-radius: 16px;
     transition: all 0.3s var(--ease);
 }
 
@@ -168,11 +172,11 @@
 }
 
 .lp-mobile-auth {
-    margin-top: auto;
-    padding-top: 3rem;
+    margin-top: 2rem;
+    padding: 2rem 0;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
 .btn-lp-primary-full {
