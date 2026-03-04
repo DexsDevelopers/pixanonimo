@@ -520,5 +520,48 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
+    // --- SISTEMA DE NOTIFICAÇÕES ---
+    async function checkNotifications() {
+        try {
+            const res = await fetch('get_notifications.php');
+            const data = await res.json();
+            if (data.success && data.notifications.length > 0) {
+                for (const n of data.notifications) {
+                    showNotificationModal(n);
+                    // Marcar como lida imediatamente após mostrar (ou após o OK)
+                    await fetch('mark_read.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: n.id })
+                    });
+                }
+            }
+        } catch (e) { console.warn("Erro ao buscar notificações:", e); }
+    }
+
+    function showNotificationModal(n) {
+        const modalId = 'modal-notification-' + n.id;
+        const color = n.type === 'success' ? '#4ade80' : (n.type === 'danger' ? '#ef4444' : (n.type === 'warning' ? '#f59e0b' : '#3b82f6'));
+
+        const html = `
+        <div id="${modalId}" class="modal-notification active" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div class="glass" style="width: 100%; max-width: 400px; padding: 2rem; border-radius: 24px; border: 1px solid ${color}44; text-align: center; animation: modalIn 0.5s var(--spring);">
+                <div style="font-size: 3rem; margin-bottom: 1rem; color: ${color};">
+                    <i class="fas ${n.type === 'success' ? 'fa-check-circle' : 'fa-bell'}"></i>
+                </div>
+                <h2 style="margin-bottom: 1rem; font-size: 1.5rem; color: #fff;">${n.title}</h2>
+                <p style="color: var(--text-2); line-height: 1.6; margin-bottom: 2rem;">${n.message}</p>
+                <button onclick="document.getElementById('${modalId}').remove()" class="btn-primary" style="width: 100%; background: ${color}; color: ${n.type === 'success' || n.type === 'danger' ? '#fff' : '#000'}; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">Entendi</button>
+            </div>
+        </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    // Iniciar verificação se não estiver no admin
+    if (!window.location.pathname.includes('/admin/')) {
+        checkNotifications();
+    }
+
     initHistoryActions();
 });

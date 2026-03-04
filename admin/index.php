@@ -14,6 +14,14 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     
     $stmt = $pdo->prepare("UPDATE users SET status = ? WHERE id = ? AND is_admin = 0");
     $stmt->execute([$status, $id]);
+    
+    // Notificação automática
+    $title = ($status == 'approved') ? 'Conta Aprovada! ✅' : 'Conta Bloqueada ⚠️';
+    $msg = ($status == 'approved') ? 'Sua conta foi verificada e aprovada. Já pode começar a operar!' : 'Sua conta foi bloqueada por nossa equipe de segurança.';
+    $type = ($status == 'approved') ? 'success' : 'danger';
+    
+    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+
     header("Location: index.php");
     exit;
 }
@@ -37,6 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hash = $_POST['tx_hash'] ?? '';
             $stmt = $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?");
             $stmt->execute([$hash, $wId]);
+            
+            // Notificação automática
+            $stmtUser = $pdo->prepare("SELECT user_id, amount FROM withdrawals WHERE id = ?");
+            $stmtUser->execute([$wId]);
+            $wInfo = $stmtUser->fetch();
+            if ($wInfo) {
+                $val = number_format($wInfo['amount'], 2, ',', '.');
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
+                    ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
+            }
+
             header("Location: index.php?success=1");
             exit;
         }
@@ -52,6 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $pdo->beginTransaction();
                 $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$w['amount'], $w['user_id']]);
                 $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wId]);
+                
+                $val = number_format($w['amount'], 2, ',', '.');
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
+                    ->execute([$w['user_id'], "Seu saque de R$ {$val} foi rejeitado e o saldo retornou para sua conta. Verifique sua chave Pix."]);
+                
                 $pdo->commit();
             }
             header("Location: index.php?success=1");
@@ -88,7 +112,7 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=103.0">
+    <link rel="stylesheet" href="../style.css?v=104.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -216,6 +240,6 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
         </div>
         </main>
     </div> <!-- Final app-container vindo da sidebar.php -->
-    <script src="../script.js?v=103.0"></script>
+    <script src="../script.js?v=104.0"></script>
 </body>
 </html>
