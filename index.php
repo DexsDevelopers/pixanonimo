@@ -31,7 +31,7 @@ if (isset($_GET['ref'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=108.0">
+    <link rel="stylesheet" href="style.css?v=109.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=107.0">
     <style>
         /* Force dark theme even if CSS is cached */
@@ -397,19 +397,19 @@ if (isset($_GET['ref'])) {
             <div class="lp-faq-item glass-card" data-aos="fade-up">
                 <div class="lp-faq-q">Como funciona o anonimato? <i class="fas fa-chevron-down"></i></div>
                 <div class="lp-faq-answer">
-                    O Ghost Pix utiliza uma camada de "proxy financeiro". Quando alguém te paga, o PIX cai em uma conta blindada e o saldo é creditado instantaneamente na sua carteira Ghost, sem expor seu CPF ou dados bancários ao pagador.
+                    O Ghost Pix utiliza uma camada de <strong>"proxy financeiro"</strong>. Quando alguém te paga, o PIX cai em uma conta blindada e o saldo é creditado <strong>instantaneamente</strong> na sua carteira Ghost, sem expor seu CPF ou dados bancários ao pagador.
                 </div>
             </div>
             <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="lp-faq-q">O sistema é legal? <i class="fas fa-chevron-down"></i></div>
                 <div class="lp-faq-answer">
-                    Sim. Operamos dentro das normas de intermediação de pagamentos. Nossa tecnologia foca em privacidade de dados.
+                    <strong>Sim.</strong> Operamos dentro das normas de intermediação de pagamentos. Nossa tecnologia foca em <strong>privacidade de dados</strong>, um direito fundamental.
                 </div>
             </div>
             <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="lp-faq-q">Quanto tempo leva o saque? <i class="fas fa-chevron-down"></i></div>
                 <div class="lp-faq-answer">
-                    Os saques são processados e liquidados em até 2 dias úteis para sua chave PIX cadastrada.
+                    Os saques são processados com <strong>segurança máxima</strong> e liquidados na sua chave PIX cadastrada em até <strong>2 dias úteis</strong>.
                 </div>
             </div>
         </div>
