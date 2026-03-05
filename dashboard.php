@@ -130,7 +130,9 @@ if ($totalPaidVol == 1 && $methodVol['pix_vol'] == 0) {
                     <div class="stat-value"><?php 
                         $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'");
                         $stmtOrders->execute([$userId]);
-                        echo $stmtOrders->fetch()['qtd'] ?? 0;
+                        $orderData = $stmtOrders->fetch();
+                        $totalOrdersCount = $orderData['qtd'] ?? 0;
+                        echo $totalOrdersCount;
                     ?></div>
                     <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +1.2%</div>
                 </div>
@@ -140,8 +142,7 @@ if ($totalPaidVol == 1 && $methodVol['pix_vol'] == 0) {
                     <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
                     <span class="stat-label">Ticket Médio</span>
                     <div class="stat-value">R$ <?php 
-                        $paidCount = $stmtOrders->fetch()['qtd'] ?? 0; // Re-fetching or just logic
-                        echo ($stats['total_paid'] > 0 && $paidCount > 0) ? number_format($stats['total_paid'] / $paidCount, 2, ',', '.') : '0,00';
+                        echo ($stats['total_paid'] > 0 && $totalOrdersCount > 0) ? number_format($stats['total_paid'] / $totalOrdersCount, 2, ',', '.') : '0,00';
                     ?></div>
                     <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +4.5%</div>
                 </div>

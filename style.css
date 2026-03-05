@@ -229,7 +229,7 @@ a,
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
-    padding: 2.2rem 1.2rem;
+    padding: 2rem 1rem;
     height: 100vh;
     position: sticky;
     top: 0;
@@ -242,8 +242,9 @@ a,
     display: flex;
     align-items: center;
     gap: .65rem;
-    margin-bottom: 2.25rem;
+    margin-bottom: 2.5rem;
     text-decoration: none;
+    padding-left: 0.5rem;
 }
 
 /* Reset logo margin in header */
@@ -293,15 +294,15 @@ a,
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.85rem 1.1rem;
-    border-radius: 14px;
+    gap: 0.85rem;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
     text-decoration: none;
     color: var(--text-2);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.3s var(--ease);
-    margin-bottom: 0.35rem;
+    margin: 0 0.4rem 0.25rem;
     position: relative;
     border: 1px solid transparent;
 }
@@ -322,14 +323,15 @@ a,
 .nav-item.active::after {
     content: '';
     position: absolute;
-    left: -1.2rem;
+    left: -1rem;
+    /* Alinhado com a borda da sidebar */
     top: 50%;
     transform: translateY(-50%);
     width: 4px;
-    height: 20px;
-    background: var(--green);
+    height: 18px;
+    background: var(--primary);
     border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 10px var(--green);
+    box-shadow: 0 0 15px var(--glow-green);
 }
 
 .logout-item {
@@ -404,24 +406,25 @@ a,
 }
 
 .nav-item.active {
-    background: rgba(74, 222, 128, 0.1);
-    color: var(--green);
+    background: rgba(74, 222, 128, 0.05);
+    /* Mais sutil como no mobile */
+    color: var(--primary);
     font-weight: 600;
-    border-color: rgba(74, 222, 128, 0.2);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-color: rgba(74, 222, 128, 0.1);
 }
 
 .nav-item.active::before {
     content: '';
     position: absolute;
-    left: 0;
+    left: -0.6rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
-    height: 20px;
-    background: var(--green);
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 10px var(--green);
+    width: 3px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 0 100px 100px 0;
+    box-shadow: 0 0 12px var(--primary);
+    opacity: 0.8;
 }
 
 /* sidebar footer */
@@ -1061,22 +1064,6 @@ a,
 
 /* ══════════════════════════════════════════════════════
    PIX KEY CARD
-══════════════════════════════════════════════════════ */
-.pix-key-box {
-    background: rgba(0, 0, 0, .3);
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: .85rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    margin-top: .65rem;
-    transition: border-color .2s;
-}
-
-.pix-key-box:focus-within {
-    border-color: var(--border-h);
-}
 
 .pix-key-input {
     background: transparent !important;
