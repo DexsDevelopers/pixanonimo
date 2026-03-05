@@ -31,7 +31,7 @@ if (isset($_GET['ref'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=107.0">
+    <link rel="stylesheet" href="style.css?v=108.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=107.0">
     <style>
         /* Force dark theme even if CSS is cached */
@@ -205,11 +205,187 @@ if (isset($_GET['ref'])) {
         </div>
 
         <?php if(isLoggedIn()): ?>
-            <a href="dashboard.php" class="btn-lp-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Acessar Meu Painel</a>
+            <a href="dashboard.php" class="btn-lp-primary">Acessar Meu Painel</a>
         <?php else: ?>
-            <a href="auth/register.php" class="btn-lp-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Quero minha conta blindada</a>
+            <a href="auth/register.php" class="btn-lp-primary">Quero minha conta blindada</a>
         <?php endif; ?>
     </header>
+
+    <!-- Section: Revenue Models & Dashboard Preview -->
+    <section class="lp-section" id="vsl" style="padding-bottom: 0;">
+        <div class="lp-section-title" data-aos="fade-up">
+            <div class="tag-badge"><i class="fas fa-chart-line"></i> Modelos de Receita</div>
+            <h2 class="lp-responsive-title">Opere como um <span class="lp-gradient-text">líder de mercado</span></h2>
+            <p>Múltiplos fluxos de receita trabalhando juntos para maximizar seus lucros e sua segurança.</p>
+        </div>
+
+        <!-- Tab System -->
+        <div class="lp-tabs-container" data-aos="fade-up">
+            <div class="lp-tabs">
+                <button class="lp-tab active" data-tab="taxas">
+                    <i class="fas fa-percentage"></i> Taxas por Transação
+                </button>
+                <button class="lp-tab" data-tab="recorrencia">
+                    <i class="fas fa-calendar-check"></i> Receita Recorrente
+                </button>
+                <button class="lp-tab" data-tab="premium">
+                    <i class="fas fa-bolt"></i> Funcionalidades Premium
+                </button>
+                <button class="lp-tab" data-tab="multi">
+                    <i class="fas fa-layer-group"></i> Multi-Adquirência
+                </button>
+            </div>
+            <div class="lp-tab-indicator"></div>
+        </div>
+
+        <!-- Dashboard Live Preview -->
+        <div class="dashboard-preview-wrapper" data-aos="zoom-in" data-aos-delay="200">
+            <div class="dashboard-preview-window">
+                <div class="window-header">
+                    <div class="window-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="window-title">Transações ao Vivo</div>
+                    <div class="window-status"><span class="pulse-dot"></span> LIVE</div>
+                </div>
+                <div class="window-content">
+                    <div class="dashboard-grid">
+                        <div class="main-stats">
+                            <div class="stat-card">
+                                <span>Faturamento em Tempo Real</span>
+                                <h3 id="live-revenue">R$ 9.131,08</h3>
+                            </div>
+                            <div class="live-transactions" id="transactions-list">
+                                <div class="transaction-item">
+                                    <div class="t-icon"><i class="fas fa-shopping-cart"></i></div>
+                                    <div class="t-info">
+                                        <strong>Loja Virtual XYZ</strong>
+                                        <span>via PIX</span>
+                                    </div>
+                                    <div class="t-amt">
+                                        <span class="plus">+R$ 72,97</span>
+                                        <span class="status-ok"><i class="fas fa-check-circle"></i> OK</span>
+                                    </div>
+                                    <div class="t-time">Agora</div>
+                                </div>
+                                <div class="transaction-item">
+                                    <div class="t-icon"><i class="fas fa-credit-card"></i></div>
+                                    <div class="t-info">
+                                        <strong>E-commerce ABC</strong>
+                                        <span>via Visa</span>
+                                    </div>
+                                    <div class="t-amt">
+                                        <span class="plus">+R$ 144,52</span>
+                                        <span class="status-ok"><i class="fas fa-check-circle"></i> OK</span>
+                                    </div>
+                                    <div class="t-time">2 min</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side-features">
+                            <div class="feature-msg-card active">
+                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
+                                <div class="f-text">
+                                    <h4>Receita automática em cada pagamento processado</h4>
+                                </div>
+                                <i class="fas fa-arrow-right f-arrow"></i>
+                            </div>
+                            <div class="feature-msg-card">
+                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
+                                <div class="f-text">
+                                    <h4>Escalável conforme seus clientes crescem</h4>
+                                </div>
+                                <i class="fas fa-arrow-right f-arrow"></i>
+                            </div>
+                            <div class="feature-msg-card">
+                                <div class="f-icon orange-glow"><i class="fas fa-check"></i></div>
+                                <div class="f-text">
+                                    <h4>Múltiplas formas de pagamento (PIX, cartão, boleto)</h4>
+                                </div>
+                                <i class="fas fa-arrow-right f-arrow"></i>
+                            </div>
+                             <div class="feature-msg-card">
+                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
+                                <div class="f-text">
+                                    <h4>Dashboard em tempo real com todas as transações</h4>
+                                </div>
+                                <i class="fas fa-arrow-right f-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-footer-stats">
+                        <div class="f-stat">
+                            <span>Volume</span>
+                            <strong>R$ 765.312,22</strong>
+                        </div>
+                        <div class="f-stat">
+                            <span>Comissões</span>
+                            <strong class="orange-text">R$ 91.837,46</strong>
+                        </div>
+                        <div class="f-stat">
+                            <span>Aprovação</span>
+                            <strong class="green-text">99.8%</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Integrated Resources -->
+    <section class="lp-section">
+        <div class="resources-box" data-aos="fade-up">
+            <div class="lp-section-title">
+                <h2>Recursos <span class="lp-gradient-text">Integrados</span></h2>
+                <p>Todos os produtos trabalham em perfeita harmonia para sua blindagem.</p>
+            </div>
+            
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="r-check orange"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>Pix, cartão e boleto</h4>
+                        <span>Ghost Checkout</span>
+                    </div>
+                </div>
+                <div class="resource-card">
+                    <div class="r-check orange"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>API de disputas</h4>
+                        <span>Ghost Shield</span>
+                    </div>
+                </div>
+                <div class="resource-card">
+                    <div class="r-check purple"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>Layout totalmente personalizável</h4>
+                        <span>Ghost Custom</span>
+                    </div>
+                </div>
+                <div class="resource-card">
+                    <div class="r-check purple"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>Conversão acima da média</h4>
+                        <span>Ghost Optimized</span>
+                    </div>
+                </div>
+                <div class="resource-card">
+                    <div class="r-check teal"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>Recuperação de carrinhos</h4>
+                        <span>Ghost Recovery</span>
+                    </div>
+                </div>
+                <div class="resource-card">
+                    <div class="r-check teal"><i class="fas fa-check"></i></div>
+                    <div class="r-content">
+                        <h4>Notificações personalizadas</h4>
+                        <span>Ghost Notify</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- FAQ Section -->
     <section class="lp-section" id="faq">
@@ -218,125 +394,23 @@ if (isset($_GET['ref'])) {
             <p>Tire suas dúvidas sobre o funcionamento da nossa tecnologia.</p>
         </div>
         <div class="lp-faq-container" style="max-width: 800px; margin: 0 auto;">
-            <div class="lp-faq-item glass-card" data-aos="fade-up" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h4 style="margin: 0;">Como funciona o anonimato?</h4>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
+            <div class="lp-faq-item glass-card" data-aos="fade-up">
+                <div class="lp-faq-q">Como funciona o anonimato? <i class="fas fa-chevron-down"></i></div>
+                <div class="lp-faq-answer">
                     O Ghost Pix utiliza uma camada de "proxy financeiro". Quando alguém te paga, o PIX cai em uma conta blindada e o saldo é creditado instantaneamente na sua carteira Ghost, sem expor seu CPF ou dados bancários ao pagador.
                 </div>
             </div>
-            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="100" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h4 style="margin: 0;">O sistema é legal?</h4>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
-                    Sim. Operamos dentro das normas de intermediação de pagamentos. Nossa tecnologia foca em privacidade de dados, um direito fundamental, sem descumprir regulamentações vigentes.
+            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="lp-faq-q">O sistema é legal? <i class="fas fa-chevron-down"></i></div>
+                <div class="lp-faq-answer">
+                    Sim. Operamos dentro das normas de intermediação de pagamentos. Nossa tecnologia foca em privacidade de dados.
                 </div>
             </div>
-            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="200" style="margin-bottom: 1rem; padding: 1.5rem; cursor: pointer;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h4 style="margin: 0;">Quanto tempo leva o saque?</h4>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="lp-faq-answer" style="display: none; margin-top: 1rem; color: var(--text-2); font-size: 0.9rem;">
-                    Os saques são processados e liquidados em até 2 dias úteis para sua chave PIX cadastrada, garantindo a segurança de toda a operação.
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="lp-section">
-        <div class="lp-section-title">
-            <h2>Por que Ghost Pix?</h2>
-            <p>Segurança impenetrável para o seu fluxo de caixa.</p>
-        </div>
-        <div class="lp-feature-grid">
-            <div class="lp-feature-card">
-                <div class="lp-feature-icon"><i class="fas fa-user-secret"></i></div>
-                <h3>Privacidade Total</h3>
-                <p>Seus dados pessoais nunca são expostos no checkout. Quem paga vê apenas a nossa liquidadora parceira.</p>
-            </div>
-            <div class="lp-feature-card">
-                <div class="lp-feature-icon"><i class="fas fa-shield-halved"></i></div>
-                <h3>Anti-Bloqueio</h3>
-                <p>Sistema off-shore imune a ordens de bloqueio nacionais instantâneas. Seu capital está seguro conosco.</p>
-            </div>
-            <div class="lp-feature-card">
-                <div class="lp-feature-icon"><i class="fas fa-bolt"></i></div>
-                <h3>Confirmação Real-time</h3>
-                <p>API de última geração com confirmação via webhook em menos de 2 segundos. Sem atrasos.</p>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- Benefits Section -->
-    <section class="lp-section" id="beneficios">
-        <div class="lp-section-title" data-aos="fade-up">
-            <h1>RECEBA COM <span class="lp-gradient-text">BLINDAGEM MILITAR</span> E PRIVACIDADE</h1>
-            <p>A única tecnologia PIX com criptografia de ponta a ponta e anonimato garantido por protocolo Ghost.</p>
-            <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.85rem; color: #4ade80; font-weight: 600;">
-                <span class="lp-pulse-dot"></span>
-                SISTEMA OPERANDO EM CAPACIDADE MÁXIMA PARA PRIVACIDADE
-            </div>
-            <div style="margin-top: 2rem; display: flex; gap: 1.5rem; filter: grayscale(1) opacity(0.5); font-size: 1.2rem;">
-                <i class="fab fa-bitcoin" title="Crypto Ready"></i>
-                <i class="fas fa-user-shield" title="End-to-End Encryption"></i>
-                <i class="fas fa-university" title="Central Bank Protocol Compatible"></i>
-            </div>
-        </div>
-        <div class="lp-analytics-grid">
-            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="100">
-                <div class="lp-card-icon"><i class="fas fa-user-secret"></i></div>
-                <h3>Anonimato Total</h3>
-                <p>Suas transações são processadas através de camadas de proteção que ocultam seus dados reais de terceiros.</p>
-            </div>
-            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="200">
-                <div class="lp-card-icon"><i class="fas fa-shield-alt"></i></div>
-                <h3>Blindagem Anti-Bacen</h3>
-                <p>Arquitetura financeira resiliente projetada para manter seu patrimônio protegido e sempre disponível.</p>
-            </div>
-            <div class="lp-card glass-card" data-aos="zoom-in" data-aos-delay="300">
-                <div class="lp-card-icon"><i class="fas fa-bolt"></i></div>
-                <h3>Liquidação Instantânea</h3>
-                <p>Receba via PIX e converta para saldo Ghost em milissegundos. Rapidez absoluta no seu fluxo.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Security Badges Section -->
-    <div class="lp-section" style="padding: 2rem 0; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <div class="lp-container" style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 2rem; opacity: 0.6;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
-                <i class="fas fa-lock" style="color: #4ade80;"></i> SSL SECURE 256-BIT
-            </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
-                <i class="fas fa-shield-virus" style="color: #4ade80;"></i> ANTI-FRAUD SYSTEM
-            </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
-                <i class="fas fa-check-circle" style="color: #4ade80;"></i> VERIFIED PIX GATEWAY
-            </div>
-        </div>
-    </div>
-        <div class="lp-section-title">
-            <h2>Dúvidas Frequentes</h2>
-        </div>
-        <div class="lp-faq-container">
-            <div class="lp-faq-item">
-                <div class="lp-faq-q">O que é a blindagem do Ghost Pix? <i class="fas fa-chevron-down"></i></div>
-                <div class="lp-faq-a">A blindagem consiste em processar seus pagamentos através de contas de liquidação de terceiros e estruturas seguras, evitando que o seu CPF/CNPJ apareça diretamente na transação e prevenindo rastreios e bloqueios automáticos.</div>
-            </div>
-            <div class="lp-faq-item">
-                <div class="lp-faq-q">Como recebo o meu dinheiro? <i class="fas fa-chevron-down"></i></div>
-                <div class="lp-faq-a">Após o pagamento do cliente, o saldo cai no seu painel Ghost Pix. Você pode solicitar o saque para qualquer chave Pix de sua preferência. O saque é processado via nossas contas blindadas.</div>
-            </div>
-            <div class="lp-faq-item">
+            <div class="lp-faq-item glass-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="lp-faq-q">Quanto tempo leva o saque? <i class="fas fa-chevron-down"></i></div>
-                <div class="lp-faq-a">Os saques são processados com segurança e liquidados na sua chave PIX cadastrada em até 2 dias úteis.</div>
+                <div class="lp-faq-answer">
+                    Os saques são processados e liquidados em até 2 dias úteis para sua chave PIX cadastrada.
+                </div>
             </div>
         </div>
     </section>
@@ -406,12 +480,74 @@ if (isset($_GET['ref'])) {
         });
 
         // FAQ Toggle
-        document.querySelectorAll('.lp-faq-q').forEach(q => {
+        document.querySelectorAll('.lp-faq-item').forEach(item => {
+            const q = item.querySelector('.lp-faq-q');
             q.onclick = () => {
-                const item = q.parentElement;
-                item.classList.toggle('active');
+                const isOpen = item.classList.contains('active');
+                
+                // Close all
+                document.querySelectorAll('.lp-faq-item').forEach(el => el.classList.remove('active'));
+                
+                if (!isOpen) {
+                    item.classList.add('active');
+                }
             };
         });
+
+        // Tabs Logic
+        document.querySelectorAll('.lp-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.lp-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Optional: add tab content switching logic if needed
+                // Currently just visual feedback as requested
+            });
+        });
+
+        // Live Dashboard Simulation
+        const transactionsList = document.getElementById('transactions-list');
+        const revenueEl = document.getElementById('live-revenue');
+        let currentRevenue = 9131.08;
+
+        const stores = ["Loja Virtual XYZ", "E-commerce ABC", "Ghost Store", "VIP Member #12", "Marketplace Pro"];
+        const paymentMethods = ["via PIX", "via Cartão", "via Boleto", "via Bitcoin"];
+
+        function createTransaction() {
+            const store = stores[Math.floor(Math.random() * stores.length)];
+            const method = paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
+            const amt = (Math.random() * 200 + 50).toFixed(2);
+            
+            const item = document.createElement('div');
+            item.className = 'transaction-item';
+            item.style.animation = 'slideInRight 0.5s var(--ease) both';
+            
+            item.innerHTML = `
+                <div class="t-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="t-info">
+                    <strong>${store}</strong>
+                    <span>${method}</span>
+                </div>
+                <div class="t-amt">
+                    <span class="plus">+R$ ${amt.replace('.', ',')}</span>
+                    <span class="status-ok"><i class="fas fa-check-circle"></i> OK</span>
+                </div>
+                <div class="t-time">Agora</div>
+            `;
+
+            transactionsList.insertBefore(item, transactionsList.firstChild);
+            
+            // Keep only 3 items
+            if (transactionsList.children.length > 3) {
+                transactionsList.removeChild(transactionsList.lastChild);
+            }
+
+            // Update Revenue
+            currentRevenue += parseFloat(amt);
+            revenueEl.innerText = `R$ ${currentRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        }
+
+        setInterval(createTransaction, 4000);
 
         // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
