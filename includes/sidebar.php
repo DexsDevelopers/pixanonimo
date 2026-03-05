@@ -28,35 +28,51 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
             <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <nav class="nav-menu">
+            <div class="nav-category">Geral</div>
             <a href="<?php echo $base_path; ?>dashboard.php" class="nav-item <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
-                <i class="fas fa-chart-line"></i> Dashboard
+                <i class="fas fa-chart-pie"></i> Visão Geral
             </a>
+            <a href="<?php echo $base_path; ?>dashboard.php" class="nav-item">
+                <i class="fas fa-shopping-cart"></i> Vendas
+            </a>
+            
+            <div class="nav-category">Produtos</div>
             <a href="<?php echo $base_path; ?>sacar.php" class="nav-item <?php echo $current_page == 'sacar.php' ? 'active' : ''; ?>">
-                <i class="fas fa-hand-holding-dollar"></i> Sacar
+                <i class="fas fa-wallet"></i> Financeiro
             </a>
             <a href="<?php echo $base_path; ?>afiliados.php" class="nav-item <?php echo $current_page == 'afiliados.php' ? 'active' : ''; ?>">
-                <i class="fas fa-users-gear"></i> Afiliados
+                <i class="fas fa-share-nodes"></i> Afiliados
             </a>
+
+            <div class="nav-category">Administração</div>
             <a href="<?php echo $base_path; ?>perfil.php" class="nav-item <?php echo $current_page == 'perfil.php' ? 'active' : ''; ?>">
-                <i class="fas fa-user-shield"></i> Perfil
-            </a>
-            <a href="<?php echo $base_path; ?>suporte.php" class="nav-item <?php echo $current_page == 'suporte.php' ? 'active' : ''; ?>">
-                <i class="fas fa-headset"></i> Suporte
+                <i class="fas fa-user-gear"></i> Minha Conta
             </a>
             <?php if(isAdmin()): ?>
                 <a href="<?php echo $base_path; ?>admin/index.php" class="nav-item <?php echo $current_page == 'index.php' && strpos($_SERVER['PHP_SELF'], '/admin/') !== false ? 'active' : ''; ?>">
-                    <i class="fas fa-user-lock"></i> Admin
+                    <i class="fas fa-users-cog"></i> Gerenciar Usuários
                 </a>
                 <a href="<?php echo $base_path; ?>admin/apis.php" class="nav-item <?php echo $current_page == 'apis.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-plug"></i> APIs PixGo
+                    <i class="fas fa-plug-circle-bolt"></i> Integrações
                 </a>
                 <a href="<?php echo $base_path; ?>admin/notifications.php" class="nav-item <?php echo $current_page == 'notifications.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-bell"></i> Notificações
+                    <i class="fas fa-bell"></i> Avisos Globais
                 </a>
-<?php endif; ?>
-            <a href="<?php echo $base_path; ?>auth/logout.php" class="nav-item" style="color: var(--red);">
-                <i class="fas fa-power-off"></i> Sair
+            <?php endif; ?>
+            
+            <div class="nav-spacer" style="flex: 1;"></div>
+            
+            <a href="<?php echo $base_path; ?>auth/logout.php" class="nav-item logout-item">
+                <i class="fas fa-arrow-right-from-bracket"></i> Sair
             </a>
+
+            <div class="mode-toggle">
+                <div class="mode-info">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Escuro</span>
+                </div>
+                <div class="toggle-switch active"></div>
+            </div>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">

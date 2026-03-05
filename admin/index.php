@@ -124,7 +124,7 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=107.0">
+    <link rel="stylesheet" href="../style.css?v=110.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -133,30 +133,33 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
 
         <main class="main-content">
             <header class="top-header admin-header">
-                <h1>Painel Administrativo</h1>
+                <div>
+                    <h1>Painel Administrativo</h1>
+                    <p>Gerenciamento de usuários e solicitações de liquidação.</p>
+                </div>
                 <div class="header-actions" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <?php if (isset($_GET['success'])): ?>
                         <div class="badge paid" style="padding: 5px 10px; font-size: 0.75rem;">✓ Salvo com sucesso</div>
                     <?php endif; ?>
 
-                    <?php
-                    // Calcular Lucro Real Acumulado
-                    $profitStmt = $pdo->query("SELECT SUM(amount_brl - amount_net_brl - (amount_brl * 0.02)) as total_profit FROM transactions WHERE status = 'paid'");
-                    $profitData = $profitStmt->fetch();
-                    $totalProfit = (float)$profitData['total_profit'];
-                    ?>
-
-                    <div class="card glass" style="padding: 0.8rem; margin: 0; min-width: 150px; border: 1px solid var(--border);">
-                        <p style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Lucro Plataforma</p>
-                        <h3 style="margin: 0; color: var(--green); font-size: 1.1rem;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></h3>
+                    <div class="stat-card ghost-green" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; min-width: 220px;">
+                        <div class="stat-icon" style="margin-bottom: 0;"><i class="fas fa-sack-dollar"></i></div>
+                        <div>
+                            <span class="stat-label">Lucro Plataforma</span>
+                            <div class="stat-value" style="font-size: 1.4rem;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></div>
+                        </div>
                     </div>
 
-                    <form method="POST" class="card glass" style="padding: 0.8rem; margin: 0; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border);">
+                    <form method="POST" class="stat-card ghost-purple" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; border: 1px solid rgba(168, 85, 247, 0.2);">
+                        <div class="stat-icon" style="margin-bottom: 0;"><i class="fas fa-percent"></i></div>
                         <div style="display: flex; flex-direction: column;">
-                            <label style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase;">Comissão Afiliados (%)</label>
-                            <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 60px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1rem; outline: none;">
+                            <label style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; font-weight: 800;">Comissão Afiliados</label>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1.1rem; outline: none;">
+                                <span style="font-size: 0.9rem; color: var(--text-3);">%</span>
+                                <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; margin-left: 10px;">Salvar</button>
+                            </div>
                         </div>
-                        <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; height: 30px;">Salvar</button>
                     </form>
                 </div>
             </header>
@@ -166,45 +169,40 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
             <form method="POST">
                 <div class="table-responsive">
                     <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Chave PIX</th>
-                            <th>Status</th>
-                            <th>Saldo (R$)</th>
-                            <th>Comissão (%)</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($users as $u): ?>
-                        <tr>
-                            <td>#<?php echo $u['id']; ?></td>
-                            <td><?php echo $u['full_name']; ?></td>
-                            <td><?php echo $u['email']; ?></td>
-                            <td><code><?php echo $u['pix_key']; ?></code></td>
-                            <td>
-                                <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : 'pending'; ?>">
-                                    <?php echo $u['status'] == 'approved' ? 'Aprovado' : 'Pendente'; ?>
-                                </span>
-                            </td>
-                            <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
-                            <td>
-                                <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 80px; padding: 5px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 4px;">
-                            </td>
-                            <td>
-                                <?php if($u['status'] != 'approved'): ?>
-                                    <a href="?action=approve&id=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration:none">Aprovar</a>
-                                <?php endif; ?>
-                                <?php if($u['status'] != 'blocked'): ?>
-                                    <a href="?action=block&id=<?php echo $u['id']; ?>" class="badge" style="background:var(--danger); color:white; text-decoration:none">Bloquear</a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Saldo</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($users as $u): ?>
+                            <tr>
+                                <td>#<?php echo $u['id']; ?></td>
+                                <td><strong><?php echo htmlspecialchars($u['full_name']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($u['email']); ?></td>
+                                <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
+                                <td><span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>"><?php echo ucfirst($u['status']); ?></span></td>
+                                <td style="text-align: right;">
+                                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                        <?php if($u['status'] == 'pending'): ?>
+                                            <a href="?approve=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration: none; border: none;">Aprovar</a>
+                                        <?php endif; ?>
+                                        <?php if($u['status'] != 'blocked'): ?>
+                                            <a href="?block=<?php echo $u['id']; ?>" class="badge expired" style="text-decoration: none; border: none;">Bloquear</a>
+                                        <?php endif; ?>
+                                        <?php if($u['status'] == 'blocked'): ?>
+                                            <a href="?approve=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration: none; border: none;">Desbloquear</a>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
                     </table>
                 </div>
                 <button type="submit" name="update_comm" class="btn-primary" style="margin-top: 2rem; width: auto; padding: 0.5rem 2rem;">Salvar Alterações</button>
@@ -216,42 +214,42 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
             <h3>Solicitações de Saque</h3>
             <div class="table-responsive">
                 <table class="transaction-table">
-                <thead>
-                    <tr style="text-align: left;">
-                        <th style="padding: 1rem;">Nome</th>
-                        <th style="padding: 1rem;">Email</th>
-                        <th style="padding: 1rem;">Chave PIX</th>
-                        <th style="padding: 1rem;">Valor</th>
-                        <th style="padding: 1rem;">Data</th>
-                        <th style="padding: 1rem;">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $stmt = $pdo->query("SELECT w.*, u.email, u.pix_key, u.commission_rate, u.balance FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
-                    while($w = $stmt->fetch()):
-                    ?>
-                    <tr>
-                        <td style="padding: 1rem;"><?php echo $w['full_name']; ?></td>
-                        <td style="padding: 1rem;"><?php echo $w['email']; ?></td>
-                        <td style="padding: 1rem;"><small><?php echo $w['pix_key']; ?></small></td>
-                        <td style="padding: 1rem;">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
-                        <td style="padding: 1rem;"><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
-                        <td style="padding: 1rem;">
-                            <form method="POST" style="display:inline-flex; align-items:center; gap:5px;">
-                                <input type="hidden" name="withdraw_id" value="<?php echo $w['id']; ?>">
-                                <input type="text" name="tx_hash" placeholder="Hash TX" style="padding: 5px; font-size: 11px; width: 100px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 4px;">
-                                <button type="submit" name="action" value="complete_withdraw" class="badge paid" style="border:none; cursor:pointer;">Pagar</button>
-                                <button type="submit" name="action" value="reject_withdraw" class="badge" style="border:none; cursor:pointer; background:var(--danger); color:white;">Negar</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Chave PIX</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $stmt = $pdo->query("SELECT w.*, u.email, u.pix_key, u.commission_rate, u.balance FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
+                        while($w = $stmt->fetch()):
+                        ?>
+                        <tr>
+                            <td><strong><?php echo htmlspecialchars($w['full_name']); ?></strong></td>
+                            <td><?php echo htmlspecialchars($w['email']); ?></td>
+                            <td><code style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;"><?php echo htmlspecialchars($w['pix_key']); ?></code></td>
+                            <td>R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
+                            <td><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
+                            <td style="text-align: right;">
+                                <form method="POST" style="display:flex; align-items:center; gap:8px; justify-content: flex-end;">
+                                    <input type="hidden" name="withdraw_id" value="<?php echo $w['id']; ?>">
+                                    <input type="text" name="tx_hash" placeholder="Hash TX" style="padding: 6px 10px; font-size: 0.75rem; width: 120px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 6px; outline: none;">
+                                    <button type="submit" name="action" value="complete_withdraw" class="badge paid" style="border:none; cursor:pointer;">Pagar</button>
+                                    <button type="submit" name="action" value="reject_withdraw" class="badge expired" style="border:none; cursor:pointer;">Negar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div> <!-- Final app-container vindo da sidebar.php -->
-    <script src="../script.js?v=107.0"></script>
+    <script src="../script.js?v=110.0"></script>
 </body>
 </html>

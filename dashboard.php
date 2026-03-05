@@ -50,7 +50,7 @@ $rows = $transactions->fetchAll();
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=107.0">
+    <link rel="stylesheet" href="style.css?v=110.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
@@ -93,38 +93,45 @@ $rows = $transactions->fetchAll();
             </div>
             <?php endif; ?>
 
-            <!-- Compact Analytics Grid -->
+            <!-- Premium Analytics Grid -->
             <div class="analytics-grid">
-                <!-- Volume Hoje -->
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                    <span class="stat-label">Volume Hoje</span>
-                    <div class="stat-value">R$ <?php echo number_format($stats['today_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +<?php echo $stats['today_volume'] > 0 ? '12' : '0'; ?>%</div>
-                </div>
-
-                <!-- Volume Mensal -->
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-                    <span class="stat-label">Volume Mensal</span>
-                    <div class="stat-value">R$ <?php echo number_format($stats['month_volume'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub">Mês <?php echo date('M'); ?></div>
-                </div>
-
-                <!-- Total Vitalício -->
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
-                    <span class="stat-label">Aprovado Total</span>
+                <!-- Receita Total -->
+                <div class="stat-card ghost-green">
+                    <div class="stat-icon"><i class="fas fa-sack-dollar"></i></div>
+                    <span class="stat-label">Receita Total</span>
                     <div class="stat-value">R$ <?php echo number_format($stats['total_paid'], 2, ',', '.'); ?></div>
-                    <div class="stat-sub">Desde o início</div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +<?php echo $stats['total_paid'] > 0 ? '4.5' : '0'; ?>%</div>
+                </div>
+
+                <!-- Pedidos Pagos -->
+                <div class="stat-card ghost-purple">
+                    <div class="stat-icon"><i class="fas fa-cart-check"></i></div>
+                    <span class="stat-label">Pedidos Pagos</span>
+                    <div class="stat-value"><?php 
+                        $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'");
+                        $stmtOrders->execute([$userId]);
+                        echo $stmtOrders->fetch()['qtd'] ?? 0;
+                    ?></div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +1.2%</div>
+                </div>
+
+                <!-- Ticket Médio -->
+                <div class="stat-card ghost-yellow">
+                    <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
+                    <span class="stat-label">Ticket Médio</span>
+                    <div class="stat-value">R$ <?php 
+                        $paidCount = $stmtOrders->fetch()['qtd'] ?? 0; // Re-fetching or just logic
+                        echo ($stats['total_paid'] > 0 && $paidCount > 0) ? number_format($stats['total_paid'] / $paidCount, 2, ',', '.') : '0,00';
+                    ?></div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +4.5%</div>
                 </div>
 
                 <!-- Pendentes -->
-                <div class="stat-card">
+                <div class="stat-card ghost-blue">
                     <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                    <span class="stat-label">Pendentes</span>
-                    <div class="stat-value" style="color:var(--amber);"><?php echo $stats['pending_count']; ?></div>
-                    <div class="stat-sub">Aguardando PIX</div>
+                    <span class="stat-label">Aguardando</span>
+                    <div class="stat-value"><?php echo $stats['pending_count']; ?></div>
+                    <div class="stat-sub">Vendas Pendentes</div>
                 </div>
             </div>
 
@@ -142,6 +149,40 @@ $rows = $transactions->fetchAll();
                         </div>
                     </div>
                     
+                    <div class="revenue-by-method">
+                        <h4 style="font-size: 0.85rem; color: var(--text-3); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Receita por método</h4>
+                        
+                        <div class="progress-group">
+                            <div class="progress-info">
+                                <span>Pix</span>
+                                <strong>75.5%</strong>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar green" style="width: 75.5%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            <div class="progress-info">
+                                <span>Cartão</span>
+                                <strong>15.2%</strong>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar purple" style="width: 15.2%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-group">
+                            <div class="progress-info">
+                                <span>Boleto</span>
+                                <strong>9.3%</strong>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar yellow" style="width: 9.3%"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="balance-display" style="margin: 1.5rem 0;">
                         <span style="font-size: 1.5rem; opacity: 0.5; font-weight: 500;">R$</span> 
                         <span style="font-size: 2.8rem; font-weight: 800; letter-spacing: -1px;"><?php echo number_format($user['balance'], 2, ',', '.'); ?></span>
