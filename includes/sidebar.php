@@ -32,7 +32,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
             <a href="<?php echo $base_path; ?>dashboard.php" class="nav-item <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
                 <i class="fas fa-chart-pie"></i> Visão Geral
             </a>
-            <a href="<?php echo $base_path; ?>dashboard.php" class="nav-item">
+            <a href="<?php echo $base_path; ?>vendas.php" class="nav-item <?php echo $current_page == 'vendas.php' ? 'active' : ''; ?>">
                 <i class="fas fa-shopping-cart"></i> Vendas
             </a>
             
