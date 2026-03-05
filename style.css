@@ -1892,19 +1892,24 @@ input:-webkit-autofill:focus {
 
 .lp-navbar {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 1200px;
     height: 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 5%;
-    background: rgba(8, 8, 8, .8);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-bottom: 1px solid var(--border);
+    padding: 0 4rem;
+    background: rgba(8, 8, 8, .75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
     z-index: 1000;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s var(--ease);
 }
 
 .lp-nav-links {
@@ -2023,9 +2028,12 @@ input:-webkit-autofill:focus {
 
 @media (max-width: 768px) {
     .lp-navbar {
+        top: 10px;
+        width: calc(100% - 20px);
         height: 70px;
-        padding: 0 15px;
-        background: rgba(0, 0, 0, 0.95);
+        padding: 0 20px;
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 16px;
     }
 
     .lp-nav-links {
