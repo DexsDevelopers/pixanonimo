@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Política de Privacidade - Ghost Pix</title>
-    <link rel="stylesheet" href="style.css?v=104.0">
+    <link rel="stylesheet" href="style.css?v=105.0">
     <style>
         .page-content { padding: 120px 10% 80px; max-width: 900px; margin: 0 auto; line-height: 1.8; color: var(--text-2); }
         h1 { color: #fff; margin-bottom: 2rem; }

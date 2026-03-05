@@ -20,7 +20,11 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $msg = ($status == 'approved') ? 'Sua conta foi verificada e aprovada. Já pode começar a operar!' : 'Sua conta foi bloqueada por nossa equipe de segurança.';
     $type = ($status == 'approved') ? 'success' : 'danger';
     
-    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+    try {
+        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+    } catch (PDOException $e) {
+        write_log('error', 'Falha ao inserir notificação automática (Aprovação): ' . $e->getMessage());
+    }
 
     header("Location: index.php");
     exit;
@@ -52,8 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $wInfo = $stmtUser->fetch();
             if ($wInfo) {
                 $val = number_format($wInfo['amount'], 2, ',', '.');
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
-                    ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
+                try {
+                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
+                        ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
+                } catch (PDOException $e) {
+                    write_log('error', 'Falha ao inserir notificação automática (Saque Pago): ' . $e->getMessage());
+                }
             }
 
             header("Location: index.php?success=1");
@@ -73,8 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wId]);
                 
                 $val = number_format($w['amount'], 2, ',', '.');
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
-                    ->execute([$w['user_id'], "Seu saque de R$ {$val} foi rejeitado e o saldo retornou para sua conta. Verifique sua chave Pix."]);
+                try {
+                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
+                        ->execute([$w['user_id'], "Seu saque de R$ {$val} foi rejeitado e o saldo retornou para sua conta. Verifique sua chave Pix."]);
+                } catch (PDOException $e) {
+                    write_log('error', 'Falha ao inserir notificação automática (Saque Rejeitado): ' . $e->getMessage());
+                }
                 
                 $pdo->commit();
             }
@@ -112,7 +124,7 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=104.0">
+    <link rel="stylesheet" href="../style.css?v=105.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -240,6 +252,6 @@ $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
         </div>
         </main>
     </div> <!-- Final app-container vindo da sidebar.php -->
-    <script src="../script.js?v=104.0"></script>
+    <script src="../script.js?v=105.0"></script>
 </body>
 </html>

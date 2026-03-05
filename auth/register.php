@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix - Cadastro</title>
-    <link rel="stylesheet" href="../style.css?v=104.0">
+    <link rel="stylesheet" href="../style.css?v=105.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body class="lp-body" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
     <div class="glass-card" style="width: 100%; max-width: 480px; padding: 2.5rem; animation: fadeInUp 0.8s ease-out;">
         <div style="text-align: center; margin-bottom: 2rem;">
-            <img src="../logo_premium.png?v=104.0" style="width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 1.2rem; display: block; object-fit: cover; border: 1px solid var(--border-h); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <img src="../logo_premium.png?v=105.0" style="width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 1.2rem; display: block; object-fit: cover; border: 1px solid var(--border-h); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -1.2px; margin-bottom: 0.3rem;">Criar Conta</h2>
             <p style="color: var(--text-2); font-size: 0.9rem; font-weight: 500;">Junte-se à rede Ghost Pix</p>
         </div>
