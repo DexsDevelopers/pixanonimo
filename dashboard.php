@@ -41,6 +41,26 @@ $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
 $transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
+
+// Cálculo Real de Receita por Método (Pago)
+$stmtMethod = $pdo->prepare("SELECT 
+    SUM(CASE WHEN method = 'pix' THEN amount_brl ELSE 0 END) as pix_vol,
+    SUM(CASE WHEN method = 'card' THEN amount_brl ELSE 0 END) as card_vol,
+    SUM(CASE WHEN method = 'boleto' THEN amount_brl ELSE 0 END) as boleto_vol
+    FROM transactions WHERE user_id = ? AND status = 'paid'");
+$stmtMethod->execute([$userId]);
+$methodVol = $stmtMethod->fetch();
+
+$totalPaidVol = ($methodVol['pix_vol'] + $methodVol['card_vol'] + $methodVol['boleto_vol']) ?: 1; // Avoid division by zero
+
+$percPix = round(($methodVol['pix_vol'] / $totalPaidVol) * 100, 1);
+$percCard = round(($methodVol['card_vol'] / $totalPaidVol) * 100, 1);
+$percBoleto = round(($methodVol['boleto_vol'] / $totalPaidVol) * 100, 1);
+
+// Se não houver vendas, define valores padrão para não ficar vazio
+if ($totalPaidVol == 1 && $methodVol['pix_vol'] == 0) {
+    $percPix = 0; $percCard = 0; $percBoleto = 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -155,30 +175,30 @@ $rows = $transactions->fetchAll();
                         <div class="progress-group">
                             <div class="progress-info">
                                 <span>Pix</span>
-                                <strong>75.5%</strong>
+                                <strong><?php echo $percPix; ?>%</strong>
                             </div>
                             <div class="progress-container">
-                                <div class="progress-bar green" style="width: 75.5%"></div>
+                                <div class="progress-bar green" style="width: <?php echo $percPix; ?>%"></div>
                             </div>
                         </div>
 
                         <div class="progress-group">
                             <div class="progress-info">
                                 <span>Cartão</span>
-                                <strong>15.2%</strong>
+                                <strong><?php echo $percCard; ?>%</strong>
                             </div>
                             <div class="progress-container">
-                                <div class="progress-bar purple" style="width: 15.2%"></div>
+                                <div class="progress-bar purple" style="width: <?php echo $percCard; ?>%"></div>
                             </div>
                         </div>
 
                         <div class="progress-group">
                             <div class="progress-info">
                                 <span>Boleto</span>
-                                <strong>9.3%</strong>
+                                <strong><?php echo $percBoleto; ?>%</strong>
                             </div>
                             <div class="progress-container">
-                                <div class="progress-bar yellow" style="width: 9.3%"></div>
+                                <div class="progress-bar yellow" style="width: <?php echo $percBoleto; ?>%"></div>
                             </div>
                         </div>
                     </div>
