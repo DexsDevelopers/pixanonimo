@@ -10,7 +10,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
 <!-- Mobile Header -->
 <div class="mobile-header">
     <div class="logo">
-        <img src="<?php echo $base_path; ?>logo_premium.png?v=106.0" class="logo-img" alt="Ghost Logo">
+        <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
         <span class="logo-text">Ghost<span> Pix</span></span>
     </div>
     <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -24,7 +24,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
             <i class="fas fa-times"></i>
         </button>
         <div class="logo" style="cursor: pointer;" onclick="window.location.href='<?php echo $base_path; ?>dashboard.php'">
-            <img src="<?php echo $base_path; ?>logo_premium.png?v=106.0" class="logo-img" alt="Ghost Logo">
+            <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <nav class="nav-menu">
@@ -61,7 +61,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
         <div class="sidebar-footer">
             <div class="user-profile">
                 <div class="avatar" style="overflow: hidden; border: 1.5px solid var(--border-h);">
-                    <img src="<?php echo $base_path; ?>logo_premium.png?v=106.0" class="avatar-img" alt="Avatar">
+                    <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="avatar-img" alt="Avatar">
                 </div>
                 <div class="user-info">
                     <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>

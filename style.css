@@ -246,6 +246,11 @@ a,
     text-decoration: none;
 }
 
+/* Reset logo margin in header */
+.lp-navbar .logo {
+    margin-bottom: 0;
+}
+
 .logo-img {
     height: 40px;
     width: auto;
