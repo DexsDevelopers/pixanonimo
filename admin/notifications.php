@@ -1,6 +1,5 @@
-<?php
-session_start();
 require_once '../includes/db.php';
+require_once '../includes/PushService.php';
 
 if (!isAdmin()) {
     redirect('../auth/login.php');
@@ -18,6 +17,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($title) && !empty($message)) {
         $stmt = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
         $stmt->execute([$userId, $title, $message, $type]);
+        
+        // Enviar Push if requested
+        if (isset($_POST['send_push'])) {
+            if ($userId) {
+                PushService::notifyUser($userId, $title, $message);
+            } else {
+                // Notificar todos (admin enviando push global)
+                global $pdo;
+                $allSubs = $pdo->query("SELECT * FROM push_subscriptions")->fetchAll();
+                foreach($allSubs as $sub) {
+                    PushService::send($sub, $title, $message);
+                }
+            }
+        }
+        
         $success = "Notificação enviada com sucesso!";
     } else {
         $error = "Preencha todos os campos.";
@@ -77,6 +91,11 @@ $users = $pdo->query("SELECT id, full_name, email FROM users WHERE is_admin = 0 
                         <option value="warning">🟡 Aviso (Amarelo)</option>
                         <option value="danger">🔴 Urgente (Vermelho)</option>
                     </select>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" name="send_push" id="send_push" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="send_push" style="font-weight: 600; color: #fff; cursor: pointer;">📲 Enviar também como Push (Celular)</label>
                 </div>
 
                 <div class="form-group">

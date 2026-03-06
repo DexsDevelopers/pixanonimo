@@ -17,9 +17,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSaveWallet = document.getElementById('btn-save-wallet');
     const btnCopyWallet = document.getElementById('btn-copy-wallet');
     const walletInput = document.getElementById('wallet-input');
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('sidebar-overlay');
+
+    // --- PUSH NOTIFICATION SETUP ---
+    const PUBLIC_VAPID_KEY = 'BFA9H1A7y3_F-Z9yY-1HlRz1Z-H-H1H1H1H1H1H1H1H1'; // Placeholder - Em produção usar chave real
+
+    async function registerServiceWorker() {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            try {
+                const registration = await navigator.serviceWorker.register('sw.js?v=8.3');
+                console.log('Service Worker registrado:', registration);
+                return registration;
+            } catch (error) {
+                console.error('Erro ao registrar SW:', error);
+            }
+        }
+        return null;
+    }
+
+    async function subscribeUserToPush() {
+        const registration = await registerServiceWorker();
+        if (!registration) return;
+
+        try {
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: PUBLIC_VAPID_KEY
+            });
+
+            console.log('Usuário inscrito:', subscription);
+
+            await fetch('save_subscription.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(subscription)
+            });
+        } catch (error) {
+            console.error('Falha ao inscrever usuário:', error);
+        }
+    }
+
+    // Solicitar permissão se logado
+    if (Notification.permission === 'default' && document.getElementById('stat-balance')) {
+        setTimeout(() => {
+            if (confirm('Deseja receber notificações de vendas e avisos no seu celular?')) {
+                subscribeUserToPush();
+            }
+        }, 3000);
+    }
 
     let statusInterval = null;
     let countdownInterval = null;
