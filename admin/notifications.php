@@ -21,15 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Enviar Push if requested
         if (isset($_POST['send_push'])) {
-            if ($userId) {
-                PushService::notifyUser($userId, $title, $message);
-            } else {
-                // Notificar todos (admin enviando push global)
-                global $pdo;
-                $allSubs = $pdo->query("SELECT * FROM push_subscriptions")->fetchAll();
-                foreach($allSubs as $sub) {
-                    PushService::send($sub, $title, $message);
+            try {
+                if ($userId) {
+                    PushService::notifyUser($userId, $title, $message);
+                } else {
+                    PushService::notifyAll($title, $message);
                 }
+            } catch (Exception $e) {
+                write_log('ERROR', 'Erro ao processar envio de Push manual', ['error' => $e->getMessage()]);
             }
         }
         
