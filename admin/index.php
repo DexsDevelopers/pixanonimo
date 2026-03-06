@@ -232,6 +232,22 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             align-items: center;
             flex-wrap: wrap;
         }
+        .main-content {
+            padding: 2rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .card.glass.full-width {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+        }
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            display: block !important;
+        }
         .btn-demo {
             display: inline-flex;
             align-items: center;
@@ -306,22 +322,22 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                             <div class="badge paid" style="padding: 5px 10px; font-size: 0.75rem;">✓ Salvo com sucesso</div>
                         <?php endif; ?>
 
-                        <div class="stats-card-bento">
-                            <div class="stat-icon"><i class="fas fa-sack-dollar"></i></div>
-                            <div class="stat-info">
+                        <div class="stat-card ghost-green" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; min-width: 200px;">
+                            <div class="stat-icon" style="margin-bottom: 0;"><i class="fas fa-sack-dollar"></i></div>
+                            <div>
                                 <span class="stat-label">Lucro Plataforma</span>
-                                <div class="stat-value">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></div>
+                                <div class="stat-value" style="font-size: 1.2rem;">R$ <?php echo number_format($totalProfit, 2, ',', '.'); ?></div>
                             </div>
                         </div>
 
-                        <form method="POST" class="stats-card-bento">
-                            <div class="stat-icon"><i class="fas fa-percent"></i></div>
-                            <div class="stat-info">
-                                <label class="stat-label">Comissão Afiliados</label>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 45px; background: transparent; border: none; color: #fff; font-weight: 800; font-size: 1.4rem; outline: none; padding: 0;">
-                                    <span style="font-size: 0.9rem; color: var(--text-dim);">%</span>
-                                    <button type="submit" name="update_settings" class="btn-icon-sm" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
+                        <form method="POST" class="stat-card ghost-purple" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; border: 1px solid rgba(168, 85, 247, 0.2);">
+                            <div class="stat-icon" style="margin-bottom: 0;"><i class="fas fa-percent"></i></div>
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; font-weight: 800;">Comissão Afiliados</label>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1.1rem; outline: none; padding: 0;">
+                                    <span style="font-size: 0.9rem; color: var(--text-3);">%</span>
+                                    <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; margin-left: 10px;">Salvar</button>
                                 </div>
                             </div>
                         </form>
