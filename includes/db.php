@@ -150,5 +150,26 @@ function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImag
         }
     }
 }
+class Response {
+    public static function json($data, $status = 200) {
+        ob_clean();
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+
+    public static function error($message, $status = 400, $code = null) {
+        self::json([
+            'success' => false,
+            'error' => $message,
+            'code' => $code
+        ], $status);
+    }
+
+    public static function success($data = []) {
+        self::json(array_merge(['success' => true], $data));
+    }
+}
 ?>
 

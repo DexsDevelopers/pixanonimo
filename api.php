@@ -25,10 +25,7 @@ if (isLoggedIn()) {
 }
 
 if (!$userId) {
-    ob_clean();
-    http_response_code(401);
-    echo json_encode(['error' => 'Não autorizado.']);
-    exit;
+    Response::error('Não autorizado.', 401);
 }
 
 try {
@@ -55,9 +52,12 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        ob_clean();
-        echo json_encode(['success' => true, 'qr_image' => $qrImage, 'pix_code' => $pixCode, 'amount' => $amount, 'pix_id' => $pixId]);
-        exit;
+        Response::success([
+            'qr_image' => $qrImage, 
+            'pix_code' => $pixCode, 
+            'amount' => $amount, 
+            'pix_id' => $pixId
+        ]);
     }
 
     // Chamada Real
@@ -94,17 +94,19 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        ob_clean();
-        echo json_encode(['success' => true, 'pix_id' => $pixId, 'qr_image' => $qrImage, 'pix_code' => $pixCode, 'amount' => $amount]);
+        Response::success([
+            'pix_id' => $pixId, 
+            'qr_image' => $qrImage, 
+            'pix_code' => $pixCode, 
+            'amount' => $amount
+        ]);
     } else {
         write_log('error', 'Resposta Inválida PixGo: ' . $response);
         throw new Exception('Erro PixGo: ' . ($res['message'] ?? 'Resposta inesperada') . ' (CS: ' . $httpCode . ')');
     }
 
 } catch (Exception $e) {
-    ob_clean();
-    http_response_code(400);
-    echo json_encode(['error' => $e->getMessage()]);
     write_log('error', 'Falha API: ' . $e->getMessage());
+    Response::error($e->getMessage());
 }
 ?>

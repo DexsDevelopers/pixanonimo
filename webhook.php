@@ -114,6 +114,6 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
 
 // Retornar 200 para o PixGo não reenviar o webhook
 http_response_code(200);
-echo json_encode(['status' => 'received']);
+Response::json(['status' => 'received']);
 ?>
 
