@@ -221,8 +221,7 @@ a,
    SIDEBAR
 ══════════════════════════════════════════════════════ */
 .sidebar {
-    width: 280px;
-    /* Slightly wider for better spacing */
+    width: 230px;
     flex-shrink: 0;
     background: rgba(3, 3, 3, 0.7);
     backdrop-filter: blur(50px) saturate(200%);

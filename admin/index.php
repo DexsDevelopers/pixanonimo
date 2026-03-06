@@ -233,43 +233,64 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             flex-wrap: wrap;
         }
         .main-content {
-            padding: 2rem !important;
+            padding: 1rem !important;
             flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem;
             max-width: 100%;
+            overflow-x: hidden;
         }
         .card.glass.full-width {
             width: 100% !important;
             max-width: 100% !important;
             margin: 0 !important;
             box-sizing: border-box !important;
-            overflow: visible !important;
-            padding: 2rem !important;
+            padding: 1.25rem !important;
         }
         .table-responsive {
             width: 100% !important;
-            overflow-x: auto !important;
+            overflow-x: visible !important;
             display: block !important;
-            scrollbar-width: thin;
         }
         .transaction-table {
             width: 100% !important;
-            min-width: 800px; /* Sensible min-width for desktop to keep columns readable */
-            table-layout: auto;
-            border-spacing: 0 0.5rem !important;
+            table-layout: fixed;
+            border-spacing: 0 0.4rem !important;
         }
         .transaction-table th, .transaction-table td {
-            font-size: 0.85rem !important;
-            padding: 1rem 0.6rem !important;
+            font-size: 0.82rem !important;
+            padding: 0.8rem 0.4rem !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
+        /* Tight Column Widths for Desktop */
+        .col-id { width: 50px; }
+        .col-user { width: 18%; }
+        .col-email { width: 22%; }
+        .col-balance { width: 15%; }
+        .col-rate { width: 80px; }
+        .col-status { width: 95px; }
+        .col-actions { width: 200px; }
+
         @media (max-width: 1200px) {
             .transaction-table {
-                min-width: 100%;
+                table-layout: auto;
             }
+            .table-responsive {
+                overflow-x: auto !important;
+            }
+        }
+        
+        /* User/Email column compression */
+        .col-user { width: 180px !important; }
+        .col-email { width: 220px !important; }
+        .col-balance { width: 130px !important; }
+        
+        .transaction-table {
+            table-layout: auto !important; /* Allow content to dictate width if needed, but flex-container will squeeze */
         }
         .btn-demo {
             display: inline-flex;
@@ -331,10 +352,10 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
         }
     </style>
 </head>
-<body class="dashboard-body" style="display: flex; min-height: 100vh; background: #000; overflow-x: hidden;">
+<body class="dashboard-body" style="background: #000; overflow-x: hidden;">
     <?php include '../includes/sidebar.php'; ?>
 
-    <main class="main-content" style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
+    <main class="main-content" style="flex: 1; min-width: 0;">
                 <header class="top-header admin-header">
                     <div>
                         <h1>Painel Administrativo</h1>
@@ -565,6 +586,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
     }
     </script>
 
+    </div> <!-- Fechamento do app-container (aberto no sidebar.php) -->
     <script src="../script.js?v=121.0"></script>
 </body>
 </html>
