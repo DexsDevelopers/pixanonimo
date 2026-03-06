@@ -50,9 +50,6 @@ if (!empty($newPassword)) {
 }
 
 try {
-    // Iniciar Transação
-    $pdo->beginTransaction();
-
     // Atualizar dados básicos
     $updateStmt = $pdo->prepare("UPDATE users SET full_name = ?, pix_key = ? WHERE id = ?");
     $updateStmt->execute([$fullName, $pixKey, $userId]);
@@ -60,7 +57,6 @@ try {
     // Atualizar senha se fornecida
     if (!empty($newPassword)) {
         if (strlen($newPassword) < 6) {
-            if ($pdo->inTransaction()) $pdo->rollBack();
             echo json_encode(['error' => 'A nova senha deve ter pelo menos 6 caracteres.']);
             exit;
         }
@@ -68,17 +64,14 @@ try {
         $passStmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
         $passStmt->execute([$hash, $userId]);
     }
-
-    $pdo->commit();
-    
+        
     // Atualizar sessão
     $_SESSION['full_name'] = $fullName;
+    error_log("Profile Update Success for User $userId: Name=$fullName");
 
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
-    if ($pdo && $pdo->inTransaction()) $pdo->rollBack();
-    // Logar o erro internamente para o desenvolvedor
-    error_log("Erro no perfil (User ID: $userId): " . $e->getMessage());
+    error_log("Profile Update Error (User ID: $userId): " . $e->getMessage());
     echo json_encode(['error' => 'Erro ao salvar no banco: ' . $e->getMessage()]);
 }
-
+?>

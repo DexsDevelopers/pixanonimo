@@ -204,7 +204,7 @@ $user = $stmt->fetch();
             btn.disabled = false;
         }
     });
-    <script src="script.js?v=121.0"></script>
+    </script>
 </body>
 </html>
 
