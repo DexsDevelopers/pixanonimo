@@ -233,7 +233,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             flex-wrap: wrap;
         }
         .main-content {
-            padding: 2rem !important;
+            padding: 1rem !important; /* Minimal padding to save space */
             flex: 1;
             min-width: 0;
             overflow-x: hidden;
@@ -243,6 +243,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             margin: 0 !important;
             box-sizing: border-box !important;
             overflow: visible !important;
+            padding: 1rem !important; /* Compact interior */
         }
         .table-responsive {
             width: 100% !important;
@@ -251,11 +252,37 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             scrollbar-width: thin;
         }
         .transaction-table {
-            min-width: 900px !important; /* Force a bit more width on desktop to avoid crowding */
+            width: 100% !important;
+            min-width: 100% !important;
+            table-layout: fixed;
+            border-spacing: 0 0.4rem !important;
         }
+        .transaction-table th, .transaction-table td {
+            font-size: 0.8rem !important;
+            padding: 0.6rem 0.4rem !important;
+            word-wrap: break-word;
+        }
+        /* Tight Column Widths for Desktop */
+        .col-id { width: 40px; }
+        .col-user { width: 22%; }
+        .col-email { width: 22%; }
+        .col-balance { width: 17%; }
+        .col-rate { width: 70px; }
+        .col-status { width: 85px; }
+        .col-actions { width: auto; }
+
+        .pix-input-admin {
+            width: 100px !important;
+            font-size: 0.75rem !important;
+        }
+        .balance-input-admin {
+            width: 75px !important;
+            font-size: 0.75rem !important;
+        }
+
         @media (max-width: 992px) {
             .transaction-table {
-                min-width: 100% !important;
+                table-layout: auto;
             }
         }
         .btn-demo {
@@ -370,13 +397,13 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                     <table class="transaction-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Usuário / Demo</th>
-                                <th>Email / Pix</th>
-                                <th>Saldo</th>
-                                <th>Taxa (%)</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Ações</th>
+                                <th class="col-id">ID</th>
+                                <th class="col-user">Usuário / Demo</th>
+                                <th class="col-email">Email / Pix</th>
+                                <th class="col-balance">Saldo</th>
+                                <th class="col-rate">Taxa (%)</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-actions" style="text-align: right;">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
