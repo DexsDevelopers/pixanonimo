@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCopyWallet = document.getElementById('btn-copy-wallet');
     const walletInput = document.getElementById('wallet-input');
     const overlay = document.getElementById('sidebar-overlay');
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
 
     // --- PUSH NOTIFICATION SETUP ---
     const PUBLIC_VAPID_KEY = 'BFA9H1A7y3_F-Z9yY-1HlRz1Z-H-H1H1H1H1H1H1H1H1';
