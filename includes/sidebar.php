@@ -10,7 +10,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
 <!-- Mobile Header -->
 <div class="mobile-header">
     <div class="logo">
-        <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
+        <img src="<?php echo $base_path; ?>logo_premium.png?v=121.0" class="logo-img" alt="Ghost Logo">
         <span class="logo-text">Ghost<span> Pix</span></span>
     </div>
     <button class="menu-toggle" id="menu-toggle">☰</button>
@@ -20,7 +20,7 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo" style="cursor: pointer;" onclick="window.location.href='<?php echo $base_path; ?>dashboard.php'">
-            <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
+            <img src="<?php echo $base_path; ?>logo_premium.png?v=121.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">Ghost<span> Pix</span></span>
         </div>
         <nav class="nav-menu">

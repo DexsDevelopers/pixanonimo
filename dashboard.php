@@ -78,7 +78,7 @@ try {
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Ghost Pix - Dashboard Premium</title>
-    <link rel="stylesheet" href="style.css?v=119.0">
+    <link rel="stylesheet" href="style.css?v=121.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
@@ -427,7 +427,7 @@ try {
         </div>
     </div>
 
-    <script src="script.js?v=107.0"></script>
+    <script src="script.js?v=121.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

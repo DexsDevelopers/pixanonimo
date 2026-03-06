@@ -1,7 +1,7 @@
-const CACHE_NAME = 'ghost-pix-v8.3';
+const CACHE_NAME = 'ghost-pix-v8.5';
 const ASSETS = [
-    'style.css?v=119.0',
-    'script.js?v=8.0',
+    'style.css?v=121.0',
+    'script.js?v=121.0',
     'logo_premium.png?v=8.0'
 ];
 
@@ -11,10 +11,26 @@ self.addEventListener('install', (event) => {
             return cache.addAll(ASSETS);
         })
     );
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('Cleaning old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-    // Bloquear requests que não sejam GET para o cache
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
