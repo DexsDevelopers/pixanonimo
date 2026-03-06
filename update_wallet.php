@@ -8,10 +8,13 @@ if (!isLoggedIn()) {
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
+error_log("Update Wallet Request: " . print_r($data, true));
 
 // Validação CSRF
 $headers = getallheaders();
 $csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+error_log("CSRF Token Received: " . $csrfToken);
+
 check_csrf($csrfToken);
 
 $wallet = $data['wallet'] ?? '';
@@ -26,7 +29,9 @@ $stmt = $pdo->prepare("UPDATE users SET pix_key = ? WHERE id = ?");
 if ($stmt->execute([$wallet, $userId])) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['error' => 'Erro ao atualizar chave PIX.']);
+    $errorInfo = $stmt->errorInfo();
+    error_log("SQL Error in Update Wallet: " . print_r($errorInfo, true));
+    echo json_encode(['error' => 'Erro ao atualizar chave PIX no banco de dados.']);
 }
 ?>
 

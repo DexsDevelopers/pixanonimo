@@ -327,11 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!wallet) return alert("Chave não pode ser vazia");
             btnSaveWallet.disabled = true;
             try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 const res = await fetch('update_wallet.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-Token': csrfToken
                     },
                     body: JSON.stringify({ wallet })
                 });
