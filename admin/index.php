@@ -53,6 +53,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    // Lógica Demo/Influencer
+    if (isset($_POST['create_demo_user'])) {
+        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $password = password_hash($_POST['password'] ?? '123456', PASSWORD_DEFAULT);
+        $full_name = strip_tags(trim($_POST['full_name'] ?? 'Demo Influencer'));
+        $balance = (float)($_POST['initial_balance'] ?? 0);
+        $pix_key = strip_tags(trim($_POST['pix_key'] ?? 'influencer@pix.com'));
+        $ref_token = bin2hex(random_bytes(8));
+
+        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, balance, status, referral_token) VALUES (?, ?, ?, ?, ?, 'approved', ?)");
+        $stmt->execute([$email, $password, $full_name, $pix_key, $balance, $ref_token]);
+        
+        header("Location: index.php?success=1");
+        exit;
+    }
+
+    if (isset($_POST['update_balance'])) {
+        $userId = (int)$_POST['user_id'];
+        $newBalance = (float)$_POST['balance'];
+        $stmt = $pdo->prepare("UPDATE users SET balance = ? WHERE id = ?");
+        $stmt->execute([$newBalance, $userId]);
+        header("Location: index.php?success=1");
+        exit;
+    }
+
+    if (isset($_POST['create_fake_withdrawal'])) {
+        $userId = (int)$_POST['user_id'];
+        $amount = (float)$_POST['amount'];
+        $pix_key = $_POST['pix_key'] ?? 'PIX FAKE';
+        $full_name = $_POST['full_name'] ?? 'Influencer';
+        $hash = '0x' . bin2hex(random_bytes(32));
+        
+        $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, full_name, status, tx_hash, created_at) VALUES (?, ?, ?, ?, 'completed', ?, NOW())");
+        $stmt->execute([$userId, $amount, $pix_key, $full_name, $hash]);
+        
+        header("Location: index.php?success=1");
+        exit;
+    }
+
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
 
@@ -177,6 +216,10 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                             </div>
                         </div>
                     </form>
+
+                    <button onclick="document.getElementById('modal-create-demo').style.display='flex'" class="btn-primary" style="width: auto; height: 50px; padding: 0 1.5rem; border-radius: 12px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); border: none; font-weight: 700;">
+                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i> Criar Conta Demo
+                    </button>
                 </div>
             </header>
 
@@ -202,13 +245,21 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                 <td>#<?php echo $u['id']; ?></td>
                                 <td><strong><?php echo htmlspecialchars($u['full_name']); ?></strong></td>
                                 <td><?php echo htmlspecialchars($u['email']); ?></td>
-                                <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
+                                <td>
+                                    <form method="POST" style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                        <span style="font-size: 0.8rem; color: var(--text-dim);">R$</span>
+                                        <input type="number" name="balance" value="<?php echo $u['balance']; ?>" step="0.01" style="width: 100px; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #4ade80; border-radius: 6px; font-weight: 700; outline: none;">
+                                        <button type="submit" name="update_balance" class="btn-icon-sm" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: none; border-radius: 4px; cursor: pointer; height: 28px; width: 28px;"><i class="fas fa-check" style="font-size: 0.7rem;"></i></button>
+                                    </form>
+                                </td>
                                 <td>
                                     <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 70px; padding: 5px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; font-size: 0.85rem;">
                                 </td>
                                 <td><span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>"><?php echo ucfirst($u['status']); ?></span></td>
                                 <td style="text-align: right;">
                                     <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                        <button type="button" onclick="openFakeWithdrawModal(<?php echo $u['id']; ?>, '<?php echo addslashes($u['full_name']); ?>', '<?php echo $u['pix_key']; ?>')" class="badge paid" style="border: none; cursor: pointer; background: var(--purple);">Saque Fake</button>
                                         <?php if($u['status'] == 'pending'): ?>
                                             <a href="?approve=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration: none; border: none;">Aprovar</a>
                                         <?php endif; ?>
@@ -268,8 +319,75 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                     </tbody>
                 </table>
             </div>
-        </main>
-    </div> <!-- Final app-container vindo da sidebar.php -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Criar Conta Demo -->
+    <div id="modal-create-demo" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <div class="card glass" style="width: 100%; max-width: 450px; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3 style="margin: 0;">Criar Conta Demo/Influencer</h3>
+                <button onclick="this.closest('.modal-overlay').style.display='none'" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <form method="POST">
+                <div style="margin-bottom: 1.2rem;">
+                    <label class="input-label">Nome Completo</label>
+                    <input type="text" name="full_name" required placeholder="Ex: Lucas Influencer" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white;">
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                    <label class="input-label">Email de Acesso</label>
+                    <input type="email" name="email" required placeholder="influencer@email.com" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white;">
+                </div>
+                <div style="margin-bottom: 1.2rem;">
+                    <label class="input-label">Senha</label>
+                    <input type="text" name="password" value="123456" required style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white;">
+                </div>
+                <div style="margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="input-label">Saldo Inicial</label>
+                        <input type="number" name="initial_balance" value="5000" step="0.01" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: #4ade80; font-weight: 700;">
+                    </div>
+                    <div>
+                        <label class="input-label">Chave Pix</label>
+                        <input type="text" name="pix_key" value="influencer@pix.com" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white;">
+                    </div>
+                </div>
+                <button type="submit" name="create_demo_user" class="btn-primary" style="width: 100%;">Gerar Conta Demo <i class="fas fa-magic" style="margin-left: 8px;"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Saque Fake -->
+    <div id="modal-fake-withdraw" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <div class="card glass" style="width: 100%; max-width: 400px; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;">Lançar Saque Fake</h3>
+                <button onclick="this.closest('.modal-overlay').style.display='none'" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1.5rem;">Este saque aparecerá como **CONCLUÍDO** no histórico do usuário imediatamente.</p>
+            <form method="POST">
+                <input type="hidden" name="user_id" id="fw_user_id">
+                <input type="hidden" name="full_name" id="fw_full_name">
+                <input type="hidden" name="pix_key" id="fw_pix_key">
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="input-label">Valor do Saque (R$)</label>
+                    <input type="number" name="amount" required placeholder="Ex: 500.00" step="0.01" style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; color: #f87171; font-weight: 800; font-size: 1.2rem; text-align: center;">
+                </div>
+                <button type="submit" name="create_fake_withdrawal" class="btn-primary" style="width: 100%; background: var(--purple);">Lançar Saque no Histórico <i class="fas fa-bolt" style="margin-left: 8px;"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function openFakeWithdrawModal(id, name, pix) {
+        document.getElementById('fw_user_id').value = id;
+        document.getElementById('fw_full_name').value = name;
+        document.getElementById('fw_pix_key').value = pix;
+        document.getElementById('modal-fake-withdraw').style.display = 'flex';
+    }
+    </script>
+
     <script src="../script.js?v=121.0"></script>
 </body>
 </html>
