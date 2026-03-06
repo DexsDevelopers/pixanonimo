@@ -121,6 +121,29 @@ try {
             </div>
             <?php endif; ?>
 
+            <!-- Notification Control Card (PWA) -->
+            <div id="push-control-card" class="card glass" style="margin-bottom: 2rem; border: 1px solid rgba(99, 102, 241, 0.2); background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), transparent); display: none;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 45px; height: 45px; border-radius: 12px; background: var(--bg-card); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid var(--border);">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 2px;">Alertas de Vendas no Celular</h3>
+                            <p id="push-status-text" style="color: var(--text-2); font-size: 0.85rem;">Ative para receber notificações fora do site (iPhone/Android).</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-activate-push" class="btn-primary" style="padding: 10px 20px; font-size: 0.85rem; background: var(--accent);">
+                            <i class="fas fa-mobile-screen-button"></i> ATIVAR AGORA
+                        </button>
+                        <button id="btn-test-push" class="btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; display: none; background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                            <i class="fas fa-paper-plane"></i> TESTAR NOTIFICAÇÃO
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Premium Analytics Grid -->
             <div class="analytics-grid">
                 <!-- Receita Total -->

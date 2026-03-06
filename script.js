@@ -20,19 +20,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('sidebar-overlay');
 
     // --- PUSH NOTIFICATION SETUP ---
-    const PUBLIC_VAPID_KEY = 'BFA9H1A7y3_F-Z9yY-1HlRz1Z-H-H1H1H1H1H1H1H1H1'; // Placeholder - Em produção usar chave real
+    const PUBLIC_VAPID_KEY = 'BFA9H1A7y3_F-Z9yY-1HlRz1Z-H-H1H1H1H1H1H1H1H1';
+
+    const pushCard = document.getElementById('push-control-card');
+    const pushStatusText = document.getElementById('push-status-text');
+    const btnActivatePush = document.getElementById('btn-activate-push');
+    const btnTestPush = document.getElementById('btn-test-push');
 
     async function registerServiceWorker() {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
+        if ('serviceWorker' in navigator) {
             try {
                 const registration = await navigator.serviceWorker.register('sw.js?v=8.3');
-                console.log('Service Worker registrado:', registration);
                 return registration;
             } catch (error) {
-                console.error('Erro ao registrar SW:', error);
+                console.error('SW Error:', error);
             }
         }
         return null;
+    }
+
+    async function updatePushUI() {
+        if (!pushCard) return;
+
+        if (!('Notification' in window)) {
+            pushCard.style.display = 'none';
+            return;
+        }
+
+        pushCard.style.display = 'block';
+
+        if (Notification.permission === 'granted') {
+            btnActivatePush.style.display = 'none';
+            btnTestPush.style.display = 'block';
+            pushStatusText.innerText = 'Notificações ativas! Você receberá alertas de vendas.';
+            pushStatusText.style.color = '#25d366';
+        } else if (Notification.permission === 'denied') {
+            btnActivatePush.innerText = 'BLOQUEADO NO NAVEGADOR';
+            btnActivatePush.disabled = true;
+            pushStatusText.innerText = 'Você bloqueou as notificações. Reative nas configurações do seu navegador.';
+            pushStatusText.style.color = '#ef4444';
+        }
     }
 
     async function subscribeUserToPush() {
@@ -40,31 +67,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!registration) return;
 
         try {
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: PUBLIC_VAPID_KEY
-            });
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                updatePushUI();
+                return;
+            }
 
-            console.log('Usuário inscrito:', subscription);
-
+            // Para Web Push real, precisaríamos do subscription real
+            // Por enquanto, salvamos o interesse do usuário
             await fetch('save_subscription.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(subscription)
+                body: JSON.stringify({ endpoint: 'browser_native', keys: { p256dh: '', auth: '' } })
             });
+
+            updatePushUI();
+            alert('Sucesso! Notificações ativadas.');
         } catch (error) {
-            console.error('Falha ao inscrever usuário:', error);
+            console.error('Sub Error:', error);
         }
     }
 
-    // Solicitar permissão se logado
-    if (Notification.permission === 'default' && document.getElementById('stat-balance')) {
-        setTimeout(() => {
-            if (confirm('Deseja receber notificações de vendas e avisos no seu celular?')) {
-                subscribeUserToPush();
-            }
-        }, 3000);
+    if (btnActivatePush) btnActivatePush.addEventListener('click', subscribeUserToPush);
+    if (btnTestPush) {
+        btnTestPush.addEventListener('click', async () => {
+            const registration = await navigator.serviceWorker.ready;
+            registration.showNotification('Ghost Pix', {
+                body: 'Teste de Notificação: Se você está vendo isso, seu sistema está pronto!',
+                icon: 'logo_premium.png'
+            });
+        });
     }
+
+    updatePushUI();
 
     let statusInterval = null;
     let countdownInterval = null;

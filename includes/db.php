@@ -1,6 +1,26 @@
 <?php
+// Configuração de Sessão Persistente (30 dias)
+$sessionLifetime = 30 * 24 * 60 * 60;
+ini_set('session.gc_maxlifetime', $sessionLifetime);
+ini_set('session.cookie_lifetime', $sessionLifetime);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+// Lógica de Auto-Login (Remember Me)
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE remember_token = ?");
+    $stmt->execute([$token]);
+    $user = $stmt->fetch();
+    
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['full_name'] = $user['full_name'];
+        $_SESSION['is_admin'] = $user['is_admin'];
+    }
 }
 date_default_timezone_set('America/Sao_Paulo');
 require_once __DIR__ . '/../config.php';

@@ -23,6 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['email'] = $user['email'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['is_admin'] = $user['is_admin'];
+
+        // Gerar token de "Lembrar-me" (Cookie de 30 dias)
+        $token = bin2hex(random_bytes(32));
+        $updateToken = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+        $updateToken->execute([$token, $user['id']]);
+        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
         
         redirect('../dashboard.php');
     } else {
