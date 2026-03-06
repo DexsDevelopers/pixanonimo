@@ -52,8 +52,8 @@ try {
         $pixId = 'sim_' . time();
         $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
         $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
-        
-        saveTransaction($userId, $amount, $amount * 0.95, $pixId, $pixCode, $qrImage, $callbackUrl);
+        $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
         ob_clean();
         echo json_encode(['success' => true, 'qr_image' => $qrImage, 'pix_code' => $pixCode, 'amount' => $amount, 'pix_id' => $pixId]);
@@ -91,7 +91,8 @@ try {
         $qrImage = $pixData['qr_image_url'] ?? '';
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
-        saveTransaction($userId, $amount, $amount * 0.95, $pixId, $pixCode, $qrImage, $callbackUrl);
+        $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
         ob_clean();
         echo json_encode(['success' => true, 'pix_id' => $pixId, 'qr_image' => $qrImage, 'pix_code' => $pixCode, 'amount' => $amount]);

@@ -6,10 +6,22 @@ if (!isAdmin()) {
     redirect('../auth/login.php');
 }
 
-// Lógica de Aprovação/Bloqueio
-if (isset($_GET['action']) && isset($_GET['id'])) {
-    $id = (int)$_GET['id'];
+// Lógica de Aprovação/Bloqueio (Suporta ?approve=ID, ?block=ID ou ?action=...&id=...)
+$action = null;
+$id = null;
+
+if (isset($_GET['approve'])) {
+    $action = 'approve';
+    $id = (int)$_GET['approve'];
+} elseif (isset($_GET['block'])) {
+    $action = 'block';
+    $id = (int)$_GET['block'];
+} elseif (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
+    $id = (int)$_GET['id'];
+}
+
+if ($action && $id) {
     $status = ($action == 'approve') ? 'approved' : 'blocked';
     
     $stmt = $pdo->prepare("UPDATE users SET status = ? WHERE id = ? AND is_admin = 0");
@@ -179,6 +191,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                 <th>Usuário</th>
                                 <th>Email</th>
                                 <th>Saldo</th>
+                                <th>Taxa (%)</th>
                                 <th>Status</th>
                                 <th style="text-align: right;">Ações</th>
                             </tr>
@@ -190,6 +203,9 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                 <td><strong><?php echo htmlspecialchars($u['full_name']); ?></strong></td>
                                 <td><?php echo htmlspecialchars($u['email']); ?></td>
                                 <td>R$ <?php echo number_format($u['balance'], 2, ',', '.'); ?></td>
+                                <td>
+                                    <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 70px; padding: 5px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; font-size: 0.85rem;">
+                                </td>
                                 <td><span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>"><?php echo ucfirst($u['status']); ?></span></td>
                                 <td style="text-align: right;">
                                     <div style="display: flex; gap: 8px; justify-content: flex-end;">
