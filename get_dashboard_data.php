@@ -9,7 +9,7 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 // --- 1. DADOS DO USUÁRIO (SALDO) ---
-$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -27,25 +27,43 @@ $stats = [
     'pending_count' => 0
 ];
 
-// Volume Hoje (24h)
-$stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
-$stmtToday->execute([$userId]);
-$stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
+if ($user['is_demo'] == 1) {
+    // Lógica Demo: Receita Total = Saldo Atual + Saques Concluídos
+    $stmtW = $pdo->prepare("SELECT SUM(amount) as total FROM withdrawals WHERE user_id = ? AND status = 'completed'");
+    $stmtW->execute([$userId]);
+    $totalWithdrawn = $stmtW->fetch()['total'] ?? 0;
+    
+    $totalPaidVal = $user['balance'] + $totalWithdrawn;
+    $monthVolVal = $totalPaidVal * 0.82;
+    $todayVolVal = $totalPaidVal * 0.14;
+    $totalOrdersCount = floor($totalPaidVal / 42) + 7;
+    $pendingCount = floor($totalOrdersCount * 0.3);
 
-// Volume Mês Atual
-$stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
-$stmtMonth->execute([$userId]);
-$stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
+    $stats['total_paid'] = number_format($totalPaidVal, 2, ',', '.');
+    $stats['month_volume'] = number_format($monthVolVal, 2, ',', '.');
+    $stats['today_volume'] = number_format($todayVolVal, 2, ',', '.');
+    $stats['pending_count'] = $pendingCount;
+} else {
+    // Volume Hoje (24h)
+    $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
+    $stmtToday->execute([$userId]);
+    $stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
 
-// Total Acumulado (Pago)
-$stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'");
-$stmtTotal->execute([$userId]);
-$stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
+    // Volume Mês Atual
+    $stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
+    $stmtMonth->execute([$userId]);
+    $stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
 
-// Cobranças Pendentes
-$stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'");
-$stmtPending->execute([$userId]);
-$stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
+    // Total Acumulado (Pago)
+    $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'");
+    $stmtTotal->execute([$userId]);
+    $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
+
+    // Cobranças Pendentes
+    $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'");
+    $stmtPending->execute([$userId]);
+    $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
+}
 
 // --- 3. ÚLTIMAS TRANSAÇÕES ---
 $stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
