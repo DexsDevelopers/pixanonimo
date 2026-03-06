@@ -3439,3 +3439,8 @@ input:-webkit-autofill:focus {
 /* --- Mobile Header & Responsiveness Correction --- */
 .mobile-header { display: none; }
 @media (max-width: 992px) { .mobile-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); } }
+
+
+/* --- Mobile Header & Responsiveness Correction --- */
+.mobile-header { display: none; }
+@media (max-width: 992px) { .mobile-header { display: flex !important; align-items: center; justify-content: space-between; padding: 1rem; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); } }
