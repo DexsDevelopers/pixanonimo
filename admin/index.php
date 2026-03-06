@@ -117,6 +117,10 @@ if (isset($_POST['update_settings'])) {
 // Buscar taxa atual para o formulário
 $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
 $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
+
+// Calcular Lucro Total da Plataforma (Soma das taxas de transações pagas)
+$stmtProfit = $pdo->query("SELECT SUM(amount_brl - amount_net_brl) as total FROM transactions WHERE status = 'paid'");
+$totalProfit = $stmtProfit->fetchColumn() ?: 0;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
