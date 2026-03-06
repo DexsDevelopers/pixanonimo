@@ -23,7 +23,7 @@ try {
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Solicitar Saque - Ghost Pix</title>
-    <link rel="stylesheet" href="style.css?v=107.0">
+    <link rel="stylesheet" href="style.css?v=117.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
