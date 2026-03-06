@@ -1,5 +1,5 @@
 ﻿/* =====================================================
-   GHOST PIX — DEFINITIVE DESIGN SYSTEM v8.0
+   GHOST PIX - DEFINITIVE DESIGN SYSTEM v8.0
    Skills: frontend-design · mobile-design
            scroll-experience · ui-ux-pro-max
    Aesthetic: Luxury Minimal Fintech
@@ -180,7 +180,7 @@ body {
     background-attachment: fixed;
 }
 
-/* Prevent 16px font-size issue → no zoom on iOS (mobile-design) */
+/* Prevent 16px font-size issue  no zoom on iOS (mobile-design) */
 input,
 select,
 textarea,
@@ -504,7 +504,7 @@ a,
     min-width: 0;
     padding: 2.5rem;
     animation: fadeIn .35s var(--ease);
-    max-width: 100%;
+    max-width: calc(100vw - 280px);
     overflow-x: hidden;
     /* Handle overflow per component */
 }
@@ -569,7 +569,7 @@ a,
 }
 
 /* ══════════════════════════════════════════════════════
-   ANALYTICS GRID — 4 cols desktop, 2 cols mobile
+   ANALYTICS GRID - 4 cols desktop, 2 cols mobile
    Uses CSS scroll-driven animation (scroll-experience)
 ══════════════════════════════════════════════════════ */
 /* ══════════════════════════════════════════════════════
@@ -821,7 +821,7 @@ a,
 
 
 /* ══════════════════════════════════════════════════════
-   DASHBOARD GRID — 3 cols desktop, 1 col mobile
+   DASHBOARD GRID - 3 cols desktop, 1 col mobile
 ══════════════════════════════════════════════════════ */
 .dashboard-grid {
     display: grid;
@@ -1059,7 +1059,7 @@ a,
     min-width: 0;
 }
 
-/* icon-button (touch target 44px — mobile-design) */
+/* icon-button (touch target 44px - mobile-design) */
 .btn-icon-sm {
     background: rgba(255, 255, 255, .05);
     border: 1px solid var(--border);
@@ -1113,7 +1113,7 @@ a,
     background: rgba(0, 0, 0, .3);
     border: 1px solid var(--border);
     padding: 1rem 1rem 1rem 2.75rem;
-    /* ≥ 48px height on mobile (mobile-design) */
+    /* = 48px height on mobile (mobile-design) */
     border-radius: 11px;
     color: var(--text);
     font-size: 1.05rem;
@@ -1848,7 +1848,7 @@ input:-webkit-autofill:focus {
 }
 
 /* ══════════════════════════════════════════════════════
-   TABLET  ≤ 1100px
+   TABLET  = 1100px
 ══════════════════════════════════════════════════════ */
 @media (max-width:1100px) {
     .analytics-grid {
@@ -1868,7 +1868,7 @@ input:-webkit-autofill:focus {
 }
 
 /* ══════════════════════════════════════════════════════
-   MOBILE  ≤ 992px
+   MOBILE  = 992px
    ===================================================== */
 @media (max-width: 992px) {
     .app-container {
@@ -1955,7 +1955,7 @@ input:-webkit-autofill:focus {
         display: block;
     }
 
-    /* Fixed header — 60px (safe) */
+    /* Fixed header - 60px (safe) */
     .mobile-header {
         display: flex !important;
         align-items: center;
@@ -2050,7 +2050,7 @@ input:-webkit-autofill:focus {
         padding: .35rem .75rem;
     }
 
-    /* Analytics → always 2×2 */
+    /* Analytics  always 2×2 */
     .analytics-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: .55rem !important;
@@ -2074,7 +2074,7 @@ input:-webkit-autofill:focus {
         font-size: .61rem !important;
     }
 
-    /* Dashboard → single column */
+    /* Dashboard  single column */
     .dashboard-grid {
         grid-template-columns: 1fr !important;
         gap: .7rem !important;
@@ -2187,7 +2187,7 @@ input:-webkit-autofill:focus {
 }
 
 /* ══════════════════════════════════════════════════════
-   EXTRA SMALL  ≤ 375px
+   EXTRA SMALL  = 375px
 ══════════════════════════════════════════════════════ */
 @media (max-width:375px) {
     .main-content {

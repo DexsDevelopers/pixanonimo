@@ -234,19 +234,29 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
         }
         .main-content {
             padding: 2rem !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
+            flex: 1;
+            min-width: 0;
+            overflow-x: hidden;
         }
         .card.glass.full-width {
             width: 100% !important;
-            max-width: 100% !important;
             margin: 0 !important;
             box-sizing: border-box !important;
+            overflow: visible !important;
         }
         .table-responsive {
             width: 100% !important;
             overflow-x: auto !important;
             display: block !important;
+            scrollbar-width: thin;
+        }
+        .transaction-table {
+            min-width: 900px !important; /* Force a bit more width on desktop to avoid crowding */
+        }
+        @media (max-width: 992px) {
+            .transaction-table {
+                min-width: 100% !important;
+            }
         }
         .btn-demo {
             display: inline-flex;
