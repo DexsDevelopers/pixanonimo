@@ -505,14 +505,15 @@ a,
     padding: 2.5rem;
     animation: fadeIn .35s var(--ease);
     max-width: calc(100vw - 280px);
-    /* Garante que não ultrapasse a tela */
-    overflow-x: auto;
+    overflow-x: hidden;
+    /* Handle overflow per component */
 }
 
 @media (max-width: 992px) {
     .main-content {
         max-width: 100vw;
-        padding: 1.5rem;
+        padding: 1rem;
+        /* More space on mobile */
     }
 }
 
@@ -1294,8 +1295,98 @@ a,
 
 .transaction-table {
     width: 100%;
-    border-collapse: collapse;
-    min-width: 480px;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+    min-width: 600px;
+    /* Fallback min-width for desktop scroll */
+}
+
+/* Responsive Table to Card Transformation (Skill: ui-ux-pro-max) */
+@media (max-width: 992px) {
+    .table-responsive {
+        overflow-x: hidden !important;
+        margin-bottom: 2rem;
+    }
+
+    .transaction-table {
+        min-width: 100% !important;
+        border-spacing: 0;
+    }
+
+    .transaction-table thead {
+        display: none;
+    }
+
+    .transaction-table,
+    .transaction-table tbody,
+    .responsive-row {
+        display: block;
+        width: 100%;
+    }
+
+    .responsive-row {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(12px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+    }
+
+    .responsive-row:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .transaction-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 0 !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        min-height: 48px;
+    }
+
+    .transaction-table td:last-child {
+        border-bottom: none !important;
+        padding-top: 1.25rem !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .transaction-table td::before {
+        content: attr(data-label);
+        font-weight: 800;
+        color: var(--text-dim);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .actions-cell {
+        text-align: left !important;
+    }
+
+    .actions-cell div {
+        justify-content: stretch !important;
+        width: 100%;
+    }
+
+    .actions-cell .badge,
+    .actions-cell button {
+        flex: 1;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.7rem !important;
+    }
 }
 
 .transaction-table th {

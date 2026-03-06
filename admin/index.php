@@ -221,30 +221,73 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .transaction-table {
-            min-width: 1000px; /* Force scroll on smaller containers */
+        .admin-header {
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
-        .transaction-table th, .transaction-table td {
-            padding: 0.75rem 0.5rem !important; /* Tighten padding */
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-demo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 1.5rem;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+            font-size: 0.9rem;
+        }
+        .btn-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+            filter: brightness(1.1);
+        }
+        .btn-demo i {
+            font-size: 1.1rem;
         }
         .pix-input-admin {
-            width: 120px !important;
-            font-size: 0.7rem !important;
-        }
-        .balance-input-admin {
-            width: 80px !important;
+            width: 130px !important;
+            background: rgba(0,0,0,0.2) !important;
+            border: 1px solid var(--border) !important;
+            color: #fff !important;
+            border-radius: 6px !important;
+            padding: 4px 8px !important;
             font-size: 0.75rem !important;
         }
-        .actions-cell {
-            white-space: nowrap;
-            width: 150px;
+        .balance-input-admin {
+            width: 90px !important;
+            background: rgba(0,0,0,0.2) !important;
+            border: 1px solid var(--border) !important;
+            color: #4ade80 !important;
+            border-radius: 6px !important;
+            font-weight: 700 !important;
+            padding: 4px 8px !important;
+        }
+        .tx-input-admin {
+            padding: 6px 10px !important;
+            font-size: 0.75rem !important;
+            width: 140px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid var(--border) !important;
+            color: white !important;
+            border-radius: 6px !important;
+            outline: none !important;
         }
         @media (max-width: 992px) {
-            .main-content {
-                padding: 1rem !important;
-            }
-            .transaction-table {
-                min-width: 900px;
+            .tx-input-admin {
+                width: 100% !important;
+                margin-bottom: 5px;
             }
         }
     </style>
@@ -258,7 +301,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                     <h1>Painel Administrativo</h1>
                     <p>Gerenciamento de usuários e solicitações de liquidação.</p>
                 </div>
-                <div class="header-actions" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div class="header-actions">
                     <?php if (isset($_GET['success'])): ?>
                         <div class="badge paid" style="padding: 5px 10px; font-size: 0.75rem;">✓ Salvo com sucesso</div>
                     <?php endif; ?>
@@ -283,8 +326,8 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         </div>
                     </form>
 
-                    <button onclick="document.getElementById('modal-create-demo').style.display='flex'" class="btn-primary" style="width: auto; height: 50px; padding: 0 1.5rem; border-radius: 12px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); border: none; font-weight: 700;">
-                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i> Criar Conta Demo
+                    <button onclick="document.getElementById('modal-create-demo').style.display='flex'" class="btn-demo">
+                        <i class="fas fa-user-plus"></i> Criar Conta Demo
                     </button>
                 </div>
             </header>
@@ -312,9 +355,9 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         </thead>
                         <tbody>
                             <?php foreach($users as $u): ?>
-                            <tr>
-                                <td>#<?php echo $u['id']; ?></td>
-                                <td>
+                            <tr class="responsive-row">
+                                <td data-label="ID">#<?php echo $u['id']; ?></td>
+                                <td data-label="Usuário / Demo">
                                     <div style="display:flex; flex-direction:column; gap:5px;">
                                         <strong><?php echo htmlspecialchars($u['full_name']); ?></strong>
                                         <form method="POST">
@@ -326,7 +369,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                         </form>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-label="Email / Pix">
                                     <span style="font-size:0.85rem; opacity:0.7;"><?php echo htmlspecialchars($u['email']); ?></span>
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
@@ -334,7 +377,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                         <button type="submit" name="update_pix" class="btn-icon-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--purple); border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
-                                <td>
+                                <td data-label="Saldo">
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                                         <span style="font-size: 0.8rem; color: var(--text-dim);">R$</span>
@@ -342,15 +385,15 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                         <button type="submit" name="update_balance" class="btn-icon-sm" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: none; border-radius: 4px; cursor: pointer; height: 28px; width: 28px;"><i class="fas fa-check" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
-                                <td>
+                                <td data-label="Taxa (%)">
                                     <input type="number" form="global-comm-form" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 65px; padding: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; font-size: 0.85rem;">
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>" style="font-size: 0.65rem;">
                                         <?php echo ucfirst($u['status']); ?>
                                     </span>
                                 </td>
-                                <td class="actions-cell" style="text-align: right;">
+                                <td data-label="Ações" class="actions-cell" style="text-align: right;">
                                     <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
                                         <button type="button" onclick="openFakeWithdrawModal(<?php echo $u['id']; ?>, '<?php echo addslashes($u['full_name']); ?>', '<?php echo $u['pix_key']; ?>')" class="badge paid" style="border: none; cursor: pointer; background: var(--purple); font-size: 0.6rem;">Saque Fake</button>
                                         
@@ -397,16 +440,16 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         $stmt = $pdo->query("SELECT w.*, u.email, u.pix_key, u.commission_rate, u.balance FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
                         while($w = $stmt->fetch()):
                         ?>
-                        <tr>
-                            <td><strong><?php echo htmlspecialchars($w['full_name']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($w['email']); ?></td>
-                            <td><code style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;"><?php echo htmlspecialchars($w['pix_key']); ?></code></td>
-                            <td>R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
-                            <td><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
-                            <td style="text-align: right;">
-                                <form method="POST" style="display:flex; align-items:center; gap:8px; justify-content: flex-end;">
+                        <tr class="responsive-row">
+                            <td data-label="Nome"><strong><?php echo htmlspecialchars($w['full_name']); ?></strong></td>
+                            <td data-label="Email"><?php echo htmlspecialchars($w['email']); ?></td>
+                            <td data-label="Chave PIX"><code style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;"><?php echo htmlspecialchars($w['pix_key']); ?></code></td>
+                            <td data-label="Valor">R$ <?php echo number_format($w['amount'], 2, ',', '.'); ?></td>
+                            <td data-label="Data"><?php echo date('d/m H:i', strtotime($w['created_at'])); ?></td>
+                            <td data-label="Ações" style="text-align: right;">
+                                <form method="POST" style="display:flex; align-items:center; gap:8px; justify-content: flex-end; flex-wrap: wrap;">
                                     <input type="hidden" name="withdraw_id" value="<?php echo $w['id']; ?>">
-                                    <input type="text" name="tx_hash" placeholder="Hash TX" style="padding: 6px 10px; font-size: 0.75rem; width: 120px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 6px; outline: none;">
+                                    <input type="text" name="tx_hash" placeholder="Hash TX" class="tx-input-admin">
                                     <button type="submit" name="action" value="complete_withdraw" class="badge paid" style="border:none; cursor:pointer;">Pagar</button>
                                     <button type="submit" name="action" value="reject_withdraw" class="badge expired" style="border:none; cursor:pointer;">Negar</button>
                                 </form>
