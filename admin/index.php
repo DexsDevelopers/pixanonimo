@@ -185,7 +185,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$users = $pdo->query("SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at DESC")->fetchAll();
+// Lógica de Filtros e Busca
+$search = $_GET['search'] ?? '';
+$status_filter = $_GET['status_filter'] ?? '';
+
+$sql = "SELECT * FROM users WHERE is_admin = 0";
+$params = [];
+
+if (!empty($search)) {
+    $sql .= " AND (full_name LIKE ? OR email LIKE ? OR pix_key LIKE ?)";
+    $search_param = "%$search%";
+    $params = array_merge($params, [$search_param, $search_param, $search_param]);
+}
+
+if ($status_filter === 'pending') {
+    $sql .= " AND status = 'pending'";
+} elseif ($status_filter === 'active') {
+    $sql .= " AND status = 'active'";
+} elseif ($status_filter === 'blocked') {
+    $sql .= " AND status = 'blocked'";
+} elseif ($status_filter === 'demo') {
+    $sql .= " AND is_demo = 1";
+}
+
+$sql .= " ORDER BY created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$users = $stmt->fetchAll();
 
 // Lógica de Configurações Globais (Processamento no topo para redirecionamento limpo)
 if (isset($_POST['update_settings'])) {
@@ -393,13 +419,46 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 </header>
 
             <div class="card glass full-width">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3>Gerenciar Usuários</h3>
-                    <form method="POST" style="display: flex; gap: 10px; align-items: center;">
-                        <button type="submit" name="update_comm" class="btn-primary" style="width: auto; padding: 0.5rem 1.5rem; font-size: 0.85rem;">Salvar Taxas</button>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-users" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        <h3 style="margin: 0;">Gerenciar Usuários</h3>
+                    </div>
+
+                    <form method="GET" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <!-- Campo de Busca -->
+                        <div style="position: relative; flex: 1; max-width: 300px;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 0.85rem;"></i>
+                            <input type="text" name="search" placeholder="Buscar nome, email ou pix..." value="<?php echo htmlspecialchars($search); ?>" 
+                                   style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 15px 10px 40px; color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s ease;">
+                        </div>
+
+                        <!-- Filtro de Status -->
+                        <select name="status_filter" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 15px; color: #fff; font-size: 0.85rem; outline: none; cursor: pointer;">
+                            <option value="" style="background: #000; color: #fff;">Todos os Status</option>
+                            <option value="active" <?php echo $status_filter == 'active' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Ativos</option>
+                            <option value="pending" <?php echo $status_filter == 'pending' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Pendentes</option>
+                            <option value="blocked" <?php echo $status_filter == 'blocked' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Bloqueados</option>
+                            <option value="demo" <?php echo $status_filter == 'demo' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Contas Demo</option>
+                        </select>
+
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.85rem; border-radius: 12px; height: 42px;">
+                            <i class="fas fa-filter" style="margin-right: 8px;"></i> Filtrar
+                        </button>
+
+                        <?php if(!empty($search) || !empty($status_filter)): ?>
+                            <a href="index.php" class="badge bg-danger" style="padding: 10px 15px; border-radius: 10px; text-decoration: none; height: 42px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="submit" form="bulk-form" name="update_comm" class="btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.85rem; border-radius: 12px; height: 42px; background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2); color: #22c55e;">
+                            <i class="fas fa-save" style="margin-right: 8px;"></i> Salvar Taxas
+                        </button>
                     </form>
                 </div>
                 
+                <form id="bulk-form" method="POST">
                 <div class="table-responsive">
                     <table class="transaction-table">
                         <thead>
@@ -473,6 +532,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         </tbody>
                     </table>
                 </div>
+                </form>
 
                 <form id="global-comm-form" method="POST" style="margin-top: 1.5rem; text-align: right;">
                     <button type="submit" name="update_comm" class="btn-primary" style="width: auto; padding: 0.6rem 2rem;">Atualizar Todas as Taxas</button>
