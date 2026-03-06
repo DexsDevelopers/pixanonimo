@@ -376,6 +376,25 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 margin-bottom: 5px;
             }
         }
+        .filter-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 12px !important;
+            padding: 10px 15px !important;
+            color: #fff !important;
+            font-size: 0.85rem !important;
+            outline: none !important;
+            transition: all 0.3s var(--ease) !important;
+        }
+        .filter-input:focus {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1) !important;
+        }
+        input[name="search"].filter-input {
+            padding-left: 40px !important;
+        }
     </style>
 </head>
 <body class="dashboard-body" style="background: #000; overflow-x: hidden;">
@@ -425,16 +444,15 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         <h3 style="margin: 0;">Gerenciar Usuários</h3>
                     </div>
 
-                    <form method="GET" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                    <form method="GET" class="filter-form" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
                         <!-- Campo de Busca -->
                         <div style="position: relative; flex: 1; max-width: 300px;">
                             <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 0.85rem;"></i>
-                            <input type="text" name="search" placeholder="Buscar nome, email ou pix..." value="<?php echo htmlspecialchars($search); ?>" 
-                                   style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 15px 10px 40px; color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s ease;">
+                            <input type="text" name="search" placeholder="Buscar nome, email ou pix..." value="<?php echo htmlspecialchars($search); ?>" class="filter-input">
                         </div>
 
                         <!-- Filtro de Status -->
-                        <select name="status_filter" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 15px; color: #fff; font-size: 0.85rem; outline: none; cursor: pointer;">
+                        <select name="status_filter" class="filter-input" style="cursor: pointer; width: auto;">
                             <option value="" style="background: #000; color: #fff;">Todos os Status</option>
                             <option value="active" <?php echo $status_filter == 'active' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Ativos</option>
                             <option value="pending" <?php echo $status_filter == 'pending' ? 'selected' : ''; ?> style="background: #000; color: #fff;">Pendentes</option>
@@ -447,7 +465,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         </button>
 
                         <?php if(!empty($search) || !empty($status_filter)): ?>
-                            <a href="index.php" class="badge bg-danger" style="padding: 10px 15px; border-radius: 10px; text-decoration: none; height: 42px; display: flex; align-items: center; justify-content: center;">
+                            <a href="index.php" title="Limpar Filtros" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 12px; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
                                 <i class="fas fa-times"></i>
                             </a>
                         <?php endif; ?>
@@ -529,6 +547,17 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                 </td>
                             </tr>
                             <?php endforeach; ?>
+                            <?php if(empty($users)): ?>
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 3rem 1rem; opacity: 0.5;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                        <i class="fas fa-search" style="font-size: 2rem;"></i>
+                                        <p>Nenhum usuário encontrado com os filtros atuais.</p>
+                                        <a href="index.php" class="btn-primary" style="width: auto; padding: 8px 20px; font-size: 0.8rem;">Limpar Tudo</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
