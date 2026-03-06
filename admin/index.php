@@ -129,17 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: index.php?success=1");
         exit;
     }
-        $amount = (float)$_POST['amount'];
-        $pix_key = $_POST['pix_key'] ?? 'PIX FAKE';
-        $full_name = $_POST['full_name'] ?? 'Influencer';
-        $hash = '0x' . bin2hex(random_bytes(32));
-        
-        $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, full_name, status, tx_hash, created_at) VALUES (?, ?, ?, ?, 'completed', ?, NOW())");
-        $stmt->execute([$userId, $amount, $pix_key, $full_name, $hash]);
-        
-        header("Location: index.php?success=1");
-        exit;
-    }
 
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
