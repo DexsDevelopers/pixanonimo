@@ -19,10 +19,6 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
 <div class="app-container">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <!-- Close Button for Mobile -->
-        <button class="sidebar-close mobile-only" id="sidebar-close" aria-label="Fechar Menu">
-            <i class="fas fa-times"></i>
-        </button>
         <div class="logo" style="cursor: pointer;" onclick="window.location.href='<?php echo $base_path; ?>dashboard.php'">
             <img src="<?php echo $base_path; ?>logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">Ghost<span> Pix</span></span>

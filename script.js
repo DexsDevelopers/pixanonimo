@@ -459,24 +459,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- WIDGET DE SUPORTE FLUTUANTE ---
 
     const supportWidgetHTML = `
-    <div id="support-widget" style="position: fixed; bottom: 100px; left: 20px; z-index: 9999;">
-        <div id="support-balloon" class="glass" style="display: none; position: absolute; bottom: 70px; left: 0; width: 300px; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); background: rgba(10,10,10,0.95); backdrop-filter: blur(10px);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h4 style="margin: 0; display: flex; align-items: center; gap: 8px; color: white;"><i class="fas fa-ghost" style="color: var(--primary);"></i> Ghost Bot</h4>
-                <button id="close-support" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem;">&times;</button>
+    <div id="support-widget" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <div id="support-balloon" class="glass" style="display: none; position: absolute; bottom: 70px; right: 0; width: 320px; padding: 1.8rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.6); background: rgba(10,10,10,0.98); backdrop-filter: blur(20px);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h4 style="margin: 0; display: flex; align-items: center; gap: 10px; color: white; font-weight: 700;"><i class="fas fa-ghost" style="color: var(--primary);"></i> Suporte Ghost</h4>
+                <button id="close-support" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.4rem;">&times;</button>
             </div>
-            <div id="support-content" style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.4;">
-                <p>Olá! Como posso ajudar você hoje?</p>
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 1rem;">
-                    <button class="support-opt glass" data-ans="Para gerar um Pix, vá ao Dashboard, digite o valor e clique em 'Gerar QR Code'. Ele expira em 20 min." style="text-align: left; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); color: white; background: rgba(255,255,255,0.05);">Como gerar um Pix?</button>
-                    <button class="support-opt glass" data-ans="O prazo médio para saques é de até 2 dias úteis." style="text-align: left; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); color: white; background: rgba(255,255,255,0.05);">Qual o prazo de saque?</button>
-                    <button class="support-opt glass" data-ans="Acesse 'Perfil' no menu lateral para atualizar seus dados e sua chave Pix." style="text-align: left; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); color: white; background: rgba(255,255,255,0.05);">Como mudar minha chave Pix?</button>
-                    <a href="https://wa.me/5551996148568" target="_blank" style="text-align: center; padding: 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; background: var(--primary); color: black; font-weight: 700; text-decoration: none; margin-top: 10px;">Falar com Humano 👤</a>
+            <div id="support-content" style="font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.5;">
+                <p style="margin-bottom: 1.2rem;">Olá! Especialista Ghost online. Como podemos ajudar?</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="support-opt glass" data-ans="Para gerar um Pix, vá ao Dashboard, digite o valor e clique em 'Gerar QR Code'." style="text-align: left; padding: 12px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); color: white; background: rgba(255,255,255,0.03); transition: all 0.3s ease;">💡 Como gerar um Pix?</button>
+                    <button class="support-opt glass" data-ans="O prazo médio para saques é de até 2 dias úteis." style="text-align: left; padding: 12px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); color: white; background: rgba(255,255,255,0.03); transition: all 0.3s ease;">💰 Qual o prazo de saque?</button>
+                    <a href="https://wa.me/5551996148568" target="_blank" style="text-align: center; padding: 12px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; background: var(--primary); color: black; font-weight: 800; text-decoration: none; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fab fa-whatsapp"></i> Falar com um Consultor
+                    </a>
                 </div>
-                <div id="support-answer" style="display: none; margin-top: 1rem; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--primary); color: white; font-size: 0.8rem;"></div>
+                <div id="support-answer" style="display: none; margin-top: 1.2rem; padding: 12px; background: rgba(34, 197, 94, 0.05); border-radius: 10px; border-left: 4px solid var(--primary); color: #fff; font-size: 0.82rem; animation: fadeIn 0.3s ease;"></div>
             </div>
         </div>
-        <button id="support-toggle" style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary); border: none; color: black; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 15px rgba(255,215,0,0.3); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+        <button id="support-toggle" style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); border: none; color: black; font-size: 1.6rem; cursor: pointer; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.4s var(--spring);">
             <i class="fas fa-headset"></i>
         </button>
     </div>
