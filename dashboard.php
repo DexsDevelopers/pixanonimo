@@ -38,6 +38,24 @@ $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE use
 $stmtPending->execute([$userId]);
 $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
 
+$totalOrdersCount = 0;
+if ($user['is_demo'] == 1) {
+    // Lógica Demo: Receita Total = Saldo Atual + Saques Concluídos
+    $stmtW = $pdo->prepare("SELECT SUM(amount) as total FROM withdrawals WHERE user_id = ? AND status = 'completed'");
+    $stmtW->execute([$userId]);
+    $totalWithdrawn = $stmtW->fetch()['total'] ?? 0;
+    
+    $stats['total_paid'] = $user['balance'] + $totalWithdrawn;
+    $stats['month_volume'] = $stats['total_paid'] * 0.82;
+    $stats['today_volume'] = $stats['total_paid'] * 0.14;
+    $totalOrdersCount = floor($stats['total_paid'] / 42) + 7; // Média de R$ 42 por pedido + offset
+    $stats['pending_count'] = floor($totalOrdersCount * 0.3);
+} else {
+    $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'");
+    $stmtOrders->execute([$userId]);
+    $totalOrdersCount = $stmtOrders->fetch()['qtd'] ?? 0;
+}
+
 $transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
@@ -158,14 +176,8 @@ try {
                 <div class="stat-card ghost-purple">
                     <div class="stat-icon"><i class="fas fa-cart-check"></i></div>
                     <span class="stat-label">Pedidos Pagos</span>
-                    <div class="stat-value"><?php 
-                        $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'");
-                        $stmtOrders->execute([$userId]);
-                        $orderData = $stmtOrders->fetch();
-                        $totalOrdersCount = $orderData['qtd'] ?? 0;
-                        echo $totalOrdersCount;
-                    ?></div>
-                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +1.2%</div>
+                    <div class="stat-value"><?php echo $totalOrdersCount; ?></div>
+                    <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +<?php echo $user['is_demo'] ? '1.2' : '0'; ?>%</div>
                 </div>
 
                 <!-- Ticket Médio -->

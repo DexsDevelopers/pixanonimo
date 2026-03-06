@@ -15,6 +15,13 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     $pdo->exec("SET time_zone = '-03:00'");
+
+    // Auto-Migração: Adicionar coluna is_demo se não existir
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN is_demo TINYINT(1) DEFAULT 0");
+    } catch (PDOException $e) {
+        // Ignora se a coluna já existir
+    }
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }

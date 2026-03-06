@@ -62,9 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pix_key = strip_tags(trim($_POST['pix_key'] ?? 'influencer@pix.com'));
         $ref_token = bin2hex(random_bytes(8));
 
-        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, balance, status, referral_token) VALUES (?, ?, ?, ?, ?, 'approved', ?)");
+        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, balance, status, referral_token, is_demo) VALUES (?, ?, ?, ?, ?, 'approved', ?, 1)");
         $stmt->execute([$email, $password, $full_name, $pix_key, $balance, $ref_token]);
         
+        header("Location: index.php?success=1");
+        exit;
+    }
+
+    if (isset($_POST['update_pix'])) {
+        $userId = (int)$_POST['user_id'];
+        $newPix = strip_tags(trim($_POST['pix_key']));
+        $stmt = $pdo->prepare("UPDATE users SET pix_key = ? WHERE id = ?");
+        $stmt->execute([$newPix, $userId]);
+        header("Location: index.php?success=1");
+        exit;
+    }
+
+    if (isset($_POST['toggle_demo'])) {
+        $userId = (int)$_POST['user_id'];
+        $status = (int)$_POST['is_demo'];
+        $stmt = $pdo->prepare("UPDATE users SET is_demo = ? WHERE id = ?");
+        $stmt->execute([$status, $userId]);
         header("Location: index.php?success=1");
         exit;
     }
@@ -231,8 +249,8 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Usuário</th>
-                                <th>Email</th>
+                                <th>Usuário / Demo</th>
+                                <th>Email / Pix</th>
                                 <th>Saldo</th>
                                 <th>Taxa (%)</th>
                                 <th>Status</th>
@@ -243,8 +261,24 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                             <?php foreach($users as $u): ?>
                             <tr>
                                 <td>#<?php echo $u['id']; ?></td>
-                                <td><strong><?php echo htmlspecialchars($u['full_name']); ?></strong></td>
-                                <td><?php echo htmlspecialchars($u['email']); ?></td>
+                                <td>
+                                    <strong><?php echo htmlspecialchars($u['full_name']); ?></strong><br>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                        <input type="hidden" name="is_demo" value="<?php echo $u['is_demo'] ? '0' : '1'; ?>">
+                                        <button type="submit" name="toggle_demo" class="badge <?php echo $u['is_demo'] ? 'paid' : 'expired'; ?>" style="border:none; cursor:pointer; font-size:0.6rem; padding: 2px 5px;">
+                                            <i class="fas <?php echo $u['is_demo'] ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i> Demo
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <span style="font-size:0.85rem; opacity:0.7;"><?php echo htmlspecialchars($u['email']); ?></span><br>
+                                    <form method="POST" style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
+                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                        <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" style="width: 150px; padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.75rem; outline: none;">
+                                        <button type="submit" name="update_pix" class="btn-icon-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--purple); border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
+                                    </form>
+                                </td>
                                 <td>
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
