@@ -271,7 +271,10 @@ try {
                             <div class="card-icon"><i class="fas fa-key"></i></div>
                             <h3 class="card-title">Configuração de Recebimento</h3>
                         </div>
-                        <button id="btn-edit-wallet" class="btn-edit"> Editar </button>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="btn-edit-wallet" class="btn-edit"> Editar </button>
+                            <button id="btn-save-wallet" class="btn-edit hidden" style="background: var(--primary); color: black; border: none; font-weight: 700;"> Salvar </button>
+                        </div>
                     </div>
                     
                     <p class="card-hint" style="margin: 1rem 0 0.5rem;">Chave PIX configurada:</p>
