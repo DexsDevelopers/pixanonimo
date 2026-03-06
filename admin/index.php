@@ -99,6 +99,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['create_fake_withdrawal'])) {
         $userId = (int)$_POST['user_id'];
         $amount = (float)$_POST['amount'];
+        $pixKey = $_POST['pix_key'];
+        
+        $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, full_name, amount, status, type) VALUES (?, (SELECT full_name FROM users WHERE id = ?), ?, 'completed', 'fake')");
+        $stmt->execute([$userId, $userId, $amount]);
+        
+        header("Location: index.php?success=1");
+        exit;
+    }
+
+    if (isset($_POST['approve_user']) || isset($_POST['block_user'])) {
+        $id = (int)$_POST['user_id'];
+        $status = isset($_POST['approve_user']) ? 'approved' : 'blocked';
+        
+        $stmt = $pdo->prepare("UPDATE users SET status = ? WHERE id = ? AND is_admin = 0");
+        $stmt->execute([$status, $id]);
+        
+        // Notificação automática
+        $title = ($status == 'approved') ? 'Conta Aprovada! ✅' : 'Conta Bloqueada ⚠️';
+        $msg = ($status == 'approved') ? 'Sua conta foi verificada e aprovada. Já pode começar a operar!' : 'Sua conta foi bloqueada por nossa equipe de segurança.';
+        $type = ($status == 'approved') ? 'success' : 'danger';
+        
+        try {
+            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+        } catch (PDOException $e) {
+            write_log('error', 'Falha ao inserir notificação automática (Aprovação): ' . $e->getMessage());
+        }
+
+        header("Location: index.php?success=1");
+        exit;
+    }
+        $amount = (float)$_POST['amount'];
         $pix_key = $_POST['pix_key'] ?? 'PIX FAKE';
         $full_name = $_POST['full_name'] ?? 'Influencer';
         $hash = '0x' . bin2hex(random_bytes(32));
@@ -242,8 +273,13 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             </header>
 
             <div class="card glass full-width">
-            <h3>Gerenciar Usuários</h3>
-            <form method="POST">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3>Gerenciar Usuários</h3>
+                    <form method="POST" style="display: flex; gap: 10px; align-items: center;">
+                        <button type="submit" name="update_comm" class="btn-primary" style="width: auto; padding: 0.5rem 1.5rem; font-size: 0.85rem;">Salvar Taxas</button>
+                    </form>
+                </div>
+                
                 <div class="table-responsive">
                     <table class="transaction-table">
                         <thead>
@@ -262,20 +298,22 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                             <tr>
                                 <td>#<?php echo $u['id']; ?></td>
                                 <td>
-                                    <strong><?php echo htmlspecialchars($u['full_name']); ?></strong><br>
-                                    <form method="POST" style="display:inline;">
-                                        <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
-                                        <input type="hidden" name="is_demo" value="<?php echo $u['is_demo'] ? '0' : '1'; ?>">
-                                        <button type="submit" name="toggle_demo" class="badge <?php echo $u['is_demo'] ? 'paid' : 'expired'; ?>" style="border:none; cursor:pointer; font-size:0.6rem; padding: 2px 5px;">
-                                            <i class="fas <?php echo $u['is_demo'] ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i> Demo
-                                        </button>
-                                    </form>
+                                    <div style="display:flex; flex-direction:column; gap:5px;">
+                                        <strong><?php echo htmlspecialchars($u['full_name']); ?></strong>
+                                        <form method="POST">
+                                            <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                            <input type="hidden" name="is_demo" value="<?php echo $u['is_demo'] ? '0' : '1'; ?>">
+                                            <button type="submit" name="toggle_demo" class="badge <?php echo $u['is_demo'] ? 'paid' : 'expired'; ?>" style="border:none; cursor:pointer; font-size:0.6rem; padding: 2px 5px;">
+                                                <i class="fas <?php echo $u['is_demo'] ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i> Demo
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                                 <td>
-                                    <span style="font-size:0.85rem; opacity:0.7;"><?php echo htmlspecialchars($u['email']); ?></span><br>
+                                    <span style="font-size:0.85rem; opacity:0.7;"><?php echo htmlspecialchars($u['email']); ?></span>
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
-                                        <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" style="width: 150px; padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.75rem; outline: none;">
+                                        <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" style="width: 140px; padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.75rem; outline: none;">
                                         <button type="submit" name="update_pix" class="btn-icon-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--purple); border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
@@ -283,26 +321,31 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                                         <span style="font-size: 0.8rem; color: var(--text-dim);">R$</span>
-                                        <input type="number" name="balance" value="<?php echo $u['balance']; ?>" step="0.01" style="width: 100px; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #4ade80; border-radius: 6px; font-weight: 700; outline: none;">
+                                        <input type="number" name="balance" value="<?php echo $u['balance']; ?>" step="0.01" style="width: 90px; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #4ade80; border-radius: 6px; font-weight: 700; outline: none; font-size: 0.85rem;">
                                         <button type="submit" name="update_balance" class="btn-icon-sm" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: none; border-radius: 4px; cursor: pointer; height: 28px; width: 28px;"><i class="fas fa-check" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
                                 <td>
-                                    <input type="number" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 70px; padding: 5px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; font-size: 0.85rem;">
+                                    <input type="number" form="global-comm-form" name="comm[<?php echo $u['id']; ?>]" value="<?php echo $u['commission_rate']; ?>" step="0.1" style="width: 65px; padding: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; font-size: 0.85rem;">
                                 </td>
-                                <td><span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>"><?php echo ucfirst($u['status']); ?></span></td>
+                                <td>
+                                    <span class="badge <?php echo $u['status'] == 'approved' ? 'paid' : ($u['status'] == 'pending' ? 'pending' : 'expired'); ?>" style="font-size: 0.65rem;">
+                                        <?php echo ucfirst($u['status']); ?>
+                                    </span>
+                                </td>
                                 <td style="text-align: right;">
-                                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                                        <button type="button" onclick="openFakeWithdrawModal(<?php echo $u['id']; ?>, '<?php echo addslashes($u['full_name']); ?>', '<?php echo $u['pix_key']; ?>')" class="badge paid" style="border: none; cursor: pointer; background: var(--purple);">Saque Fake</button>
-                                        <?php if($u['status'] == 'pending'): ?>
-                                            <a href="?approve=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration: none; border: none;">Aprovar</a>
-                                        <?php endif; ?>
-                                        <?php if($u['status'] != 'blocked'): ?>
-                                            <a href="?block=<?php echo $u['id']; ?>" class="badge expired" style="text-decoration: none; border: none;">Bloquear</a>
-                                        <?php endif; ?>
-                                        <?php if($u['status'] == 'blocked'): ?>
-                                            <a href="?approve=<?php echo $u['id']; ?>" class="badge paid" style="text-decoration: none; border: none;">Desbloquear</a>
-                                        <?php endif; ?>
+                                    <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                                        <button type="button" onclick="openFakeWithdrawModal(<?php echo $u['id']; ?>, '<?php echo addslashes($u['full_name']); ?>', '<?php echo $u['pix_key']; ?>')" class="badge paid" style="border: none; cursor: pointer; background: var(--purple); font-size: 0.6rem;">Saque Fake</button>
+                                        
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
+                                            <?php if($u['status'] == 'pending' || $u['status'] == 'blocked'): ?>
+                                                <button type="submit" name="approve_user" class="badge paid" style="border: none; cursor: pointer; font-size: 0.6rem;">Aprovar</button>
+                                            <?php endif; ?>
+                                            <?php if($u['status'] != 'blocked'): ?>
+                                                <button type="submit" name="block_user" class="badge expired" style="border: none; cursor: pointer; font-size: 0.6rem;">Bloquear</button>
+                                            <?php endif; ?>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -310,8 +353,11 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                         </tbody>
                     </table>
                 </div>
-                <button type="submit" name="update_comm" class="btn-primary" style="margin-top: 2rem; width: auto; padding: 0.5rem 2rem;">Salvar Alterações</button>
-            </form>
+
+                <form id="global-comm-form" method="POST" style="margin-top: 1.5rem; text-align: right;">
+                    <button type="submit" name="update_comm" class="btn-primary" style="width: auto; padding: 0.6rem 2rem;">Atualizar Todas as Taxas</button>
+                </form>
+            </div>
         </div>
 
         <!-- Seção de Saques -->
