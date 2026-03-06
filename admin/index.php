@@ -233,17 +233,21 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             flex-wrap: wrap;
         }
         .main-content {
-            padding: 1rem !important; /* Minimal padding to save space */
+            padding: 2rem !important;
             flex: 1;
             min-width: 0;
-            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 100%;
         }
         .card.glass.full-width {
             width: 100% !important;
+            max-width: 100% !important;
             margin: 0 !important;
             box-sizing: border-box !important;
             overflow: visible !important;
-            padding: 1rem !important; /* Compact interior */
+            padding: 2rem !important;
         }
         .table-responsive {
             width: 100% !important;
@@ -253,36 +257,18 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
         }
         .transaction-table {
             width: 100% !important;
-            min-width: 100% !important;
-            table-layout: fixed;
-            border-spacing: 0 0.4rem !important;
+            min-width: 800px; /* Sensible min-width for desktop to keep columns readable */
+            table-layout: auto;
+            border-spacing: 0 0.5rem !important;
         }
         .transaction-table th, .transaction-table td {
-            font-size: 0.8rem !important;
-            padding: 0.6rem 0.4rem !important;
-            word-wrap: break-word;
+            font-size: 0.85rem !important;
+            padding: 1rem 0.6rem !important;
         }
-        /* Tight Column Widths for Desktop */
-        .col-id { width: 40px; }
-        .col-user { width: 22%; }
-        .col-email { width: 22%; }
-        .col-balance { width: 17%; }
-        .col-rate { width: 70px; }
-        .col-status { width: 85px; }
-        .col-actions { width: auto; }
-
-        .pix-input-admin {
-            width: 100px !important;
-            font-size: 0.75rem !important;
-        }
-        .balance-input-admin {
-            width: 75px !important;
-            font-size: 0.75rem !important;
-        }
-
-        @media (max-width: 992px) {
+        
+        @media (max-width: 1200px) {
             .transaction-table {
-                table-layout: auto;
+                min-width: 100%;
             }
         }
         .btn-demo {
@@ -345,10 +331,10 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
         }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" style="display: flex; min-height: 100vh; background: #000; overflow-x: hidden;">
     <?php include '../includes/sidebar.php'; ?>
 
-        <main class="main-content">
+    <main class="main-content" style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
                 <header class="top-header admin-header">
                     <div>
                         <h1>Painel Administrativo</h1>
@@ -471,7 +457,6 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                     <button type="submit" name="update_comm" class="btn-primary" style="width: auto; padding: 0.6rem 2rem;">Atualizar Todas as Taxas</button>
                 </form>
             </div>
-        </div>
 
         <!-- Seção de Saques -->
         <div class="card glass full-width" style="margin-top: 2rem;">
@@ -513,7 +498,6 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 </table>
             </div>
             </div>
-        </div>
     </main>
 
     <!-- Modal Criar Conta Demo -->
