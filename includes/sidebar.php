@@ -78,7 +78,15 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
                 <div class="user-info">
                     <span class="user-name"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Usuário'); ?></span>
                     <span class="user-status"><?php echo isAdmin() ? 'Administrador' : 'Conta Blindada'; ?></span>
-                </div>
+            </div>
+            
+            <div class="social-links" style="display: flex; gap: 15px; justify-content: center; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <a href="https://www.instagram.com/pixghost.site/" target="_blank" style="color: var(--text-2); font-size: 1.2rem; transition: color 0.3s ease;" onmouseover="this.style.color='#E1306C'" onmouseout="this.style.color='var(--text-2)'" title="Instagram Ghost Pix">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@ghost.pix" target="_blank" style="color: var(--text-2); font-size: 1.2rem; transition: color 0.3s ease;" onmouseover="this.style.color='#00f2fe'" onmouseout="this.style.color='var(--text-2)'" title="TikTok Ghost Pix">
+                    <i class="fab fa-tiktok"></i>
+                </a>
             </div>
         </div>
     </aside>
