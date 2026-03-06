@@ -201,7 +201,7 @@ if (!empty($search)) {
 if ($status_filter === 'pending') {
     $sql .= " AND status = 'pending'";
 } elseif ($status_filter === 'active') {
-    $sql .= " AND status = 'active'";
+    $sql .= " AND status = 'approved'";
 } elseif ($status_filter === 'blocked') {
     $sql .= " AND status = 'blocked'";
 } elseif ($status_filter === 'demo') {
