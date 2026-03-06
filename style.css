@@ -504,9 +504,9 @@ a,
     min-width: 0;
     padding: 2.5rem;
     animation: fadeIn .35s var(--ease);
-    max-width: calc(100vw - 260px);
+    max-width: calc(100vw - 280px);
     /* Garante que não ultrapasse a tela */
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 @media (max-width: 992px) {
@@ -1282,6 +1282,14 @@ a,
 .table-wrap::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, .1);
     border-radius: 2px;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+    border-radius: var(--r-sm);
 }
 
 .transaction-table {
@@ -2069,11 +2077,7 @@ input:-webkit-autofill:focus {
 
     /* Admin Responsiveness */
     .table-responsive {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         margin-bottom: 1rem;
-        border-radius: var(--r-sm);
     }
 
     .top-header {

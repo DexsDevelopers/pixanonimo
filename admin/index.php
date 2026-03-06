@@ -220,6 +220,34 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
     <link rel="stylesheet" href="../style.css?v=121.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .transaction-table {
+            min-width: 1000px; /* Force scroll on smaller containers */
+        }
+        .transaction-table th, .transaction-table td {
+            padding: 0.75rem 0.5rem !important; /* Tighten padding */
+        }
+        .pix-input-admin {
+            width: 120px !important;
+            font-size: 0.7rem !important;
+        }
+        .balance-input-admin {
+            width: 80px !important;
+            font-size: 0.75rem !important;
+        }
+        .actions-cell {
+            white-space: nowrap;
+            width: 150px;
+        }
+        @media (max-width: 992px) {
+            .main-content {
+                padding: 1rem !important;
+            }
+            .transaction-table {
+                min-width: 900px;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
     <?php include '../includes/sidebar.php'; ?>
@@ -302,7 +330,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                     <span style="font-size:0.85rem; opacity:0.7;"><?php echo htmlspecialchars($u['email']); ?></span>
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
-                                        <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" style="width: 140px; padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.75rem; outline: none;">
+                                        <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" class="pix-input-admin" style="padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
                                         <button type="submit" name="update_pix" class="btn-icon-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--purple); border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
@@ -310,7 +338,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px;">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                                         <span style="font-size: 0.8rem; color: var(--text-dim);">R$</span>
-                                        <input type="number" name="balance" value="<?php echo $u['balance']; ?>" step="0.01" style="width: 90px; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #4ade80; border-radius: 6px; font-weight: 700; outline: none; font-size: 0.85rem;">
+                                        <input type="number" name="balance" value="<?php echo $u['balance']; ?>" step="0.01" class="balance-input-admin" style="padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #4ade80; border-radius: 6px; font-weight: 700; outline: none;">
                                         <button type="submit" name="update_balance" class="btn-icon-sm" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; border: none; border-radius: 4px; cursor: pointer; height: 28px; width: 28px;"><i class="fas fa-check" style="font-size: 0.7rem;"></i></button>
                                     </form>
                                 </td>
@@ -322,7 +350,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                         <?php echo ucfirst($u['status']); ?>
                                     </span>
                                 </td>
-                                <td style="text-align: right;">
+                                <td class="actions-cell" style="text-align: right;">
                                     <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
                                         <button type="button" onclick="openFakeWithdrawModal(<?php echo $u['id']; ?>, '<?php echo addslashes($u['full_name']); ?>', '<?php echo $u['pix_key']; ?>')" class="badge paid" style="border: none; cursor: pointer; background: var(--purple); font-size: 0.6rem;">Saque Fake</button>
                                         
