@@ -118,8 +118,8 @@ if (isset($_POST['update_settings'])) {
 $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
 $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
 
-// Calcular Lucro Total da Plataforma (Soma das taxas de transações pagas)
-$stmtProfit = $pdo->query("SELECT SUM(amount_brl - amount_net_brl) as total FROM transactions WHERE status = 'paid'");
+// Calcular Lucro Total da Plataforma (Lucro líquido após taxa de 2% do PixGo)
+$stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
 $totalProfit = $stmtProfit->fetchColumn() ?: 0;
 ?>
 <!DOCTYPE html>
