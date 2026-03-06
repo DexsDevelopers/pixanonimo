@@ -7,6 +7,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+date_default_timezone_set('America/Sao_Paulo');
+require_once __DIR__ . '/../config.php';
+
+try {
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->exec("SET time_zone = '-03:00'");
+} catch (PDOException $e) {
+    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
+}
+
 // Lógica de Auto-Login (Remember Me)
 if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
     $token = $_COOKIE['remember_token'];
@@ -20,17 +32,6 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['is_admin'] = $user['is_admin'];
     }
-}
-date_default_timezone_set('America/Sao_Paulo');
-require_once __DIR__ . '/../config.php';
-
-try {
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    $pdo->exec("SET time_zone = '-03:00'");
-} catch (PDOException $e) {
-    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
 
 function isLoggedIn() {
