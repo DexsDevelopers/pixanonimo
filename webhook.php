@@ -1,7 +1,7 @@
-<?php
 require_once 'includes/db.php';
 require_once 'includes/notify.php';
 require_once 'includes/PushService.php';
+require_once 'includes/MailService.php';
 
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
@@ -71,10 +71,15 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
 
             $pdo->commit();
             write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
+            // 3.5 Enviar Notificações
             notify_new_payment($transaction['amount_brl'], $transaction['user_id']);
-            
-            // Enviar Push Notification
             PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', 'Você recebeu R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' via Pix.');
+            
+            // Enviar e-mail para o usuário
+            $userData = getUser($transaction['user_id']);
+            if ($userData && !empty($userData['email'])) {
+                MailService::notifySale($userData['email'], $userData['full_name'], $transaction['amount_brl']);
+            }
 
             // 4. Disparar Webhook Externo para o Lojista (se houver)
             if (!empty($transaction['callback_url'])) {

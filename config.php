@@ -12,5 +12,12 @@ define('PIXGO_PROJECT_ID', '');
 // Telegram Bot Configuration (Skill: @telegram-bot-builder)
 define('TELEGRAM_BOT_TOKEN', ''); // Insira o token do seu bot aqui
 define('TELEGRAM_CHAT_ID', '');   // Insira o seu Chat ID aqui
+
+// Gmail SMTP Configuration
+define('MAIL_HOST', 'smtp.gmail.com');
+define('MAIL_PORT', 587);
+define('MAIL_USER', ''); // Seu e-mail do Gmail
+define('MAIL_PASS', ''); // Sua Senha de App do Google
+define('MAIL_FROM_NAME', 'Ghost Pix');
 ?>
 

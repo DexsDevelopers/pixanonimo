@@ -1,6 +1,6 @@
-<?php
 session_start();
 require_once '../includes/db.php';
+require_once '../includes/MailService.php';
 
 if (!isAdmin()) {
     redirect('../auth/login.php');
@@ -34,6 +34,14 @@ if ($action && $id) {
     
     try {
         $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+        
+        // Enviar e-mail se aprovado
+        if ($status == 'approved') {
+            $userData = getUser($id);
+            if ($userData && !empty($userData['email'])) {
+                MailService::notifyApproval($userData['email'], $userData['full_name']);
+            }
+        }
     } catch (PDOException $e) {
         write_log('error', 'Falha ao inserir notificação automática (Aprovação): ' . $e->getMessage());
     }
@@ -122,6 +130,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         try {
             $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$id, $title, $msg, $type]);
+            
+            // Enviar e-mail se aprovado
+            if ($status == 'approved') {
+                $userData = getUser($id);
+                if ($userData && !empty($userData['email'])) {
+                    MailService::notifyApproval($userData['email'], $userData['full_name']);
+                }
+            }
         } catch (PDOException $e) {
             write_log('error', 'Falha ao inserir notificação automática (Aprovação): ' . $e->getMessage());
         }
@@ -148,6 +164,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 try {
                     $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
                         ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
+
+                    // Enviar e-mail de saque pago
+                    $userData = getUser($wInfo['user_id']);
+                    if ($userData && !empty($userData['email'])) {
+                        MailService::notifyWithdrawalPaid($userData['email'], $userData['full_name'], $wInfo['amount']);
+                    }
                 } catch (PDOException $e) {
                     write_log('error', 'Falha ao inserir notificação automática (Saque Pago): ' . $e->getMessage());
                 }
