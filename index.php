@@ -31,7 +31,7 @@ if (isset($_GET['ref'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#080808">
     <title>Ghost Pix - Receba com Total Blindagem e Privacidade</title>
-    <link rel="stylesheet" href="style.css?v=121.0">
+    <link rel="stylesheet" href="style.css?v=122.0">
     <link rel="stylesheet" href="css/mobile-menu.css?v=107.0">
     <style>
         /* Force dark theme even if CSS is cached */
@@ -62,6 +62,29 @@ if (isset($_GET['ref'])) {
                 color: #000 !important;
                 border: 1px solid #4ade80 !important;
             }
+        }
+
+        /* Force Logo Alignment Fix */
+        .lp-navbar .logo {
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: auto !important;
+            transform: none !important;
+        }
+        .lp-navbar .logo-img {
+            height: 38px !important;
+            margin: 0 !important;
+            transform: none !important;
+            vertical-align: middle !important;
+        }
+        .lp-navbar .logo-text {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
         }
     </style>
     <!-- SEO & Premium Fonts -->
