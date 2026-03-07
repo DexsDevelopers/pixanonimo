@@ -7,11 +7,9 @@
 class MailService {
     /**
      * Envia um e-mail formatado.
-     * Implementação robusta usando a função mail() do PHP como base, 
-     * preparada para ser expandida para PHPMailer se necessário.
      */
     public static function send($to, $subject, $message) {
-        if (empty(MAIL_USER) || empty(MAIL_PASS)) {
+        if (!defined('MAIL_USER') || !defined('MAIL_PASS') || empty(MAIL_USER) || empty(MAIL_PASS)) {
             write_log('WARNING', 'Envio de e-mail abortado: Credenciais não configuradas.');
             return false;
         }
@@ -24,7 +22,6 @@ class MailService {
             'X-Mailer: PHP/' . phpversion()
         ];
 
-        // Template básico de e-mail Luxury Ghost
         $htmlMessage = "
         <html>
         <body style='font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px;'>
@@ -58,39 +55,57 @@ class MailService {
         }
     }
 
+    private static function getTemplate($slug, $replacements = []) {
+        global $pdo;
+        try {
+            $stmt = $pdo->prepare("SELECT subject, message FROM email_templates WHERE slug = ?");
+            $stmt->execute([$slug]);
+            $template = $stmt->fetch();
+            
+            if (!$template) return null;
+
+            $subject = $template['subject'];
+            $message = $template['message'];
+
+            foreach ($replacements as $key => $value) {
+                $subject = str_replace("{{$key}}", $value, $subject);
+                $message = str_replace("{{$key}}", $value, $message);
+            }
+
+            return ['subject' => $subject, 'message' => $message];
+        } catch (Exception $e) {
+            write_log('ERROR', 'Erro ao carregar template de e-mail', ['slug' => $slug, 'error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
     public static function notifyApproval($userEmail, $userName) {
-        $subject = "Sua conta Ghost Pix foi APROVADA! 🔥";
-        $message = "
-            <p>Olá, <strong>{$userName}</strong>!</p>
-            <p>Temos ótimas notícias: sua conta foi verificada e <strong>aprovada</strong> pela nossa equipe.</p>
-            <p>Você já pode acessar seu painel e começar a receber pagamentos com total blindagem e anonimato.</p>
-            <div style='text-align: center; margin: 30px 0;'>
-                <a href='https://pixghost.site/auth/login.php' style='background: #4ade80; color: #000; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;'>ACESSAR MEU PAINEL</a>
-            </div>
-        ";
-        return self::send($userEmail, $subject, $message);
+        $tpl = self::getTemplate('account_approved', ['name' => $userName]);
+        if (!$tpl) return false;
+        return self::send($userEmail, $tpl['subject'], $tpl['message']);
     }
 
     public static function notifySale($userEmail, $userName, $amount) {
         $val = number_format($amount, 2, ',', '.');
-        $subject = "💰 Venda Confirmada: R$ {$val}";
-        $message = "
-            <p>Boas vendas, <strong>{$userName}</strong>!</p>
-            <p>Um novo pagamento via PIX foi confirmado na sua conta.</p>
-            <p style='font-size: 24px; color: #4ade80; font-weight: bold;'>R$ {$val}</p>
-            <p>O saldo já foi creditado na sua carteira e está disponível para consulta no dashboard.</p>
-        ";
-        return self::send($userEmail, $subject, $message);
+        $tpl = self::getTemplate('sale_confirmed', ['name' => $userName, 'amount' => $val]);
+        if (!$tpl) return false;
+        return self::send($userEmail, $tpl['subject'], $tpl['message']);
     }
 
     public static function notifyWithdrawalPaid($userEmail, $userName, $amount) {
         $val = number_format($amount, 2, ',', '.');
-        $subject = "💸 Seu saque foi PAGO!";
-        $message = "
-            <p>Olá, <strong>{$userName}</strong>!</p>
-            <p>Seu pedido de saque no valor de <strong>R$ {$val}</strong> foi processado e enviado com sucesso para sua chave PIX cadastrada.</p>
-            <p>Obrigado por utilizar o sistema Ghost Pix!</p>
-        ";
-        return self::send($userEmail, $subject, $message);
+        $tpl = self::getTemplate('withdrawal_paid', ['name' => $userName, 'amount' => $val]);
+        if (!$tpl) return false;
+        return self::send($userEmail, $tpl['subject'], $tpl['message']);
+    }
+
+    public static function notifyGlobal($userEmail, $userName, $title, $message) {
+        $tpl = self::getTemplate('global_announcement', [
+            'name' => $userName, 
+            'title' => $title, 
+            'message' => $message
+        ]);
+        if (!$tpl) return false;
+        return self::send($userEmail, $tpl['subject'], $tpl['message']);
     }
 }

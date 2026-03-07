@@ -54,6 +54,9 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
                 <a href="<?php echo $base_path; ?>admin/notifications.php" class="nav-item <?php echo $current_page == 'notifications.php' ? 'active' : ''; ?>">
                     <i class="fas fa-bell"></i> Avisos Globais
                 </a>
+                <a href="<?php echo $base_path; ?>admin/email_settings.php" class="nav-item <?php echo $current_page == 'email_settings.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-envelope-open-text"></i> Editar E-mails
+                </a>
             <?php endif; ?>
             
             <div class="nav-spacer" style="flex: 1;"></div>

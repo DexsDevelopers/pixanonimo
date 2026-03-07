@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php';
 require_once '../includes/PushService.php';
+require_once '../includes/MailService.php';
 
 if (!isAdmin()) {
     redirect('../auth/login.php');
@@ -29,6 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             } catch (Exception $e) {
                 write_log('ERROR', 'Erro ao processar envio de Push manual', ['error' => $e->getMessage()]);
+            }
+        }
+
+        // Enviar E-mail if requested
+        if (isset($_POST['send_email'])) {
+            try {
+                if ($userId) {
+                    $userData = getUser($userId);
+                    if ($userData && !empty($userData['email'])) {
+                        MailService::notifyGlobal($userData['email'], $userData['full_name'], $title, $message);
+                    }
+                } else {
+                    // Global Email - Cuidado com timeout em muitos usuários
+                    $allUsers = $pdo->query("SELECT email, full_name FROM users WHERE is_admin = 0 AND status = 'approved'")->fetchAll();
+                    foreach ($allUsers as $user) {
+                        if (!empty($user['email'])) {
+                            MailService::notifyGlobal($user['email'], $user['full_name'], $title, $message);
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                write_log('ERROR', 'Erro ao processar envio de E-mail manual', ['error' => $e->getMessage()]);
             }
         }
         
@@ -93,9 +115,13 @@ $users = $pdo->query("SELECT id, full_name, email FROM users WHERE is_admin = 0 
                     </select>
                 </div>
 
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" name="send_push" id="send_push" style="width: 20px; height: 20px; cursor: pointer;">
-                    <label for="send_push" style="font-weight: 600; color: #fff; cursor: pointer;">📲 Enviar também como Push (Celular)</label>
+                <div class="form-group" style="display: flex; gap: 20px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #fff;">
+                        <input type="checkbox" name="send_push" style="width: 20px; height: 20px; cursor: pointer;"> 📲 Enviar Push
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #fff;">
+                        <input type="checkbox" name="send_email" style="width: 20px; height: 20px; cursor: pointer;"> 📧 Enviar E-mail
+                    </label>
                 </div>
 
                 <div class="form-group">
