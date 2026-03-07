@@ -12,8 +12,8 @@ $error = false;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userId = $_POST['user_id'] != 'all' ? (int)$_POST['user_id'] : null;
-    $title = strip_tags($_POST['title']);
-    $message = strip_tags($_POST['message']);
+    $title = trim($_POST['title']);
+    $message = trim($_POST['message']);
     $type = $_POST['type'];
 
     if (!empty($title) && !empty($message)) {

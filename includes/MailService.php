@@ -55,6 +55,12 @@ class MailService {
         }
     }
 
+    private static function autoLink($text) {
+        // Expressão regular para encontrar URLs
+        $pattern = '/(https?:\/\/[^\s]+)/';
+        return preg_replace($pattern, '<a href="$1" style="color: #4ade80; text-decoration: underline;" target="_blank">$1</a>', $text);
+    }
+
     private static function getTemplate($slug, $replacements = []) {
         global $pdo;
         try {
@@ -68,8 +74,14 @@ class MailService {
             $message = $template['message'];
 
             foreach ($replacements as $key => $value) {
-                // Converter quebras de linha simples em <br> para campos de texto
-                $val = ($key === 'message' || $key === 'reason') ? nl2br(trim($value)) : $value;
+                // Converter quebras de linha e criar links clicáveis para o campo de mensagem
+                if ($key === 'message' || $key === 'reason') {
+                    $val = nl2br(trim($value));
+                    $val = self::autoLink($val);
+                } else {
+                    $val = $value;
+                }
+                
                 $subject = str_replace("{{$key}}", $val, $subject);
                 $message = str_replace("{{$key}}", $val, $message);
             }
