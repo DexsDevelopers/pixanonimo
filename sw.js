@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ghost-pix-v8.6';
+const CACHE_NAME = 'ghost-pix-v8.7';
 const ASSETS = [
-    'style.css?v=121.0',
-    'script.js?v=121.0',
-    'logo_premium.png?v=8.0',
-    'manifest.json?v=2.0'
+    'style.css?v=122.0',
+    'script.js?v=122.0',
+    'logo_premium.png?v=9.0',
+    'manifest.json?v=3.0'
 ];
 
 self.addEventListener('install', (event) => {

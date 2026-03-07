@@ -114,7 +114,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
     <!-- Navbar -->
     <nav class="lp-navbar">
         <div class="logo">
-            <img src="logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
+            <img src="logo_premium.png?v=9.0" class="logo-img" alt="Ghost Logo">
             <span class="logo-text">GHOST<span> PIX</span></span>
         </div>
         
@@ -446,7 +446,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         <div class="lp-footer-container">
             <div class="lp-footer-brand">
                 <div class="logo">
-                    <img src="logo_premium.png?v=107.0" class="logo-img" alt="Ghost Logo">
+                    <img src="logo_premium.png?v=9.0" class="logo-img" alt="Ghost Logo">
                     <span class="logo-text">GHOST<span> PIX</span></span>
                 </div>
                 <p class="lp-brand-tagline">Feito por uma comunidade para uma comunidade.</p>
