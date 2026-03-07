@@ -425,8 +425,8 @@ if (isset($_GET['ref'])) {
                 </div>
                 <p class="lp-brand-tagline">Feito por uma comunidade para uma comunidade.</p>
                 <div class="lp-social-icons">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/pixghost.site/" target="_blank" title="Instagram Ghost Pix"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@ghost.pix" target="_blank" title="TikTok Ghost Pix"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
 
