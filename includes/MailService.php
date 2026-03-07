@@ -68,8 +68,10 @@ class MailService {
             $message = $template['message'];
 
             foreach ($replacements as $key => $value) {
-                $subject = str_replace("{{$key}}", $value, $subject);
-                $message = str_replace("{{$key}}", $value, $message);
+                // Converter quebras de linha simples em <br> para campos de texto
+                $val = ($key === 'message' || $key === 'reason') ? nl2br(trim($value)) : $value;
+                $subject = str_replace("{{$key}}", $val, $subject);
+                $message = str_replace("{{$key}}", $val, $message);
             }
 
             return ['subject' => $subject, 'message' => $message];
