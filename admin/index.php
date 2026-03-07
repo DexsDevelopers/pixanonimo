@@ -266,7 +266,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Ghost Pix Admin</title>
-    <link rel="stylesheet" href="../style.css?v=122.3">
+    <link rel="stylesheet" href="../style.css?v=124.0">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -699,6 +699,6 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
     </script>
 
     </div> <!-- Fechamento do app-container (aberto no sidebar.php) -->
-    <script src="../script.js?v=121.0"></script>
+    <script src="../script.js?v=124.0"></script>
 </body>
 </html>
