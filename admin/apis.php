@@ -139,19 +139,19 @@ try {
                                 </tr>
                             <?php endif; ?>
                             <?php foreach($apis as $api): ?>
-                            <tr>
-                                <td>
+                            <tr class="responsive-row">
+                                <td data-label="Nome">
                                     <div style="display:flex; flex-direction:column;">
                                         <span style="font-weight:600;"><?php echo htmlspecialchars($api['name']); ?></span>
                                         <span style="font-size:0.7rem; color:var(--text-dim);"><?php echo 'pk_...' . substr($api['api_key'], -6); ?></span>
                                     </div>
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="badge <?php echo $api['status'] == 'active' ? 'paid' : 'pending'; ?>">
                                         <?php echo $api['status'] == 'active' ? 'Ativo' : 'Inativo'; ?>
                                     </span>
                                 </td>
-                                <td>
+                                <td data-label="Ações" class="actions-cell">
                                     <div style="display:flex; gap: 8px;">
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="action" value="toggle_status">

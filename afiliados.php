@@ -113,8 +113,8 @@ $referrals = $stmt->fetchAll();
                         <tbody>
                             <?php if ($referrals): ?>
                                 <?php foreach ($referrals as $ref): ?>
-                                    <tr>
-                                        <td>
+                                    <tr class="responsive-row">
+                                        <td data-label="Nome do Indicado">
                                             <div style="display: flex; align-items: center; gap: 10px;">
                                                 <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border);">
                                                     <?php echo strtoupper(substr($ref['full_name'], 0, 1)); ?>
@@ -122,8 +122,8 @@ $referrals = $stmt->fetchAll();
                                                 <span style="font-weight: 500;"><?php echo htmlspecialchars($ref['full_name']); ?></span>
                                             </div>
                                         </td>
-                                        <td style="color: var(--text-3); font-size: 0.85rem;"><?php echo date('d/m/Y H:i', strtotime($ref['created_at'])); ?></td>
-                                        <td>
+                                        <td data-label="Data de Registro" style="color: var(--text-3); font-size: 0.85rem;"><?php echo date('d/m/Y H:i', strtotime($ref['created_at'])); ?></td>
+                                        <td data-label="Status">
                                             <span class="badge <?php echo $ref['status'] == 'approved' ? 'paid' : 'pending'; ?>" style="font-size: 0.7rem;">
                                                 <?php echo $ref['status'] == 'approved' ? 'Ativo' : 'Pendente'; ?>
                                             </span>

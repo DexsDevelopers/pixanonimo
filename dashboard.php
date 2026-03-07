@@ -330,11 +330,11 @@ try {
                         </thead>
                         <tbody>
                             <?php foreach($rows as $t): ?>
-                            <tr>
-                                <td><?php echo date('d/m H:i', strtotime($t['created_at'])); ?></td>
-                                <td>R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></td>
-                                <td>R$ <?php echo number_format($t['amount_net_brl'], 2, ',', '.'); ?></td>
-                                <td>
+                            <tr class="responsive-row">
+                                <td data-label="Data"><?php echo date('d/m H:i', strtotime($t['created_at'])); ?></td>
+                                <td data-label="Bruto">R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></td>
+                                <td data-label="Líquido">R$ <?php echo number_format($t['amount_net_brl'], 2, ',', '.'); ?></td>
+                                <td data-label="Status">
                                     <?php 
                                     $status = $t['status'];
                                     $displayStatus = ucfirst($status);
@@ -353,7 +353,7 @@ try {
                                     ?>
                                     <span class="badge <?php echo $badgeClass; ?>"><?php echo $displayStatus; ?></span>
                                 </td>
-                                <td>
+                                <td class="actions-cell" data-label="Ações">
                                     <div class="action-row">
                                         <button class="btn-history-action btn-view-qr" 
                                                 data-qr="<?php echo htmlspecialchars($t['qr_image'] ?? ''); ?>" 

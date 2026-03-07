@@ -136,17 +136,17 @@ $pageStats = $stmtStats->fetch();
                             </tr>
                         <?php else: ?>
                             <?php foreach($transactions as $t): ?>
-                            <tr>
-                                <td>#<?php echo $t['id']; ?></td>
-                                <td>
+                            <tr class="responsive-row">
+                                <td data-label="ID">#<?php echo $t['id']; ?></td>
+                                <td data-label="Produto / Referência">
                                     <strong><?php echo $t['external_id'] ?: 'Pagamento Pix'; ?></strong>
                                     <br><small style="color: var(--text-3); font-size: 0.75rem;"><?php echo $t['customer_name'] ?: 'Sem nome'; ?></small>
                                 </td>
-                                <td>
+                                <td data-label="Valor">
                                     <span style="font-weight: 700; color: #fff;">R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></span>
                                 </td>
-                                <td><span class="badge <?php echo $t['status']; ?>"><?php echo ucfirst($t['status']); ?></span></td>
-                                <td>
+                                <td data-label="Status"><span class="badge <?php echo $t['status']; ?>"><?php echo ucfirst($t['status']); ?></span></td>
+                                <td data-label="Data">
                                     <?php echo date('d/m/Y', strtotime($t['created_at'])); ?>
                                     <br><small style="color: var(--text-3);"><?php echo date('H:i', strtotime($t['created_at'])); ?></small>
                                 </td>
