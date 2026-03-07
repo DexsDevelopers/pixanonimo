@@ -2257,6 +2257,19 @@ input:-webkit-autofill:focus {
     transition: all 0.4s var(--ease);
 }
 
+/* Fix Logo Alignment in LP Navbar */
+.lp-navbar .logo {
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+}
+
+.lp-navbar .logo-img {
+    height: 40px;
+    margin-bottom: 0;
+}
+
 .lp-nav-links {
     display: flex;
     gap: 2rem;
