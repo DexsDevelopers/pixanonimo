@@ -1,6 +1,6 @@
-const CACHE_NAME = 'ghost-pix-v9.0';
+const CACHE_NAME = 'ghost-pix-v9.1';
 const ASSETS = [
-    'style.css?v=124.0',
+    'style.css?v=125.0',
     'script.js?v=124.0',
     'logo_premium.png?v=9.0',
     'manifest.json?v=3.0'
