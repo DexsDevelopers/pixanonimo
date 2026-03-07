@@ -16,8 +16,8 @@ define('TELEGRAM_CHAT_ID', '');   // Insira o seu Chat ID aqui
 // Gmail SMTP Configuration
 define('MAIL_HOST', 'smtp.gmail.com');
 define('MAIL_PORT', 587);
-define('MAIL_USER', ''); // Seu e-mail do Gmail
-define('MAIL_PASS', ''); // Sua Senha de App do Google
+define('MAIL_USER', 'pixghost.site@gmail.com'); // Seu e-mail do Gmail
+define('MAIL_PASS', 'ezxgfkvfuykzurcs'); // Sua Senha de App do Google
 define('MAIL_FROM_NAME', 'Ghost Pix');
 ?>
 
