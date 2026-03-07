@@ -22,7 +22,10 @@ if (isset($_GET['ref'])) {
     }
 }
 
-// Removemos o redirecionamento automático para permitir que usuários logados vejam a VSL se desejarem.
+// Redirecionamento automático se estiver logado e for PWA
+if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa')) {
+    redirect('dashboard.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
