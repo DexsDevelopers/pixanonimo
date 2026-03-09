@@ -353,6 +353,78 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             .steps-grid { grid-template-columns: 1fr; }
             .step-card { min-height: auto; }
         }
+
+        /* Integrations Row */
+        .integrations-bar {
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            position: relative;
+        }
+        .integrations-track {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0.6;
+            filter: grayscale(1) brightness(2);
+        }
+        .integration-item { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .integration-item i { font-size: 2rem; }
+
+        /* Comparison Table - Advantages */
+        .advantages-section { padding: 100px 20px; max-width: 1000px; margin: 0 auto; }
+        .comp-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .comp-table th { padding: 20px; text-align: left; color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; text-transform: uppercase; }
+        .comp-row {
+            background: rgba(255, 255, 255, 0.03);
+            transition: transform 0.3s ease;
+        }
+        .comp-row:hover { background: rgba(255, 255, 255, 0.05); transform: scale(1.01); }
+        .comp-row td { padding: 22px 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .comp-row td:first-child { border-left: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px 0 0 16px; font-weight: 600; }
+        .comp-row td:last-child { border-right: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 16px 16px 0; }
+        .bad-feat { color: #ff4b4b; font-weight: 700; }
+        .good-feat { color: #4ade80; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .ghost-col { background: rgba(88, 55, 255, 0.1); color: #fff; border: 1px solid rgba(88, 55, 255, 0.2) !important; }
+
+        /* Pricing Section */
+        .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 50px; }
+        .price-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        .price-card.popular {
+            border: 2px solid #5837ff;
+            background: rgba(88, 55, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(88, 55, 255, 0.15);
+        }
+        .price-card h4 { font-size: 1.5rem; margin-bottom: 10px; }
+        .price-value { font-size: 3rem; font-weight: 800; margin: 20px 0; }
+        .price-value span { font-size: 1rem; color: rgba(255, 255, 255, 0.5); }
+        .price-features { list-style: none; padding: 0; margin: 30px 0; text-align: left; }
+        .price-features li { padding: 10px 0; border_bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .price-features li i { color: #4ade80; }
+
+        @media (max-width: 768px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .integration-item { font-size: 1.1rem; }
+            .comp-table { font-size: 0.8rem; }
+            .comp-table th:nth-child(2), .comp-row td:nth-child(2) { display: none; }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -563,6 +635,18 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         </div>
     </section>
 
+    <!-- Integrations -->
+    <div class="integrations-bar">
+        <div class="integrations-track">
+            <div class="integration-item"><i class="fab fa-stripe"></i> Stripe API</div>
+            <div class="integration-item"><i class="fab fa-shopify"></i> Shopify</div>
+            <div class="integration-item"><i class="fas fa-plug"></i> Webhooks</div>
+            <div class="integration-item"><i class="fab fa-wordpress"></i> Elementor</div>
+            <div class="integration-item"><i class="fas fa-robot"></i> Bot Conversas</div>
+            <div class="integration-item"><i class="fas fa-university"></i> Open Bank</div>
+        </div>
+    </div>
+
     <!-- Section: Revenue Models & Dashboard Preview -->
     <section class="lp-section" id="vsl" style="padding-bottom: 0;">
         <div class="lp-section-title" data-aos="fade-up">
@@ -735,6 +819,90 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                         <span>Ghost Notify</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advantages Comparison Section -->
+    <section class="advantages-section">
+        <div class="lp-section-title" data-aos="fade-up">
+            <div class="tag-badge" style="background: rgba(74, 222, 128, 0.1); color: #4ade80;"><i class="fas fa-shield-alt"></i> Comparativo de Segurança</div>
+            <h2 class="lp-responsive-title">Por que escolher a <span class="lp-gradient-text">Blindagem Ghost Pix?</span></h2>
+            <p>Compare e veja a diferença entre operar exposto e operar sob nossa tutela.</p>
+        </div>
+
+        <table class="comp-table" data-aos="fade-up">
+            <thead>
+                <tr>
+                    <th>Recurso</th>
+                    <th>Plataformas Comuns</th>
+                    <th style="color: #fff;">Ghost Pix VIP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="comp-row">
+                    <td>Exposição de Dados (CPF/CNPJ)</td>
+                    <td class="bad-feat">Alta (Exposto no Checkout)</td>
+                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Zero (100% Oculto)</td>
+                </tr>
+                <tr class="comp-row">
+                    <td>Risco de Bloqueio Judicial</td>
+                    <td class="bad-feat">Crítico (BacenJud 2.0)</td>
+                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Blindado (Liquidação Indireta)</td>
+                </tr>
+                <tr class="comp-row">
+                    <td>Velocidade de Liquidação</td>
+                    <td>D+15 ou D+30</td>
+                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Imediata (via API)</td>
+                </tr>
+                <tr class="comp-row">
+                    <td>Aprovação de Produtos</td>
+                    <td>2-3 dias úteis</td>
+                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Instantânea</td>
+                </tr>
+                <tr class="comp-row">
+                    <td>Suporte Especializado</td>
+                    <td>Tickets Lentos</td>
+                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Gerente VIP no Whats</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="lp-section" id="taxas">
+        <div class="lp-section-title" data-aos="fade-up">
+            <div class="tag-badge"><i class="fas fa-dollar-sign"></i> Taxas Transparentes</div>
+            <h2 class="lp-responsive-title">O melhor custo-beneficio <br><span class="lp-gradient-text">para sua blindagem</span></h2>
+            <p>Sem mensalidades ocultas ou taxas de adesão. Pagamos pelo seu sucesso.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="price-card" data-aos="fade-right">
+                <h4>Iniciante</h4>
+                <div class="price-value">0%<span>/mês</span></div>
+                <p>Para quem está começando e busca segurança total desde o primeiro real.</p>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Taxa: 9.9% + R$ 1,00</li>
+                    <li><i class="fas fa-check"></i> Checkout Blindado</li>
+                    <li><i class="fas fa-check"></i> Saque em D+2</li>
+                    <li><i class="fas fa-check"></i> Suporte via Ticket</li>
+                </ul>
+                <a href="auth/register.php" class="btn-lp-outline" style="width: 100%;">COMEÇAR AGORA</a>
+            </div>
+
+            <div class="price-card popular" data-aos="fade-left">
+                <div style="position: absolute; top: 15px; right: 25px; background: #5837ff; color: #fff; font-size: 0.65rem; padding: 4px 12px; border-radius: 50px; font-weight: 800;">RECOMENDADO</div>
+                <h4>Enterprise</h4>
+                <div class="price-value">Custom<span>/mês</span></div>
+                <p>Para produtores acima de R$ 50k/mês que precisam de taxas reduzidas.</p>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Taxas Negociáveis</li>
+                    <li><i class="fas fa-check"></i> Checkout Customizável</li>
+                    <li><i class="fas fa-check"></i> Saque em D+1</li>
+                    <li><i class="fas fa-check"></i> Gerente de Contas Exclusivo</li>
+                </ul>
+                <a href="suporte.php" class="btn-lp-primary" style="width: 100%;">FALAR COM CONSULTOR</a>
             </div>
         </div>
     </section>
