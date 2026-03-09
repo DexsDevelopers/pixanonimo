@@ -603,6 +603,9 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             <?php endif; ?>
         </div>
 
+        <!-- Mobile Menu Toggle -->
+        <button class="lp-menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
         </button>
     </nav>
 

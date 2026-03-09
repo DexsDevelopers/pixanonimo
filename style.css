@@ -2299,6 +2299,22 @@ input:-webkit-autofill:focus {
     align-items: center;
 }
 
+.lp-menu-toggle {
+    display: none;
+    /* Hidden on desktop */
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.lp-menu-toggle:hover {
+    color: var(--green);
+}
+
 .btn-lp-outline {
     padding: .6rem 1.2rem;
     border: 1px solid var(--border-h);
@@ -2406,6 +2422,11 @@ input:-webkit-autofill:focus {
 
     .lp-auth-buttons {
         gap: 10px;
+    }
+
+    .lp-menu-toggle {
+        display: block !important;
+        /* Visible on mobile */
     }
 
     /* Fix for "Ugly" buttons reported by user */
