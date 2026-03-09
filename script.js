@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
 
     // --- PUSH NOTIFICATION SETUP ---
-    const PUBLIC_VAPID_KEY = 'BFA9H1A7y3_F-Z9yY-1HlRz1Z-H-H1H1H1H1H1H1H1H1';
+    const PUBLIC_VAPID_KEY = 'BF4Lpx8H-7V_A7y3_F-Z9yY-1HlRz1Z-N-H-H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1';
 
     const pushCard = document.getElementById('push-control-card');
     const pushStatusText = document.getElementById('push-status-text');
@@ -64,6 +64,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+    }
+
     async function subscribeUserToPush() {
         const registration = await registerServiceWorker();
         if (!registration) return;
@@ -75,18 +82,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Para Web Push real, precisaríamos do subscription real
-            // Por enquanto, salvamos o interesse do usuário
+            const subscribeOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+            };
+
+            const subscription = await registration.pushManager.subscribe(subscribeOptions);
+            const key = subscription.getKey('p256dh');
+            const auth = subscription.getKey('auth');
+
             await fetch('save_subscription.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ endpoint: 'browser_native', keys: { p256dh: '', auth: '' } })
+                body: JSON.stringify({
+                    endpoint: subscription.endpoint,
+                    keys: {
+                        p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(key))),
+                        auth: btoa(String.fromCharCode.apply(null, new Uint8Array(auth)))
+                    }
+                })
             });
 
             updatePushUI();
-            alert('Sucesso! Notificações ativadas.');
+            alert('Sucesso! Notificações ativas neste dispositivo.');
         } catch (error) {
             console.error('Sub Error:', error);
+            alert('Erro ao ativar push. Verifique se o site está em HTTPS e se você "Instalou" o app no iPhone.');
         }
     }
 

@@ -29,17 +29,53 @@ class PushService {
     public static function send($subscription, $title, $body, $icon = 'logo_premium.png') {
         try {
             $endpoint = $subscription['endpoint'];
-            
-            // Simulação de Push (Protocolo Web Push exigiria criptografia AES-GCM)
-            write_log('INFO', 'Disparando Push Notification (Simulação)', [
-                'to' => $endpoint,
+            $p256dh = $subscription['p256dh'];
+            $auth = $subscription['auth'];
+
+            if ($endpoint === 'browser_native' || empty($p256dh)) {
+                write_log('INFO', 'Inscrição push incompleta ou legado.');
+                return false;
+            }
+
+            // Configuração VAPID
+            $auth_config = [
+                'VAPID' => [
+                    'subject' => VAPID_SUBJECT,
+                    'publicKey' => VAPID_PUBLIC_KEY,
+                    'privateKey' => VAPID_PRIVATE_KEY,
+                ],
+            ];
+
+            $webPush = new \Minishlink\WebPush\WebPush($auth_config);
+
+            $payload = json_encode([
                 'title' => $title,
-                'body' => $body
+                'body' => $body,
+                'icon' => 'assets/' . $icon,
+                'badge' => 'assets/logo_premium.png',
+                'data' => [
+                    'url' => 'dashboard.php'
+                ]
             ]);
 
-            return true;
+            $report = $webPush->sendOneNotification(
+                \Minishlink\WebPush\Subscription::create([
+                    'endpoint' => $endpoint,
+                    'publicKey' => $p256dh,
+                    'authToken' => $auth,
+                ]),
+                $payload
+            );
+
+            if ($report->isSuccess()) {
+                write_log('INFO', 'Push Real Enviado com Sucesso', ['endpoint' => $endpoint]);
+                return true;
+            } else {
+                write_log('ERROR', 'Falha ao enviar Push Real', ['reason' => $report->getReason()]);
+                return false;
+            }
         } catch (Exception $e) {
-            write_log('ERROR', 'Falha no envio de Push', ['error' => $e->getMessage()]);
+            write_log('ERROR', 'Erro Crítico no PushService', ['error' => $e->getMessage()]);
             return false;
         }
     }
