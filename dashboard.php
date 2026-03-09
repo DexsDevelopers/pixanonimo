@@ -105,6 +105,18 @@ try {
     <?php include 'includes/sidebar.php'; ?>
 
         <main class="main-content">
+            <!-- WhatsApp Channel Announcement -->
+            <a href="https://whatsapp.com/channel/0029VbC56v0GZNComh5KQ73J" target="_blank" class="card glass" style="display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.25rem; margin-bottom: 1.5rem; text-decoration: none; border: 1px solid rgba(37, 211, 102, 0.2); background: linear-gradient(90deg, rgba(37, 211, 102, 0.05), transparent); transition: all 0.3s ease;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(37, 211, 102, 0.1); color: #25d366; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #fff; margin: 0;">Canal de Novidades</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-2); margin: 0;">Entre no nosso canal e fique por dentro de todas as atualizações! 🚀</p>
+                </div>
+                <i class="fas fa-chevron-right" style="font-size: 0.8rem; color: var(--text-3);"></i>
+            </a>
+
             <header class="top-header">
                 <div>
                     <h1>Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
