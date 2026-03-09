@@ -61,9 +61,9 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 background: rgba(255, 255, 255, 0.05) !important;
             }
             .btn-lp-primary-sm {
-                background: #4ade80 !important;
+                background: #fff !important;
                 color: #000 !important;
-                border: 1px solid #4ade80 !important;
+                border: 1px solid #fff !important;
             }
         }
 
@@ -92,7 +92,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
         /* Announcement Banner - Theme Refined */
         .lp-announcement-banner {
-            background: linear-gradient(90deg, rgba(88, 55, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(88, 55, 255, 0.05) 100%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 14px;
             backdrop-filter: blur(15px);
@@ -128,13 +128,13 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             letter-spacing: 0.3px;
         }
         .banner-content i {
-            color: #5837ff; /* Purple to match theme */
+            color: #fff; /* White instead of purple */
             font-size: 1.3rem;
-            filter: drop-shadow(0 0 8px rgba(88, 55, 255, 0.6));
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
         }
         .btn-banner {
-            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
-            color: #fff;
+            background: #fff;
+            color: #000;
             padding: 7px 20px;
             border-radius: 12px;
             font-weight: 700;
@@ -142,7 +142,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             letter-spacing: 0.8px;
-            box-shadow: 0 4px 15px rgba(88, 55, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-transform: uppercase;
         }
@@ -164,7 +164,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             margin: 0 auto;
         }
         .approval-card {
-            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
+            background: #111; /* Deep Black instead of Purple */
             border-radius: 24px;
             padding: 40px;
             display: flex;
@@ -172,8 +172,8 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             gap: 40px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(88, 55, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .approval-card::after {
             content: '';
@@ -213,7 +213,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         .btn-white {
             background: #fff;
-            color: #5837ff;
+            color: #000;
             padding: 12px 30px;
             border-radius: 12px;
             font-weight: 800;
@@ -344,7 +344,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         .step-visual {
             height: 180px;
-            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
+            background: linear-gradient(135deg, #222 0%, #000 100%);
             border-radius: 20px;
             margin-bottom: 20px;
             display: flex;
@@ -354,6 +354,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             color: #fff;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .step-visual i { opacity: 0.9; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
         .step-card h3 { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 15px; }
@@ -421,16 +422,16 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             position: relative;
         }
         .price-card.popular {
-            border: 2px solid #5837ff;
-            background: rgba(88, 55, 255, 0.05);
-            box-shadow: 0 20px 40px rgba(88, 55, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         .price-card h4 { font-size: 1.5rem; margin-bottom: 10px; }
         .price-value { font-size: 3rem; font-weight: 800; margin: 20px 0; }
         .price-value span { font-size: 1rem; color: rgba(255, 255, 255, 0.5); }
         .price-features { list-style: none; padding: 0; margin: 30px 0; text-align: left; }
         .price-features li { padding: 10px 0; border_bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
-        .price-features li i { color: #4ade80; }
+        .price-features li i { color: #fff; }
 
         @media (max-width: 768px) {
             .pricing-grid { grid-template-columns: 1fr; }
@@ -453,7 +454,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         .hero-text-side {
             flex: 1;
             text-align: left;
-            max-width: 700px;
+            max-width: 650px;
         }
         .hero-feed-side {
             flex-shrink: 0;
@@ -467,15 +468,22 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
         /* Overriding old hero styles for new structure */
         .lp-hero { padding: 0 20px; text-align: left; min-height: auto; }
-        .lp-responsive-title { text-align: left; margin: 20px 0; }
-        .lp-hero p { margin: 0 0 40px 0; text-align: left; }
+        .lp-responsive-title { 
+            text-align: left; 
+            margin: 20px 0; 
+            font-size: 3.2rem !important; /* Smaller text */
+            line-height: 1.1 !important;
+            letter-spacing: -2px !important;
+            font-weight: 800;
+        }
+        .lp-hero p { margin: 0 0 40px 0; text-align: left; font-size: 1.1rem; opacity: 0.7; }
 
         /* Dynamic Feed Items */
         .static-sales-feed { margin: 0; } /* Reset margin */
         .sp-bubble-static {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 16px 20px;
             width: 100%;
@@ -617,8 +625,8 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <div class="lp-hero-badge" data-aos="fade-down">
                     <span></span> Plataforma de vendas completa
                 </div>
-                <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA EM UMA <br><span class="lp-gradient-text" style="font-size: 0.85em; display: block; margin-top: 10px;">PLATAFORMA DESENHADA PARA PERFORMANCE, SEGURANÇA E RESULTADO SÓLIDO</span></h1>
-                <p>Uma plataforma completa para maximizar conversões e simplificar sua operação.</p>
+                <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA <br><span class="lp-gradient-text" style="font-size: 0.8em; display: block; margin-top: 10px; color: #aaa;">PLATAFORMA BLINDADA PARA ALTA PERFORMANCE</span></h1>
+                <p>Receba com total privacidade. Sem exposição de dados, sem bloqueios judiciais e liquidação imediata.</p>
                 
                 <?php if(isLoggedIn()): ?>
                     <a href="dashboard.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Acessar Meu Painel</a>
@@ -897,27 +905,27 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <tr class="comp-row">
                     <td>Exposição de Dados (CPF/CNPJ)</td>
                     <td class="bad-feat">Alta (Exposto no Checkout)</td>
-                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Zero (100% Oculto)</td>
+                    <td class="good-feat" style="background: rgba(255, 255, 255, 0.05);"><i class="fas fa-check-circle" style="color: #fff;"></i> Zero (100% Oculto)</td>
                 </tr>
                 <tr class="comp-row">
                     <td>Risco de Bloqueio Judicial</td>
                     <td class="bad-feat">Crítico (BacenJud 2.0)</td>
-                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Blindado (Liquidação Indireta)</td>
+                    <td class="good-feat" style="background: rgba(255, 255, 255, 0.05);"><i class="fas fa-check-circle" style="color: #fff;"></i> Blindado (Liquidação Indireta)</td>
                 </tr>
                 <tr class="comp-row">
                     <td>Velocidade de Liquidação</td>
                     <td>D+15 ou D+30</td>
-                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Imediata (via API)</td>
+                    <td class="good-feat" style="background: rgba(255, 255, 255, 0.05);"><i class="fas fa-check-circle" style="color: #fff;"></i> Imediata (via API)</td>
                 </tr>
                 <tr class="comp-row">
                     <td>Aprovação de Produtos</td>
                     <td>2-3 dias úteis</td>
-                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Instantânea</td>
+                    <td class="good-feat" style="background: rgba(255, 255, 255, 0.05);"><i class="fas fa-check-circle" style="color: #fff;"></i> Instantânea</td>
                 </tr>
                 <tr class="comp-row">
                     <td>Suporte Especializado</td>
                     <td>Tickets Lentos</td>
-                    <td class="good-feat" style="background: rgba(88, 55, 255, 0.1);"><i class="fas fa-check-circle"></i> Gerente VIP no Whats</td>
+                    <td class="good-feat" style="background: rgba(255, 255, 255, 0.05);"><i class="fas fa-check-circle" style="color: #fff;"></i> Gerente VIP no Whats</td>
                 </tr>
             </tbody>
         </table>
@@ -946,7 +954,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             </div>
 
             <div class="price-card popular" data-aos="fade-left">
-                <div style="position: absolute; top: 15px; right: 25px; background: #5837ff; color: #fff; font-size: 0.65rem; padding: 4px 12px; border-radius: 50px; font-weight: 800;">RECOMENDADO</div>
+                <div style="position: absolute; top: 15px; right: 25px; background: #fff; color: #000; font-size: 0.65rem; padding: 4px 12px; border-radius: 50px; font-weight: 800;">RECOMENDADO</div>
                 <h4>Enterprise</h4>
                 <div class="price-value">Custom<span>/mês</span></div>
                 <p>Para produtores acima de R$ 50k/mês que precisam de taxas reduzidas.</p>
@@ -956,7 +964,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                     <li><i class="fas fa-check"></i> Saque em D+1</li>
                     <li><i class="fas fa-check"></i> Gerente de Contas Exclusivo</li>
                 </ul>
-                <a href="suporte.php" class="btn-lp-primary" style="width: 100%;">FALAR COM CONSULTOR</a>
+                <a href="suporte.php" class="btn-lp-primary" style="width: 100%; border: 1px solid #fff;">FALAR COM CONSULTOR</a>
             </div>
         </div>
     </section>
