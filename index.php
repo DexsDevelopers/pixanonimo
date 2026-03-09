@@ -661,9 +661,37 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <img src="assets/user3.png" alt="User 3">
                 <div class="lp-avatar-more">+</div>
             </div>
-            <span class="lp-social-text">+2.348 usuários online agora</span>
+            <span class="lp-social-text">+<span id="dynamic-online-users">2.348</span> usuários online agora</span>
         </div>
     </div>
+
+    <!-- Script for Dynamic Online Users -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userCounter = document.getElementById('dynamic-online-users');
+            let currentUsers = 2348; // Base starting number
+
+            function updateUsers() {
+                // Randomly decide to increase or decrease (slightly more bias to increase to keep it healthy)
+                const change = Math.random() > 0.4 ? Math.floor(Math.random() * 15) : -Math.floor(Math.random() * 10);
+                
+                currentUsers += change;
+                
+                // Keep it within a believable range
+                if (currentUsers < 2100) currentUsers += 50; 
+                
+                // Format with thousand separator (pt-BR styling)
+                userCounter.textContent = currentUsers.toLocaleString('pt-BR');
+
+                // Schedule next update between 3 to 12 seconds
+                const nextUpdate = Math.floor(Math.random() * 9000) + 3000;
+                setTimeout(updateUsers, nextUpdate);
+            }
+
+            // Start the cycle
+            setTimeout(updateUsers, 3000);
+        });
+    </script>
 
     <!-- Hero Section -->
     <header class="lp-hero">
