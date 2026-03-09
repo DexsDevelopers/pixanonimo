@@ -287,6 +287,72 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             .social-proof-container { left: 10px; bottom: 10px; }
             .sp-bubble { width: 250px; padding: 10px 14px; }
         }
+
+        /* Hero Badge Refresh */
+        .lp-hero-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+            backdrop-filter: blur(5px);
+        }
+        .lp-hero-badge span {
+            width: 10px; height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Steps Section Styling */
+        .steps-section { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
+        .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px; }
+        .step-card {
+            background: rgba(88, 55, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 380px;
+        }
+        .step-card:hover {
+            transform: translateY(-10px);
+            background: rgba(88, 55, 255, 0.08);
+            border-color: rgba(88, 55, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .step-visual {
+            height: 180px;
+            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .step-visual i { opacity: 0.9; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
+        .step-card h3 { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 15px; }
+        .step-card p { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
+        
+        @media (max-width: 1024px) {
+            .steps-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .steps-grid { grid-template-columns: 1fr; }
+            .step-card { min-height: auto; }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -400,9 +466,11 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
     <!-- Hero Section -->
     <header class="lp-hero">
-        <div class="lp-hero-tag" data-aos="fade-down">A ERA DA BLINDAGEM FINANCEIRA CHEGOU</div>
-        <h1 class="lp-responsive-title">RECEBA COM TOTAL <br><span class="lp-gradient-text">BLINDAGEM E SIGILO</span></h1>
-        <p>Pare de se preocupar com bloqueios judiciais ou exposição de dados. O Ghost Pix é a primeira plataforma de liquidação blindada focada em privacidade absoluta.</p>
+        <div class="lp-hero-badge" data-aos="fade-down">
+            <span></span> Plataforma de vendas completa
+        </div>
+        <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA EM UMA <br><span class="lp-gradient-text">PLATAFORMA DESENHADA PARA PERFORMANCE, SEGURANÇA E RESULTADO SÓLIDO</span></h1>
+        <p>Uma plataforma completa para maximizar conversões e simplificar sua operação.</p>
         
         <!-- Visual Hero: 3D Floating Glass Cards -->
         <div class="hero-visual-wrapper">
@@ -450,6 +518,47 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <p>Chega de ficar esperando 2 ou 3 dias para vender. Aqui no Ghost Pix todos os seus produtos tem a aprovação instantânea. Basta fazer o cadastro, preencher as informações básicas sobre o produto e começar a vender.</p>
                 <p style="font-weight: 700;">Para você sair vendendo o mais rápido possível.</p>
                 <a href="auth/register.php" class="btn-white">QUERO SER GHOST PIX</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="steps-section" data-aos="fade-up">
+        <div class="steps-grid">
+            <!-- Step 1 -->
+            <div class="step-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-visual">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3>Crie sua conta</h3>
+                <p>Clique no botão "Criar conta" e aguarde o redirecionamento para a página de cadastro.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-visual">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h3>Preencha seus dados</h3>
+                <p>Preencha seus dado, defina a senha, atualize seu endereço e finalize seu cadastro.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-visual">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3>Cadastre seu produto</h3>
+                <p>Assim que estiver logado, você já pode criar um novo produto e ele será aprovado automaticamente.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="step-visual">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Comece a vender</h3>
+                <p>Pronto! Basta utilizar o link do seu checkout e aplicar nos seus funis de venda.</p>
             </div>
         </div>
     </section>
