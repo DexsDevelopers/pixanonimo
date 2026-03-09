@@ -90,17 +90,23 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             align-items: center !important;
         }
 
-        /* Announcement Banner - Theme Refined */
+        /* Announcement Banner - Theme Refined (Floating Glass Card) */
         .lp-announcement-banner {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 14px;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px 24px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             position: relative;
             z-index: 99;
-            margin-top: 80px; /* Below navbar */
+            margin: 100px auto 0 auto; /* Below navbar, centered */
+            max-width: max-content;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .lp-announcement-banner::before {
             content: '';
@@ -108,7 +114,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             top: 0; left: -100%;
             width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: shine-banner 8s infinite linear;
+            animation: shine-banner 6s infinite linear;
         }
         @keyframes shine-banner {
             0% { left: -100%; }
@@ -135,9 +141,9 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         .btn-banner {
             background: #fff;
             color: #000;
-            padding: 7px 20px;
-            border-radius: 12px;
-            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 800;
             font-size: 0.75rem;
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -148,13 +154,28 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         .btn-banner:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(88, 55, 255, 0.5);
-            filter: brightness(1.2);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            background: #f0f0f0;
         }
         @media (max-width: 768px) {
-            .lp-announcement-banner { margin-top: 70px; padding: 18px 10px; }
-            .banner-content { flex-direction: column; text-align: center; gap: 12px; font-size: 0.85rem; }
-            .btn-banner { width: 100%; max-width: 240px; padding: 10px; }
+            .lp-announcement-banner { 
+                margin-top: 90px; 
+                padding: 12px 15px; 
+                width: 90%; 
+                border-radius: 14px;
+            }
+            .banner-content { 
+                flex-direction: row; /* Keep it in line if possible */
+                text-align: center; 
+                gap: 10px; 
+                font-size: 0.75rem; 
+                flex-wrap: wrap;
+            }
+            .btn-banner { 
+                width: 100%; 
+                max-width: none; 
+                padding: 8px; 
+            }
         }
 
         /* Instant Approval Section */
@@ -737,126 +758,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         </div>
     </div>
 
-    <!-- Section: Revenue Models & Dashboard Preview -->
-    <section class="lp-section" id="vsl" style="padding-bottom: 0;">
-        <div class="lp-section-title" data-aos="fade-up">
-            <div class="tag-badge"><i class="fas fa-chart-line"></i> Modelos de Receita</div>
-            <h2 class="lp-responsive-title">Opere como um <span class="lp-gradient-text">líder de mercado</span></h2>
-            <p>Múltiplos fluxos de receita trabalhando juntos para maximizar seus lucros e sua segurança.</p>
-        </div>
 
-        <!-- Tab System -->
-        <div class="lp-tabs-container" data-aos="fade-up">
-            <div class="lp-tabs">
-                <button class="lp-tab active" data-tab="taxas">
-                    <i class="fas fa-percentage"></i> Taxas por Transação
-                </button>
-                <button class="lp-tab" data-tab="recorrencia">
-                    <i class="fas fa-calendar-check"></i> Receita Recorrente
-                </button>
-                <button class="lp-tab" data-tab="premium">
-                    <i class="fas fa-bolt"></i> Funcionalidades Premium
-                </button>
-                <button class="lp-tab" data-tab="multi">
-                    <i class="fas fa-layer-group"></i> Multi-Adquirência
-                </button>
-            </div>
-            <div class="lp-tab-indicator"></div>
-        </div>
-
-        <!-- Dashboard Live Preview -->
-        <div class="dashboard-preview-wrapper" data-aos="zoom-in" data-aos-delay="200">
-            <div class="dashboard-preview-window">
-                <div class="window-header">
-                    <div class="window-dots">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <div class="window-title">Transações ao Vivo</div>
-                    <div class="window-status"><span class="pulse-dot"></span> LIVE</div>
-                </div>
-                <div class="window-content">
-                    <div class="dashboard-grid">
-                        <div class="main-stats">
-                            <div class="stat-card">
-                                <span>Faturamento em Tempo Real</span>
-                                <h3 id="live-revenue">R$ 9.131,08</h3>
-                            </div>
-                            <div class="live-transactions" id="transactions-list">
-                                <div class="transaction-item">
-                                    <div class="t-icon"><i class="fas fa-shopping-cart"></i></div>
-                                    <div class="t-info">
-                                        <strong>Loja Virtual XYZ</strong>
-                                        <span>via PIX</span>
-                                    </div>
-                                    <div class="t-amt">
-                                        <span class="plus">+R$ 72,97</span>
-                                        <span class="status-ok"><i class="fas fa-check-circle"></i> OK</span>
-                                    </div>
-                                    <div class="t-time">Agora</div>
-                                </div>
-                                <div class="transaction-item">
-                                    <div class="t-icon"><i class="fas fa-credit-card"></i></div>
-                                    <div class="t-info">
-                                        <strong>E-commerce ABC</strong>
-                                        <span>via Visa</span>
-                                    </div>
-                                    <div class="t-amt">
-                                        <span class="plus">+R$ 144,52</span>
-                                        <span class="status-ok"><i class="fas fa-check-circle"></i> OK</span>
-                                    </div>
-                                    <div class="t-time">2 min</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="side-features">
-                            <div class="feature-msg-card active">
-                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
-                                <div class="f-text">
-                                    <h4>Receita automática em cada pagamento processado</h4>
-                                </div>
-                                <i class="fas fa-arrow-right f-arrow"></i>
-                            </div>
-                            <div class="feature-msg-card">
-                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
-                                <div class="f-text">
-                                    <h4>Escalável conforme seus clientes crescem</h4>
-                                </div>
-                                <i class="fas fa-arrow-right f-arrow"></i>
-                            </div>
-                            <div class="feature-msg-card">
-                                <div class="f-icon orange-glow"><i class="fas fa-check"></i></div>
-                                <div class="f-text">
-                                    <h4>Múltiplas formas de pagamento (PIX, cartão, boleto)</h4>
-                                </div>
-                                <i class="fas fa-arrow-right f-arrow"></i>
-                            </div>
-                             <div class="feature-msg-card">
-                                <div class="f-icon orange"><i class="fas fa-check"></i></div>
-                                <div class="f-text">
-                                    <h4>Dashboard em tempo real com todas as transações</h4>
-                                </div>
-                                <i class="fas fa-arrow-right f-arrow"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-footer-stats">
-                        <div class="f-stat">
-                            <span>Volume</span>
-                            <strong>R$ 765.312,22</strong>
-                        </div>
-                        <div class="f-stat">
-                            <span>Comissões</span>
-                            <strong class="orange-text">R$ 91.837,46</strong>
-                        </div>
-                        <div class="f-stat">
-                            <span>Aprovação</span>
-                            <strong class="green-text">99.8%</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Section: Integrated Resources -->
     <section class="lp-section">
