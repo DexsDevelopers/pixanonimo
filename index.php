@@ -370,26 +370,52 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
         /* Integrations Row */
         .integrations-bar {
-            padding: 40px 0;
-            background: rgba(255, 255, 255, 0.02);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             overflow: hidden;
             position: relative;
+            text-align: center;
+        }
+        .integrations-title {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            font-weight: 600;
         }
         .integrations-track {
             display: flex;
-            gap: 60px;
+            gap: 20px;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            opacity: 0.6;
-            filter: grayscale(1) brightness(2);
         }
-        .integration-item { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .integration-item i { font-size: 2rem; }
+        .integration-item { 
+            font-size: 1rem; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 24px;
+            border-radius: 100px;
+            color: #fff;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .integration-item:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-3px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .integration-item i { font-size: 1.3rem; opacity: 0.8; color: #fff; }
 
         /* Comparison Table - Advantages */
         .advantages-section { padding: 100px 20px; max-width: 1000px; margin: 0 auto; }
@@ -699,13 +725,15 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
     <!-- Integrations -->
     <div class="integrations-bar">
-        <div class="integrations-track">
-            <div class="integration-item"><i class="fab fa-stripe"></i> Stripe API</div>
-            <div class="integration-item"><i class="fab fa-shopify"></i> Shopify</div>
-            <div class="integration-item"><i class="fas fa-plug"></i> Webhooks</div>
-            <div class="integration-item"><i class="fab fa-wordpress"></i> Elementor</div>
-            <div class="integration-item"><i class="fas fa-robot"></i> Bot Conversas</div>
-            <div class="integration-item"><i class="fas fa-university"></i> Open Bank</div>
+        <div class="integrations-container" data-aos="fade-up">
+            <h4 class="integrations-title">Integrações Nativas & Tecnologias</h4>
+            <div class="integrations-track">
+                <div class="integration-item"><i class="fas fa-code"></i> API</div>
+                <div class="integration-item"><i class="fas fa-plug"></i> Webhooks</div>
+                <div class="integration-item"><i class="fas fa-robot"></i> Bot Conversas</div>
+                <div class="integration-item"><i class="fas fa-university"></i> Open Bank</div>
+                <div class="integration-item"><i class="fab fa-bitcoin"></i> Criptomoedas</div>
+            </div>
         </div>
     </div>
 
