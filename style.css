@@ -2481,7 +2481,8 @@ input:-webkit-autofill:focus {
     }
 
     .lp-hero {
-        padding-top: 120px !important;
+        padding-top: 20px !important;
+        /* Heavily reduced */
     }
 
     .lp-hero h1 {
@@ -2492,8 +2493,8 @@ input:-webkit-autofill:focus {
     .lp-social-proof-wrapper {
         display: flex !important;
         justify-content: center;
-        margin-top: 40px !important;
-        /* Salto para limpar navbar, reduzido de 110px */
+        margin-top: 15px !important;
+        /* Salto para limpar navbar, reduzido */
         position: relative;
         z-index: 100;
         width: 100%;
