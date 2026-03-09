@@ -704,7 +704,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                     <span></span> Plataforma de vendas completa
                 </div>
                 <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA <br><span class="lp-gradient-text" style="font-size: 0.8em; display: block; margin-top: 10px; color: #aaa;">PLATAFORMA BLINDADA PARA ALTA PERFORMANCE</span></h1>
-                <p>Receba com total privacidade. Sem exposição de dados, sem bloqueios judiciais e liquidação imediata.</p>
+                <p>Receba via Pix com total privacidade. <strong>Não precisa de CPF ou CNPJ</strong>, saques para qualquer conta, <strong>aprovação na mesma hora</strong> e proteção absoluta: <strong>Sem MED ou reembolso.</strong></p>
                 
                 <?php if(isLoggedIn()): ?>
                     <a href="dashboard.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Acessar Meu Painel</a>
@@ -727,7 +727,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             </div>
             <div class="approval-text">
                 <h2>Aprovação INSTANTÂNEA de produtos.</h2>
-                <p>Chega de ficar esperando 2 ou 3 dias para vender. Aqui no Ghost Pix todos os seus produtos tem a aprovação instantânea. Basta fazer o cadastro, preencher as informações básicas sobre o produto e começar a vender.</p>
+                <p>Chega de ficar esperando 2 ou 3 dias para vender. Aqui no Ghost Pix todos os seus produtos tem a aprovação na mesma hora. Sem burocracia, <strong>não pedimos seus dados</strong> e você recebe suas vendas com <strong>taxas justas e pequenas</strong>.</p>
                 <p style="font-weight: 700;">Para você sair vendendo o mais rápido possível.</p>
                 <a href="auth/register.php" class="btn-white">QUERO SER GHOST PIX</a>
             </div>
@@ -780,7 +780,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         <div class="integrations-container" data-aos="fade-up">
             <h4 class="integrations-title">Integrações Nativas & Tecnologias</h4>
             <div class="integrations-track">
-                <div class="integration-item"><i class="fas fa-code"></i> API</div>
+                <div class="integration-item"><i class="fas fa-code"></i> API de Pagamentos</div>
                 <div class="integration-item"><i class="fas fa-plug"></i> Webhooks</div>
                 <div class="integration-item"><i class="fas fa-robot"></i> Bot Conversas</div>
                 <div class="integration-item"><i class="fas fa-university"></i> Open Bank</div>
@@ -803,15 +803,15 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <div class="resource-card">
                     <div class="r-check orange"><i class="fas fa-check"></i></div>
                     <div class="r-content">
-                        <h4>Pix, cartão e boleto</h4>
-                        <span>Ghost Checkout</span>
+                        <h4>Recebimento em Pix</h4>
+                        <span>Na sua conta em qualquer nome</span>
                     </div>
                 </div>
                 <div class="resource-card">
                     <div class="r-check orange"><i class="fas fa-check"></i></div>
                     <div class="r-content">
-                        <h4>API de disputas</h4>
-                        <span>Ghost Shield</span>
+                        <h4>API de Pagamentos</h4>
+                        <span>Integração fácil e rápida</span>
                     </div>
                 </div>
                 <div class="resource-card">
