@@ -3,6 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 require_once '../includes/db.php';
+require_once '../includes/MailService.php';
 
 if (isLoggedIn()) {
     header("Location: ../dashboard.php");
@@ -41,8 +42,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token) VALUES (?, ?, ?, ?, 'pending', ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token) VALUES (?, ?, ?, ?, 'approved', ?, ?)");
     $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8))]);
+    $newUserId = $pdo->lastInsertId();
+
+    // Notificação Interna de Aprovação
+    try {
+        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Conta Aprovada! ✅', 'Sua conta foi verificada e aprovada automaticamente. Já pode começar a operar!', 'success')")
+            ->execute([$newUserId]);
+    } catch (PDOException $e) {
+        write_log('error', 'Falha ao inserir notificação automática no registro: ' . $e->getMessage());
+    }
+
+    // Enviar E-mail de Aprovação
+    MailService::notifyApproval($email, $full_name);
 
     header("Location: login.php?registered=1");
     exit;
