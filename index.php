@@ -89,6 +89,73 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             display: flex !important;
             align-items: center !important;
         }
+
+        /* Announcement Banner - Theme Refined */
+        .lp-announcement-banner {
+            background: linear-gradient(90deg, rgba(88, 55, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(88, 55, 255, 0.05) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 99;
+            margin-top: 80px; /* Below navbar */
+            overflow: hidden;
+        }
+        .lp-announcement-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shine-banner 8s infinite linear;
+        }
+        @keyframes shine-banner {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .banner-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .banner-content i {
+            color: #5837ff; /* Purple to match theme */
+            font-size: 1.3rem;
+            filter: drop-shadow(0 0 8px rgba(88, 55, 255, 0.6));
+        }
+        .btn-banner {
+            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
+            color: #fff;
+            padding: 7px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 15px rgba(88, 55, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+        }
+        .btn-banner:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(88, 55, 255, 0.5);
+            filter: brightness(1.2);
+        }
+        @media (max-width: 768px) {
+            .lp-announcement-banner { margin-top: 70px; padding: 18px 10px; }
+            .banner-content { flex-direction: column; text-align: center; gap: 12px; font-size: 0.85rem; }
+            .btn-banner { width: 100%; max-width: 240px; padding: 10px; }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -135,13 +202,17 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             <?php endif; ?>
         </div>
 
-        <!-- Mobile Toggle -->
-        <button class="lp-menu-toggle mobile-only" id="menuToggle" aria-label="Abrir Menu">
-            <span></span>
-            <span></span>
-            <span></span>
         </button>
     </nav>
+
+    <!-- WhatsApp Announcement Banner -->
+    <div class="lp-announcement-banner">
+        <div class="banner-content">
+            <i class="fab fa-whatsapp"></i>
+            <span>Entre no nosso canal oficial do WhatsApp para novidades e avisos!</span>
+            <a href="https://whatsapp.com/channel/0029VbC56v0GZNComh5KQ73J" target="_blank" class="btn-banner">ENTRAR AGORA</a>
+        </div>
+    </div>
 
     <!-- Mobile Menu Overlay -->
     <div class="lp-mobile-menu" id="mobileMenu">
