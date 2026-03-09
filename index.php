@@ -242,46 +242,46 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             pointer-events: none;
             width: 320px;
         }
-        .sp-bubble {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 16px 20px;
+        /* STatic Sales Feed - INSIDE HERO */
+        .static-sales-feed {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        .sp-bubble-static {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px 18px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-            animation: sp-in-right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-            pointer-events: auto;
+            transition: all 0.3s ease;
             position: relative;
             box-sizing: border-box;
+            backdrop-filter: blur(10px);
         }
+        .sp-bubble-static:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(5px); }
         .sp-icon {
-            width: 44px; height: 44px;
+            width: 36px; height: 36px;
             background: #000;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 1.2rem;
-            flex-shrink: 0;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1rem; flex-shrink: 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .sp-content { flex: 1; }
-        .sp-content b { display: block; font-size: 0.9rem; color: #fff; margin-bottom: 2px; font-weight: 700; }
-        .sp-content span { font-size: 0.8rem; color: rgba(255, 255, 255, 0.65); display: block; }
-        .sp-content .amt { color: #fff; font-weight: 800; margin-left: 4px; }
-        .sp-time { 
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 0.65rem; 
-            color: rgba(255, 255, 255, 0.4); 
+        .sp-content { flex: 1; text-align: left; }
+        .sp-content b { display: block; font-size: 0.85rem; color: #fff; margin-bottom: 2px; font-weight: 700; }
+        .sp-content span { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); display: block; }
+        .sp-content .amt { color: #fff; font-weight: 800; }
+        .sp-time-static { 
+            font-size: 0.6rem; 
+            color: rgba(255, 255, 255, 0.3); 
             font-weight: 500;
+            margin-left: auto;
         }
 
         @keyframes sp-in-right {
@@ -438,6 +438,67 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             .comp-table { font-size: 0.8rem; }
             .comp-table th:nth-child(2), .comp-row td:nth-child(2) { display: none; }
         }
+
+        /* NEW 2-COLUMN HERO LAYOUT */
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 50px;
+            padding-top: 120px;
+            padding-bottom: 80px;
+        }
+        .hero-text-side {
+            flex: 1;
+            text-align: left;
+            max-width: 700px;
+        }
+        .hero-feed-side {
+            flex-shrink: 0;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Overriding old hero styles for new structure */
+        .lp-hero { padding: 0 20px; text-align: left; min-height: auto; }
+        .lp-responsive-title { text-align: left; margin: 20px 0; }
+        .lp-hero p { margin: 0 0 40px 0; text-align: left; }
+
+        /* Dynamic Feed Items */
+        .static-sales-feed { margin: 0; } /* Reset margin */
+        .sp-bubble-static {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 16px 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 1;
+            transform: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .sp-icon {
+            width: 42px; height: 42px;
+            background: #000;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 1100px) {
+            .hero-container { flex-direction: column; text-align: center; gap: 40px; padding-top: 80px; }
+            .hero-text-side, .lp-responsive-title, .lp-hero p { text-align: center !important; }
+            .hero-feed-side { width: 100%; max-width: 400px; margin: 0 auto; }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -551,45 +612,25 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
     <!-- Hero Section -->
     <header class="lp-hero">
-        <div class="lp-hero-badge" data-aos="fade-down">
-            <span></span> Plataforma de vendas completa
-        </div>
-        <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA EM UMA <br><span class="lp-gradient-text">PLATAFORMA DESENHADA PARA PERFORMANCE, SEGURANÇA E RESULTADO SÓLIDO</span></h1>
-        <p>Uma plataforma completa para maximizar conversões e simplificar sua operação.</p>
-        
-        <!-- Visual Hero: 3D Floating Glass Cards -->
-        <div class="hero-visual-wrapper">
-            <div class="floating-card card-1">
-                <i class="fas fa-shield-virus"></i>
-                <h4>Blindagem Total</h4>
-                <p>Seu CPF nunca aparece. Transações 100% anônimas via liquidadora.</p>
-                <div style="height: 2px; width: 40px; background: var(--green); border-radius: 10px;"></div>
-            </div>
-            
-            <div class="floating-card card-2">
-                <i class="fas fa-university"></i>
-                <h4>Anti-Bacen</h4>
-                <p>Imunidade a bloqueios judiciais instantâneos.</p>
-                <div style="display: flex; gap: 5px; margin-top: 5px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); opacity: 0.5;"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); opacity: 0.2;"></span>
+        <div class="hero-container">
+            <div class="hero-text-side">
+                <div class="lp-hero-badge" data-aos="fade-down">
+                    <span></span> Plataforma de vendas completa
                 </div>
+                <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA EM UMA <br><span class="lp-gradient-text" style="font-size: 0.85em; display: block; margin-top: 10px;">PLATAFORMA DESENHADA PARA PERFORMANCE, SEGURANÇA E RESULTADO SÓLIDO</span></h1>
+                <p>Uma plataforma completa para maximizar conversões e simplificar sua operação.</p>
+                
+                <?php if(isLoggedIn()): ?>
+                    <a href="dashboard.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Acessar Meu Painel</a>
+                <?php else: ?>
+                    <a href="auth/register.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Quero minha conta blindada</a>
+                <?php endif; ?>
             </div>
 
-            <div class="floating-card card-3">
-                <i class="fas fa-bolt"></i>
-                <h4>Webhook Real-time</h4>
-                <p>Liquidado e confirmado em 2 segundos. Sem delay.</p>
-                <div style="background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; font-family: monospace; font-size: 10px; color: var(--green);">status: success</div>
+            <div class="hero-feed-side" id="static-sales-feed" data-aos="fade-left">
+                <!-- Items driven by JS -->
             </div>
         </div>
-
-        <?php if(isLoggedIn()): ?>
-            <a href="dashboard.php" class="btn-lp-primary">Acessar Meu Painel</a>
-        <?php else: ?>
-            <a href="auth/register.php" class="btn-lp-primary">Quero minha conta blindada</a>
-        <?php endif; ?>
     </header>
 
     <!-- Instant Approval Highlight -->
@@ -1167,57 +1208,58 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             });
         });
     </script>
-    <div id="social-proof-root" class="social-proof-container"></div>
     <script>
-        // Social Proof System - STACKED RIGHT SIDE
-        const spRoot = document.getElementById('social-proof-root');
-        const MAX_PROOFS = 4;
+        // Static Sales Feed - SIDE INTEGRATED
+        const feedRoot = document.getElementById('static-sales-feed');
+        const MAX_FEED_ITEMS = 6;
 
-        function showSocialProof() {
-            // Remove oldest if more than MAX
-            if (spRoot.children.length >= MAX_PROOFS) {
-                const oldest = spRoot.lastElementChild;
-                oldest.style.animation = 'sp-out-right 0.6s ease both';
-                setTimeout(() => oldest.remove(), 600);
-            }
-
+        function addSaleItem() {
             const amount = (Math.random() * 400 + 50).toFixed(2);
+            const item = document.createElement('div');
+            item.className = 'sp-bubble-static';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8) translateX(20px)';
             
-            const sp = document.createElement('div');
-            sp.className = 'sp-bubble';
-            sp.innerHTML = `
-                <div class="sp-icon"><img src="logo_premium.png" style="width: 24px; filter: brightness(10);"></div>
+            item.innerHTML = `
+                <div class="sp-icon"><img src="logo_premium.png" style="width: 20px; filter: brightness(10);"></div>
                 <div class="sp-content">
                     <b>Venda realizada!</b>
                     <span>Comissão: <b class="amt">R$ ${amount.replace('.', ',')}</b></span>
                 </div>
-                <div class="sp-time">agora</div>
+                <div class="sp-time-static">agora</div>
             `;
 
-            // Insert at the top to stack
-            spRoot.insertBefore(sp, spRoot.firstChild);
-
-            setTimeout(() => {
-                if (sp.parentElement) {
-                    sp.style.animation = 'sp-out-right 0.6s ease both';
-                    setTimeout(() => sp.remove(), 600);
-                }
-            }, 8000);
-        }
-
-        // Random intervals between 5 and 10 seconds
-        function startProofs() {
-            function loop() {
+            feedRoot.insertBefore(item, feedRoot.firstChild);
+            
+            // Animation
+            requestAnimationFrame(() => {
                 setTimeout(() => {
-                    showSocialProof();
-                    loop();
-                }, Math.random() * 5000 + 5000);
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1) translateX(0)';
+                }, 50);
+            });
+
+            if (feedRoot.children.length > MAX_FEED_ITEMS) {
+                const oldest = feedRoot.lastElementChild;
+                oldest.style.opacity = '0';
+                oldest.style.transform = 'scale(0.9) translateY(10px)';
+                setTimeout(() => oldest.remove(), 400);
             }
-            loop();
         }
 
-        setTimeout(startProofs, 2000);
-        setTimeout(showSocialProof, 500); // Show first one quickly
+        // Initialize multiple items
+        for(let i=0; i<4; i++) {
+            setTimeout(addSaleItem, i*600);
+        }
+
+        // Random loop
+        function feedLoop() {
+            setTimeout(() => {
+                addSaleItem();
+                feedLoop();
+            }, Math.random() * 3000 + 4000);
+        }
+        setTimeout(feedLoop, 5000);
     </script>
 </body>
 </html>
