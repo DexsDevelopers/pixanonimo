@@ -230,62 +230,75 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             background: #f8f8f8;
         }
 
-        /* Social Proof Bubbles */
+        /* Social Proof Bubbles - RIGHT SIDE STACKED */
         .social-proof-container {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            top: 100px;
+            right: 20px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             pointer-events: none;
+            width: 320px;
         }
         .sp-bubble {
-            background: rgba(20, 20, 25, 0.8);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             gap: 15px;
-            width: 280px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            animation: sp-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            width: 100%;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            animation: sp-in-right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
             pointer-events: auto;
+            position: relative;
+            box-sizing: border-box;
         }
         .sp-icon {
-            width: 40px; height: 40px;
-            background: #5837ff;
-            border-radius: 10px;
+            width: 44px; height: 44px;
+            background: #000;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .sp-content { flex: 1; }
-        .sp-content b { display: block; font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
-        .sp-content span { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); display: block; }
-        .sp-content .amt { color: #4ade80; font-weight: 700; margin-left: 4px; }
-        .sp-time { font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); align-self: flex-start; margin-top: 2px; }
+        .sp-content b { display: block; font-size: 0.9rem; color: #fff; margin-bottom: 2px; font-weight: 700; }
+        .sp-content span { font-size: 0.8rem; color: rgba(255, 255, 255, 0.65); display: block; }
+        .sp-content .amt { color: #fff; font-weight: 800; margin-left: 4px; }
+        .sp-time { 
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 0.65rem; 
+            color: rgba(255, 255, 255, 0.4); 
+            font-weight: 500;
+        }
 
-        @keyframes sp-in {
-            from { opacity: 0; transform: translateX(-50px) scale(0.9); }
+        @keyframes sp-in-right {
+            from { opacity: 0; transform: translateX(50px) scale(0.9); }
             to { opacity: 1; transform: translateX(0) scale(1); }
         }
-        @keyframes sp-out {
+        @keyframes sp-out-right {
             from { opacity: 1; transform: translateX(0) scale(1); }
-            to { opacity: 0; transform: translateX(-50px) scale(0.9); }
+            to { opacity: 0; transform: translateX(50px) scale(0.95); }
         }
 
         @media (max-width: 768px) {
             .approval-card { flex-direction: column; text-align: center; padding: 30px 20px; gap: 20px; }
             .approval-icon { width: 80px; height: 80px; font-size: 2rem; }
-            .social-proof-container { left: 10px; bottom: 10px; }
-            .sp-bubble { width: 250px; padding: 10px 14px; }
+            .social-proof-container { right: 10px; top: 90px; width: 280px; }
+            .sp-bubble { padding: 12px 16px; border-radius: 16px; }
+            .sp-icon { width: 36px; height: 36px; font-size: 1rem; }
         }
 
         /* Hero Badge Refresh */
@@ -1156,14 +1169,18 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
     </script>
     <div id="social-proof-root" class="social-proof-container"></div>
     <script>
-        // Social Proof System
+        // Social Proof System - STACKED RIGHT SIDE
         const spRoot = document.getElementById('social-proof-root');
-        const names = ['André R.', 'Maria S.', 'João P.', 'Lucas M.', 'Felipe G.', 'Ana B.', 'Priscilla T.', 'Roberto C.', 'Gabriel H.', 'Carlos D.'];
-        const methods = ['via PIX', 'via Cartão', 'via Bitcoin'];
+        const MAX_PROOFS = 4;
 
         function showSocialProof() {
-            const name = names[Math.floor(Math.random() * names.length)];
-            const method = methods[Math.floor(Math.random() * methods.length)];
+            // Remove oldest if more than MAX
+            if (spRoot.children.length >= MAX_PROOFS) {
+                const oldest = spRoot.lastElementChild;
+                oldest.style.animation = 'sp-out-right 0.6s ease both';
+                setTimeout(() => oldest.remove(), 600);
+            }
+
             const amount = (Math.random() * 400 + 50).toFixed(2);
             
             const sp = document.createElement('div');
@@ -1177,23 +1194,30 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 <div class="sp-time">agora</div>
             `;
 
-            spRoot.appendChild(sp);
+            // Insert at the top to stack
+            spRoot.insertBefore(sp, spRoot.firstChild);
 
             setTimeout(() => {
-                sp.style.animation = 'sp-out 0.6s ease both';
-                setTimeout(() => sp.remove(), 600);
-            }, 5000);
+                if (sp.parentElement) {
+                    sp.style.animation = 'sp-out-right 0.6s ease both';
+                    setTimeout(() => sp.remove(), 600);
+                }
+            }, 8000);
         }
 
-        // Random intervals between 8 and 15 seconds
-        function nextProof() {
-            setTimeout(() => {
-                showSocialProof();
-                nextProof();
-            }, Math.random() * 7000 + 8000);
+        // Random intervals between 5 and 10 seconds
+        function startProofs() {
+            function loop() {
+                setTimeout(() => {
+                    showSocialProof();
+                    loop();
+                }, Math.random() * 5000 + 5000);
+            }
+            loop();
         }
 
-        setTimeout(nextProof, 3000);
+        setTimeout(startProofs, 2000);
+        setTimeout(showSocialProof, 500); // Show first one quickly
     </script>
 </body>
 </html>
