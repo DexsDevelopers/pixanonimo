@@ -2454,8 +2454,8 @@ input:-webkit-autofill:focus {
     .lp-social-proof-wrapper {
         display: flex !important;
         justify-content: center;
-        margin-top: 110px !important;
-        /* Salto para limpar navbar de 70px */
+        margin-top: 40px !important;
+        /* Salto para limpar navbar, reduzido de 110px */
         position: relative;
         z-index: 100;
         width: 100%;
@@ -3391,7 +3391,8 @@ input:-webkit-autofill:focus {
 .lp-social-proof-wrapper {
     display: flex;
     justify-content: center;
-    margin: 3rem 0 1rem;
+    margin: 1.5rem 0 0.5rem;
+    /* Reduced top spacing */
     animation: fadeIn 1s var(--ease);
 }
 

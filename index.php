@@ -100,7 +100,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             -webkit-backdrop-filter: blur(25px);
             position: relative;
             z-index: 99;
-            margin: 100px auto 0 auto; /* Below navbar, centered */
+            margin: 60px auto 0 auto; /* Reduced from 100px */
             max-width: max-content;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -159,7 +159,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         @media (max-width: 768px) {
             .lp-announcement-banner { 
-                margin-top: 90px; 
+                margin-top: 60px; /* Reduced from 90px */
                 padding: 12px 15px; 
                 width: 90%; 
                 border-radius: 14px;
@@ -495,7 +495,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             max-width: 1400px;
             margin: 0 auto;
             gap: 50px;
-            padding-top: 120px;
+            padding-top: 60px; /* Reduced from 120px */
             padding-bottom: 80px;
         }
         .hero-text-side {
@@ -506,9 +506,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         .hero-feed-side {
             flex-shrink: 0;
             width: 380px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            height: 140px; /* Fixed height for stacked absolute items */
             position: relative;
             z-index: 10;
         }
@@ -530,6 +528,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         .sp-bubble-static {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 16px 20px;
@@ -537,9 +536,13 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             display: flex;
             align-items: center;
             gap: 15px;
-            opacity: 1;
-            transform: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
         }
         .sp-icon {
             width: 42px; height: 42px;
@@ -1019,20 +1022,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             });
         });
 
-        // FAQ Toggle
-        document.querySelectorAll('.lp-faq-item').forEach(item => {
-            const q = item.querySelector('.lp-faq-q');
-            q.onclick = () => {
-                const isOpen = item.classList.contains('active');
-                
-                // Close all
-                document.querySelectorAll('.lp-faq-item').forEach(el => el.classList.remove('active'));
-                
-                if (!isOpen) {
-                    item.classList.add('active');
-                }
-            };
-        });
+        // (Redundant FAQ logic block has been removed)
 
         // Tabs Logic
         document.querySelectorAll('.lp-tab').forEach(tab => {
@@ -1158,26 +1148,46 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
         // FAQ Toggle Logic
         document.querySelectorAll('.lp-faq-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const answer = item.querySelector('.lp-faq-answer');
-                const icon = item.querySelector('i.fa-chevron-down');
-                const isOpen = answer.style.display === 'block';
-                
-                // Close all others
-                document.querySelectorAll('.lp-faq-answer').forEach(a => a.style.display = 'none');
-                document.querySelectorAll('.lp-faq-item i.fa-chevron-down').forEach(i => i.style.transform = 'rotate(0deg)');
-
-                if (!isOpen) {
-                    answer.style.display = 'block';
-                    icon.style.transform = 'rotate(180deg)';
-                }
-            });
+            const q = item.querySelector('.lp-faq-q');
+            if (q) {
+                q.onclick = () => {
+                    const isOpen = item.classList.contains('active');
+                    
+                    // Close all
+                    document.querySelectorAll('.lp-faq-item').forEach(el => el.classList.remove('active'));
+                    
+                    if (!isOpen) {
+                        item.classList.add('active');
+                    }
+                };
+            }
         });
     </script>
     <script>
-        // Static Sales Feed - SIDE INTEGRATED
+        // Static Sales Feed - SIDE INTEGRATED STACKED
         const feedRoot = document.getElementById('static-sales-feed');
-        const MAX_FEED_ITEMS = 6;
+        const MAX_FEED_ITEMS = 4;
+
+        function updateFeedStack() {
+            const items = Array.from(feedRoot.children);
+            items.forEach((item, index) => {
+                item.style.zIndex = 100 - index;
+                if(index === 0) {
+                    item.style.transform = 'translateY(0) scale(1)';
+                    item.style.opacity = '1';
+                } else if(index === 1) {
+                    item.style.transform = 'translateY(15px) scale(0.95)';
+                    item.style.opacity = '0.8';
+                } else if(index === 2) {
+                    item.style.transform = 'translateY(30px) scale(0.9)';
+                    item.style.opacity = '0.5';
+                } else {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(45px) scale(0.85)';
+                    setTimeout(() => item.remove(), 500); // Wait for transition
+                }
+            });
+        }
 
         function addSaleItem() {
             const amount = (Math.random() * 400 + 50).toFixed(2);
@@ -1197,20 +1207,11 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
             feedRoot.insertBefore(item, feedRoot.firstChild);
             
-            // Animation
+            // Animation Stack Update
             requestAnimationFrame(() => {
-                setTimeout(() => {
-                    item.style.opacity = '1';
-                    item.style.transform = 'scale(1) translateX(0)';
-                }, 50);
+                setTimeout(updateFeedStack, 50);
             });
 
-            if (feedRoot.children.length > MAX_FEED_ITEMS) {
-                const oldest = feedRoot.lastElementChild;
-                oldest.style.opacity = '0';
-                oldest.style.transform = 'scale(0.9) translateY(10px)';
-                setTimeout(() => oldest.remove(), 400);
-            }
         }
 
         // Initialize multiple items
