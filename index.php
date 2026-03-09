@@ -100,7 +100,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             -webkit-backdrop-filter: blur(25px);
             position: relative;
             z-index: 99;
-            margin: 60px auto 0 auto; /* Reduced from 100px */
+            margin: 130px auto 0 auto; /* Increased to safely clear the fixed navbar */
             max-width: max-content;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -159,7 +159,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         @media (max-width: 768px) {
             .lp-announcement-banner { 
-                margin-top: 60px; /* Reduced from 90px */
+                margin-top: 110px; /* Reduced for mobile, but still clears navbar */
                 padding: 12px 15px; 
                 width: 90%; 
                 border-radius: 14px;
@@ -495,7 +495,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             max-width: 1400px;
             margin: 0 auto;
             gap: 50px;
-            padding-top: 60px; /* Reduced from 120px */
+            padding-top: 40px; /* Kept tight to the badge/banner */
             padding-bottom: 80px;
         }
         .hero-text-side {
@@ -1171,19 +1171,26 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         function updateFeedStack() {
             const items = Array.from(feedRoot.children);
             items.forEach((item, index) => {
+                // To achieve the overlapping look:
+                // Z-index decreases for older items so they go behind.
+                // Translate Y increments down slightly so they peek out from bottom.
+                // Scale reduces to give depth.
                 item.style.zIndex = 100 - index;
                 if(index === 0) {
                     item.style.transform = 'translateY(0) scale(1)';
                     item.style.opacity = '1';
                 } else if(index === 1) {
-                    item.style.transform = 'translateY(15px) scale(0.95)';
-                    item.style.opacity = '0.8';
+                    item.style.transform = 'translateY(12px) scale(0.96)';
+                    item.style.opacity = '0.9';
                 } else if(index === 2) {
-                    item.style.transform = 'translateY(30px) scale(0.9)';
-                    item.style.opacity = '0.5';
+                    item.style.transform = 'translateY(24px) scale(0.92)';
+                    item.style.opacity = '0.7';
+                } else if(index === 3) {
+                    item.style.transform = 'translateY(36px) scale(0.88)';
+                    item.style.opacity = '0.4';
                 } else {
                     item.style.opacity = '0';
-                    item.style.transform = 'translateY(45px) scale(0.85)';
+                    item.style.transform = 'translateY(48px) scale(0.8)';
                     setTimeout(() => item.remove(), 500); // Wait for transition
                 }
             });
