@@ -159,7 +159,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
         @media (max-width: 768px) {
             .lp-announcement-banner { 
-                margin-top: 110px; /* Reduced for mobile, but still clears navbar */
+                margin-top: 90px; /* Reduced for mobile to stay closer below navbar */
                 padding: 12px 15px; 
                 width: 90%; 
                 border-radius: 14px;
@@ -553,7 +553,7 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
 
         @media (max-width: 1100px) {
-            .hero-container { flex-direction: column; text-align: center; gap: 40px; padding-top: 80px; }
+            .hero-container { flex-direction: column; text-align: center; gap: 30px; padding-top: 0px; }
             .hero-text-side, .lp-responsive-title, .lp-hero p { text-align: center !important; }
             .hero-feed-side { width: 100%; max-width: 400px; margin: 0 auto; }
         }
