@@ -156,6 +156,137 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             .banner-content { flex-direction: column; text-align: center; gap: 12px; font-size: 0.85rem; }
             .btn-banner { width: 100%; max-width: 240px; padding: 10px; }
         }
+
+        /* Instant Approval Section */
+        .instant-approval-section {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .approval-card {
+            background: linear-gradient(135deg, #5837ff 0%, #3a1cff 100%);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(88, 55, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .approval-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -10%;
+            width: 400px; height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .approval-icon {
+            flex-shrink: 0;
+            width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+        .approval-icon i {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+        }
+        .approval-text h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .approval-text p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .btn-white {
+            background: #fff;
+            color: #5837ff;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: #f8f8f8;
+        }
+
+        /* Social Proof Bubbles */
+        .social-proof-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .sp-bubble {
+            background: rgba(20, 20, 25, 0.8);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 280px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: sp-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            pointer-events: auto;
+        }
+        .sp-icon {
+            width: 40px; height: 40px;
+            background: #5837ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+        .sp-content { flex: 1; }
+        .sp-content b { display: block; font-size: 0.85rem; color: #fff; margin-bottom: 2px; }
+        .sp-content span { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); display: block; }
+        .sp-content .amt { color: #4ade80; font-weight: 700; margin-left: 4px; }
+        .sp-time { font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); align-self: flex-start; margin-top: 2px; }
+
+        @keyframes sp-in {
+            from { opacity: 0; transform: translateX(-50px) scale(0.9); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes sp-out {
+            from { opacity: 1; transform: translateX(0) scale(1); }
+            to { opacity: 0; transform: translateX(-50px) scale(0.9); }
+        }
+
+        @media (max-width: 768px) {
+            .approval-card { flex-direction: column; text-align: center; padding: 30px 20px; gap: 20px; }
+            .approval-icon { width: 80px; height: 80px; font-size: 2rem; }
+            .social-proof-container { left: 10px; bottom: 10px; }
+            .sp-bubble { width: 250px; padding: 10px 14px; }
+        }
     </style>
     <!-- SEO & Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -307,6 +438,21 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             <a href="auth/register.php" class="btn-lp-primary">Quero minha conta blindada</a>
         <?php endif; ?>
     </header>
+
+    <!-- Instant Approval Highlight -->
+    <section class="instant-approval-section" data-aos="fade-up">
+        <div class="approval-card">
+            <div class="approval-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="approval-text">
+                <h2>Aprovação INSTANTÂNEA de produtos.</h2>
+                <p>Chega de ficar esperando 2 ou 3 dias para vender. Aqui no Ghost Pix todos os seus produtos tem a aprovação instantânea. Basta fazer o cadastro, preencher as informações básicas sobre o produto e começar a vender.</p>
+                <p style="font-weight: 700;">Para você sair vendendo o mais rápido possível.</p>
+                <a href="auth/register.php" class="btn-white">QUERO SER GHOST PIX</a>
+            </div>
+        </div>
+    </section>
 
     <!-- Section: Revenue Models & Dashboard Preview -->
     <section class="lp-section" id="vsl" style="padding-bottom: 0;">
@@ -730,6 +876,47 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 }
             });
         });
+    </script>
+    <div id="social-proof-root" class="social-proof-container"></div>
+    <script>
+        // Social Proof System
+        const spRoot = document.getElementById('social-proof-root');
+        const names = ['André R.', 'Maria S.', 'João P.', 'Lucas M.', 'Felipe G.', 'Ana B.', 'Priscilla T.', 'Roberto C.', 'Gabriel H.', 'Carlos D.'];
+        const methods = ['via PIX', 'via Cartão', 'via Bitcoin'];
+
+        function showSocialProof() {
+            const name = names[Math.floor(Math.random() * names.length)];
+            const method = methods[Math.floor(Math.random() * methods.length)];
+            const amount = (Math.random() * 400 + 50).toFixed(2);
+            
+            const sp = document.createElement('div');
+            sp.className = 'sp-bubble';
+            sp.innerHTML = `
+                <div class="sp-icon"><img src="logo_premium.png" style="width: 24px; filter: brightness(10);"></div>
+                <div class="sp-content">
+                    <b>Venda realizada!</b>
+                    <span>Comissão: <b class="amt">R$ ${amount.replace('.', ',')}</b></span>
+                </div>
+                <div class="sp-time">agora</div>
+            `;
+
+            spRoot.appendChild(sp);
+
+            setTimeout(() => {
+                sp.style.animation = 'sp-out 0.6s ease both';
+                setTimeout(() => sp.remove(), 600);
+            }, 5000);
+        }
+
+        // Random intervals between 8 and 15 seconds
+        function nextProof() {
+            setTimeout(() => {
+                showSocialProof();
+                nextProof();
+            }, Math.random() * 7000 + 8000);
+        }
+
+        setTimeout(nextProof, 3000);
     </script>
 </body>
 </html>
