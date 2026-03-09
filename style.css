@@ -2302,13 +2302,21 @@ input:-webkit-autofill:focus {
 .lp-menu-toggle {
     display: none;
     /* Hidden on desktop */
-    background: transparent;
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    /* Added slight background */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Added outline */
     color: #fff;
+    /* Enforced white */
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 0.5rem;
-    transition: color 0.3s ease;
+    padding: 0.4rem 0.8rem;
+    /* Better tap target */
+    border-radius: 8px;
+    /* Rounded corners */
+    transition: all 0.3s ease;
+    z-index: 1010;
+    /* Ensure on top */
 }
 
 .lp-menu-toggle:hover {
