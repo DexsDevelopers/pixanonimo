@@ -2321,6 +2321,15 @@ input:-webkit-autofill:focus {
 
 .lp-menu-toggle:hover {
     color: var(--green);
+    border-color: var(--green);
+}
+
+.lp-menu-toggle i {
+    color: #ffffff !important;
+}
+
+.lp-menu-toggle:hover i {
+    color: var(--green) !important;
 }
 
 .btn-lp-outline {
