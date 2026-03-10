@@ -43,7 +43,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $item_names = $_POST['item_name'] ?? [];
     $item_prices = $_POST['item_price'] ?? [];
-    $item_images = $_POST['item_image'] ?? [];
+    $existing_item_images = $_POST['existing_item_image'] ?? [];
+    
+    // File upload logic for banner
+    $checkout_banner_url = $_POST['checkout_banner_url'] ?? '';
+    if (isset($_FILES['checkout_banner_file']) && $_FILES['checkout_banner_file']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/checkouts/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileName = time() . '_banner_' . basename($_FILES['checkout_banner_file']['name']);
+        $targetPath = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['checkout_banner_file']['tmp_name'], $targetPath)) {
+            $checkout_banner_url = $targetPath;
+        }
+    }
 
     if (empty($title) || empty($slug)) {
         $error = "Título e Slug são obrigatórios.";
@@ -52,11 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         try {
             $pdo->beginTransaction();
-
-                $custom_html_head = $_POST['custom_html_head'] ?? '';
-                $custom_html_body = $_POST['custom_html_body'] ?? '';
-                $active = isset($_POST['active']) ? 1 : 0;
-                $checkout_banner_url = $_POST['checkout_banner_url'] ?? '';
 
                 if ($checkoutId > 0) {
                     // Update
@@ -78,7 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $name = trim($item_names[$i]);
                 $price = str_replace(',', '.', trim($item_prices[$i])); 
                 $price = (float) $price;
-                $image = trim($item_images[$i]);
+                
+                // Determine item image
+                $image = trim($_POST['item_image'][$i] ?? '');
+                if (isset($_FILES['item_image_file']['name'][$i]) && $_FILES['item_image_file']['error'][$i] === UPLOAD_ERR_OK) {
+                    $uploadDir = 'uploads/checkouts/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+                    $fileName = time() . "_item_{$i}_" . basename($_FILES['item_image_file']['name'][$i]);
+                    $targetPath = $uploadDir . $fileName;
+                    if (move_uploaded_file($_FILES['item_image_file']['tmp_name'][$i], $targetPath)) {
+                        $image = $targetPath;
+                    }
+                } else if (empty($image) && isset($existing_item_images[$i])) {
+                    $image = $existing_item_images[$i];
+                }
                 
                 if (!empty($name) && $price > 0) {
                     $stmt->execute([$checkoutId, $name, $price, $image]);
@@ -288,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
             <div class="builder-grid">
                 <!-- Coluna Principal (Configurações base) -->
                 <div>
@@ -311,8 +335,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Banner do Checkout (URL da imagem opcional)</label>
-                            <input type="url" name="checkout_banner_url" class="form-input" placeholder="https://exemplo.com/banner.png" value="<?php echo htmlspecialchars($checkout['checkout_banner_url'] ?? ''); ?>">
+                            <label class="form-label">Banner do Checkout (Upload de Imagem ou Link)</label>
+                            
+                            <div style="display:flex; flex-direction:column; gap:10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius:8px;">
+                                <?php if(!empty($checkout['checkout_banner_url'])): ?>
+                                    <div style="margin-bottom: 5px;">
+                                        <img src="<?php echo htmlspecialchars($checkout['checkout_banner_url']); ?>" alt="Banner Atual" style="max-height: 80px; border-radius: 4px; border: 1px solid var(--border);">
+                                    </div>
+                                <?php endif; ?>
+                                <div>
+                                    <small style="color: var(--text-3); margin-bottom: 5px; display:block;">Fazer envio do seu computador:</small>
+                                    <input type="file" name="checkout_banner_file" class="form-input" accept="image/*" style="padding: 8px;">
+                                </div>
+                                <div style="text-align:center; color: var(--text-3); font-size: 0.8rem;">OU</div>
+                                <div>
+                                    <small style="color: var(--text-3); margin-bottom: 5px; display:block;">Colar URL da imagem:</small>
+                                    <input type="url" name="checkout_banner_url" class="form-input" placeholder="https://exemplo.com/banner.png" value="<?php echo htmlspecialchars($checkout['checkout_banner_url'] ?? ''); ?>">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -333,16 +373,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <label class="form-label">Preço (R$)</label>
                                         <input type="number" step="0.01" name="item_price[]" class="form-input" required placeholder="97,00">
                                     </div>
-                                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
-                                        <label class="form-label">URL da Imagem do Produto (Opcional)</label>
-                                        <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png">
+                                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                                        <label class="form-label">Imagem do Produto (Opcional)</label>
+                                        <div style="display:flex; flex-direction:column; gap:8px;">
+                                            <input type="file" name="item_image_file[]" class="form-input" accept="image/*" style="padding: 8px; font-size:0.85rem;">
+                                            <input type="url" name="item_image[]" class="form-input" placeholder="Ou cole a URL: https://exemplo.com/foto.png">
+                                        </div>
                                     </div>
                                     <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             <?php else: ?>
-                                <?php foreach ($items as $item): ?>
+                                <?php foreach ($items as $index => $item): ?>
                                     <div class="product-item">
                                         <div class="form-group" style="margin: 0;">
                                             <label class="form-label">Nome do Produto</label>
@@ -352,9 +395,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <label class="form-label">Preço (R$)</label>
                                             <input type="number" step="0.01" name="item_price[]" class="form-input" required value="<?php echo htmlspecialchars($item['price']); ?>">
                                         </div>
-                                        <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
-                                            <label class="form-label">URL da Imagem do Produto (Opcional)</label>
-                                            <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png" value="<?php echo htmlspecialchars($item['image_url']); ?>">
+                                        <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                                            <label class="form-label">Imagem do Produto (Opcional)</label>
+                                            <?php if(!empty($item['image_url'])): ?>
+                                                <div style="margin-bottom: 5px;">
+                                                    <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="Atual" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+                                                    <input type="hidden" name="existing_item_image[]" value="<?php echo htmlspecialchars($item['image_url']); ?>">
+                                                </div>
+                                            <?php else: ?>
+                                                <input type="hidden" name="existing_item_image[]" value="">
+                                            <?php endif; ?>
+                                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                                <input type="file" name="item_image_file[]" class="form-input" accept="image/*" style="padding: 8px; font-size:0.85rem;">
+                                                <input type="url" name="item_image[]" class="form-input" placeholder="Ou cole a URL aqui..." value="<?php echo (strpos($item['image_url'], 'http') === 0) ? htmlspecialchars($item['image_url']) : ''; ?>">
+                                            </div>
                                         </div>
                                         <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                                             <i class="fas fa-trash"></i>
@@ -441,9 +495,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label class="form-label">Preço (R$)</label>
                         <input type="number" step="0.01" name="item_price[]" class="form-input" required placeholder="0,00">
                     </div>
-                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
-                        <label class="form-label">URL da Imagem do Produto (Opcional)</label>
-                        <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png">
+                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                        <label class="form-label">Imagem do Produto (Opcional)</label>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <input type="file" name="item_image_file[]" class="form-input" accept="image/*" style="padding: 8px; font-size:0.85rem;">
+                            <input type="url" name="item_image[]" class="form-input" placeholder="Ou cole a URL da foto...">
+                        </div>
                     </div>
                     <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                         <i class="fas fa-trash"></i>
