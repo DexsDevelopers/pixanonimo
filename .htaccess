@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Checkouts customizados
+RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ pay.php?c=$1 [L,QSA]

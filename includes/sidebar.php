@@ -33,6 +33,9 @@ $base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
             </a>
             
             <div class="nav-category">Produtos</div>
+            <a href="<?php echo $base_path; ?>checkouts.php" class="nav-item <?php echo $current_page == 'checkouts.php' || $current_page == 'checkout_builder.php' ? 'active' : ''; ?>">
+                <i class="fas fa-link"></i> Links de Pagamento
+            </a>
             <a href="<?php echo $base_path; ?>sacar.php" class="nav-item <?php echo $current_page == 'sacar.php' ? 'active' : ''; ?>">
                 <i class="fas fa-wallet"></i> Financeiro
             </a>
