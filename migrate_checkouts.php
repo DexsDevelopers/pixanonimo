@@ -12,6 +12,7 @@ try {
             secondary_color VARCHAR(20) DEFAULT '#111111',
             custom_html_head TEXT,
             custom_html_body TEXT,
+            checkout_banner_url VARCHAR(255),
             active BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

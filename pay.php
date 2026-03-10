@@ -95,6 +95,29 @@ $secondary = $checkout['secondary_color'];
                 gap: 1.5rem;
             }
         }
+        
+        .checkout-wrapper {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .checkout-banner {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+        }
+        
+        .checkout-banner img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
 
         .order-summary {
             background: rgba(0, 0, 0, 0.2);
@@ -386,30 +409,37 @@ $secondary = $checkout['secondary_color'];
 </head>
 <body>
 
-    <div class="checkout-container">
-        <!-- Resumo do Pedido -->
-        <div class="order-summary">
-            <h2 class="order-title"><i class="fas fa-shopping-bag" style="color: var(--primary);"></i> Resumo da Compra</h2>
-            
-            <div class="items-list">
-                <?php foreach ($items as $item): ?>
-                <div class="item-row">
-                    <div style="display:flex; align-items:center; gap: 10px;">
-                        <?php if ($item['image_url']): ?>
-                        <img src="<?php echo htmlspecialchars($item['image_url']); ?>" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
-                        <?php endif; ?>
-                        <span class="item-name"><?php echo htmlspecialchars($item['name']); ?></span>
-                    </div>
-                    <span class="item-price">R$ <?php echo number_format($item['price'], 2, ',', '.'); ?></span>
-                </div>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="total-row">
-                <span>Total</span>
-                <span class="total-price">R$ <?php echo number_format($total, 2, ',', '.'); ?></span>
-            </div>
+    <div class="checkout-wrapper">
+        <?php if (!empty($checkout['checkout_banner_url'])): ?>
+        <div class="checkout-banner">
+            <img src="<?php echo htmlspecialchars($checkout['checkout_banner_url']); ?>" alt="Banner do Checkout">
         </div>
+        <?php endif; ?>
+        
+        <div class="checkout-container">
+            <!-- Resumo do Pedido -->
+            <div class="order-summary">
+                <h2 class="order-title"><i class="fas fa-shopping-bag" style="color: var(--primary);"></i> Resumo da Compra</h2>
+                
+                <div class="items-list">
+                    <?php foreach ($items as $item): ?>
+                    <div class="item-row">
+                        <div style="display:flex; align-items:center; gap: 10px;">
+                            <?php if (!empty($item['image_url'])): ?>
+                            <img src="<?php echo htmlspecialchars($item['image_url']); ?>" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+                            <?php endif; ?>
+                            <span class="item-name"><?php echo htmlspecialchars($item['name']); ?></span>
+                        </div>
+                        <span class="item-price">R$ <?php echo number_format($item['price'], 2, ',', '.'); ?></span>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="total-row">
+                    <span>Total</span>
+                    <span class="total-price">R$ <?php echo number_format($total, 2, ',', '.'); ?></span>
+                </div>
+            </div>
 
         <!-- Formulário de Pagamento -->
         <div>
@@ -439,6 +469,8 @@ $secondary = $checkout['secondary_color'];
                 </button>
             </form>
         </div>
+    </div>
+
     </div>
 
     <!-- Modal Pagamento PIX -->

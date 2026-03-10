@@ -53,16 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
             $pdo->beginTransaction();
 
-            if ($checkoutId > 0) {
-                // Update
-                $stmt = $pdo->prepare("UPDATE checkouts SET title=?, slug=?, primary_color=?, secondary_color=?, custom_html_head=?, custom_html_body=?, active=? WHERE id=? AND user_id=?");
-                $stmt->execute([$title, $slug, $primary_color, $secondary_color, $custom_html_head, $custom_html_body, $active, $checkoutId, $userId]);
-            } else {
-                // Create
-                $stmt = $pdo->prepare("INSERT INTO checkouts (user_id, title, slug, primary_color, secondary_color, custom_html_head, custom_html_body, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $title, $slug, $primary_color, $secondary_color, $custom_html_head, $custom_html_body, $active]);
-                $checkoutId = $pdo->lastInsertId();
-            }
+                $custom_html_head = $_POST['custom_html_head'] ?? '';
+                $custom_html_body = $_POST['custom_html_body'] ?? '';
+                $active = isset($_POST['active']) ? 1 : 0;
+                $checkout_banner_url = $_POST['checkout_banner_url'] ?? '';
+
+                if ($checkoutId > 0) {
+                    // Update
+                    $stmt = $pdo->prepare("UPDATE checkouts SET title=?, slug=?, primary_color=?, secondary_color=?, custom_html_head=?, custom_html_body=?, active=?, checkout_banner_url=? WHERE id=? AND user_id=?");
+                    $stmt->execute([$title, $slug, $primary_color, $secondary_color, $custom_html_head, $custom_html_body, $active, $checkout_banner_url, $checkoutId, $userId]);
+                } else {
+                    // Create
+                    $stmt = $pdo->prepare("INSERT INTO checkouts (user_id, title, slug, primary_color, secondary_color, custom_html_head, custom_html_body, active, checkout_banner_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$userId, $title, $slug, $primary_color, $secondary_color, $custom_html_head, $custom_html_body, $active, $checkout_banner_url]);
+                    $checkoutId = $pdo->lastInsertId();
+                }
 
             // Refresh items
             $stmt = $pdo->prepare("DELETE FROM checkout_items WHERE checkout_id = ?");
@@ -304,6 +309,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                             <small style="color: var(--text-3); display: block; margin-top: 5px;">A url ficará: <?php echo $_SERVER['HTTP_HOST']; ?>/c/seu-slug</small>
                         </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Banner do Checkout (URL da imagem opcional)</label>
+                            <input type="url" name="checkout_banner_url" class="form-input" placeholder="https://exemplo.com/banner.png" value="<?php echo htmlspecialchars($checkout['checkout_banner_url'] ?? ''); ?>">
+                        </div>
                     </div>
 
                     <!-- Produtos -->
@@ -323,6 +333,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <label class="form-label">Preço (R$)</label>
                                         <input type="number" step="0.01" name="item_price[]" class="form-input" required placeholder="97,00">
                                     </div>
+                                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
+                                        <label class="form-label">URL da Imagem do Produto (Opcional)</label>
+                                        <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png">
+                                    </div>
                                     <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -337,6 +351,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <div class="form-group" style="margin: 0;">
                                             <label class="form-label">Preço (R$)</label>
                                             <input type="number" step="0.01" name="item_price[]" class="form-input" required value="<?php echo htmlspecialchars($item['price']); ?>">
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
+                                            <label class="form-label">URL da Imagem do Produto (Opcional)</label>
+                                            <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png" value="<?php echo htmlspecialchars($item['image_url']); ?>">
                                         </div>
                                         <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                                             <i class="fas fa-trash"></i>
@@ -422,6 +440,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="form-group" style="margin: 0;">
                         <label class="form-label">Preço (R$)</label>
                         <input type="number" step="0.01" name="item_price[]" class="form-input" required placeholder="0,00">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2; margin: 0; margin-top: 10px;">
+                        <label class="form-label">URL da Imagem do Produto (Opcional)</label>
+                        <input type="url" name="item_image[]" class="form-input" placeholder="https://exemplo.com/foto.png">
                     </div>
                     <button type="button" class="btn-remove-product" title="Remover" onclick="this.parentElement.remove()">
                         <i class="fas fa-trash"></i>
