@@ -8,9 +8,18 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 // Obter os checkouts
-$stmt = $pdo->prepare("SELECT * FROM checkouts WHERE user_id = ? ORDER BY created_at DESC");
-$stmt->execute([$userId]);
-$checkouts = $stmt->fetchAll();
+$checkouts = [];
+try {
+    $stmt = $pdo->prepare("SELECT * FROM checkouts WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$userId]);
+    $checkouts = $stmt->fetchAll();
+} catch (PDOException $e) {
+    if (strpos($e->getMessage(), 'Base table or view not found') !== false) {
+        $dbError = "As tabelas de checkout ainda não foram criadas. Por favor, acesse o painel de instalação ou execute o script de migração: <a href='migrate_checkouts.php' target='_blank'>migrate_checkouts.php</a> e depois atualize e página.";
+    } else {
+        $dbError = "Erro no banco de dados: " . $e->getMessage();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -148,7 +157,13 @@ $checkouts = $stmt->fetchAll();
             </a>
         </header>
 
-        <?php if (empty($checkouts)): ?>
+        <?php if (!empty($dbError)): ?>
+            <div class="alert error" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 15px; border-radius: 8px; margin-bottom: 1.5rem;">
+                <i class="fas fa-exclamation-circle"></i> <?php echo $dbError; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (empty($checkouts) && empty($dbError)): ?>
             <div class="empty-state">
                 <div class="empty-icon"><i class="fas fa-store-slash"></i></div>
                 <h3>Nenhum checkout criado</h3>
