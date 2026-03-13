@@ -186,7 +186,7 @@ try {
 
                 <!-- Pedidos Pagos -->
                 <div class="stat-card ghost-purple">
-                    <div class="stat-icon"><i class="fas fa-cart-check"></i></div>
+                    <div class="stat-icon"><i class="fas fa-cart-shopping"></i></div>
                     <span class="stat-label">Pedidos Pagos</span>
                     <div class="stat-value"><?php echo $totalOrdersCount; ?></div>
                     <div class="stat-sub positive"><i class="fas fa-arrow-up"></i> +<?php echo $user['is_demo'] ? '1.2' : '0'; ?>%</div>
