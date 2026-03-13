@@ -291,8 +291,8 @@ try {
                     
                     <p class="card-hint" style="margin: 1rem 0 0.5rem;">Chave PIX configurada:</p>
                     <div class="pix-key-box">
-                        <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? 'Não configurada'); ?>" readonly class="pix-key-input" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-                        <button id="btn-copy-wallet" class="btn-icon-sm"><i class="far fa-copy"></i></button>
+                        <input type="text" id="wallet-input" value="<?php echo htmlspecialchars($user['pix_key'] ?? 'Não configurada'); ?>" readonly class="pix-key-input">
+                        <button id="btn-copy-wallet" class="btn-icon-sm" title="Copiar chave"><i class="far fa-copy"></i></button>
                     </div>
                 </div>
 

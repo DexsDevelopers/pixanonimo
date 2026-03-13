@@ -1062,6 +1062,23 @@ a,
 
 /* ══════════════════════════════════════════════════════
    PIX KEY CARD
+══════════════════════════════════════════════════════ */
+.pix-key-box {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px;
+    transition: all 0.3s var(--ease);
+    margin-bottom: 0.5rem;
+}
+
+.pix-key-box:focus-within {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.05);
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+}
 
 .pix-key-input {
     background: transparent !important;
@@ -1069,11 +1086,16 @@ a,
     color: var(--text) !important;
     flex: 1;
     font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace !important;
-    font-size: .8rem !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+    font-size: 0.9rem !important;
+    padding: 0.8rem 1rem !important;
     outline: none !important;
     min-width: 0;
+}
+
+box-shadow: none !important;
+padding: 0 !important;
+outline: none !important;
+min-width: 0;
 }
 
 /* icon-button (touch target 44px — mobile-design) */
