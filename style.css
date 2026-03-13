@@ -1092,12 +1092,6 @@ a,
     min-width: 0;
 }
 
-box-shadow: none !important;
-padding: 0 !important;
-outline: none !important;
-min-width: 0;
-}
-
 /* icon-button (touch target 44px — mobile-design) */
 .btn-icon-sm {
     background: rgba(255, 255, 255, .05);
