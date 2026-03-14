@@ -4,13 +4,15 @@
  * Implementação nativa simplificada do protocolo Web Push (VAPID)
  */
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 class PushService {
     
     private static function ensureTableExists() {
         global $pdo;
         try {
             $pdo->query("SELECT 1 FROM push_subscriptions LIMIT 1");
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Se a tabela não existe, tenta criar
             $sql = "CREATE TABLE IF NOT EXISTS push_subscriptions (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +76,7 @@ class PushService {
                 write_log('ERROR', 'Falha ao enviar Push Real', ['reason' => $report->getReason()]);
                 return false;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             write_log('ERROR', 'Erro Crítico no PushService', ['error' => $e->getMessage()]);
             return false;
         }
@@ -91,7 +93,7 @@ class PushService {
             foreach ($subscriptions as $sub) {
                 self::send($sub, $title, $body);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             write_log('ERROR', 'Erro ao processar notifyUser Push', ['error' => $e->getMessage()]);
         }
     }
@@ -114,7 +116,7 @@ class PushService {
                     self::send($sub, $title, $body);
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             write_log('ERROR', 'Erro ao processar notifyAdmins Push', ['error' => $e->getMessage()]);
         }
     }
@@ -129,7 +131,7 @@ class PushService {
             foreach ($subscriptions as $sub) {
                 self::send($sub, $title, $body);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             write_log('ERROR', 'Erro ao processar notifyAll Push', ['error' => $e->getMessage()]);
         }
     }
