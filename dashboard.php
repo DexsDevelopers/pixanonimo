@@ -421,6 +421,22 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
                     <p class="card-hint center">Crédito imediato após confirmação.</p>
                 </div>
 
+                <!-- Recent Activity Feed -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <div class="card-icon" style="background: rgba(249, 115, 22, 0.12); border-color: rgba(249, 115, 22, 0.2); color: #f97316;"><i class="fas fa-bolt-lightning"></i></div>
+                            <h3 class="card-title">Atividade Recente</h3>
+                        </div>
+                    </div>
+                    <div id="activity-feed" class="activity-feed-list" style="margin-top: 1rem;">
+                        <!-- JS Dynamic Content -->
+                        <div class="feed-placeholder" style="text-align: center; padding: 2rem; opacity: 0.5;">
+                            <i class="fas fa-circle-notch fa-spin"></i> Carregando...
+                        </div>
+                    </div>
+                </div>
+
                 <!-- History Card -->
                 <div class="card full-width">
                     <div class="card-header">

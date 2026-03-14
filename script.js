@@ -554,12 +554,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 tableBody.innerHTML = html;
                 window.initHistoryActions(); // Re-vincular eventos
             }
+
+            // Atualizar Feed de Atividade
+            const feedBody = document.getElementById('activity-feed');
+            if (feedBody && data.notifications) {
+                if (data.notifications.length === 0) {
+                    feedBody.innerHTML = '<div style="text-align: center; padding: 1.5rem; opacity: 0.5; font-size: 0.85rem;">Nenhuma atividade recente.</div>';
+                } else {
+                    let feedHtml = '';
+                    data.notifications.forEach(n => {
+                        const icon = n.type === 'success' ? 'fa-circle-check' : 'fa-bolt';
+                        const color = n.type === 'success' ? '#22c55e' : '#f97316';
+                        feedHtml += `
+                        <div class="feed-item" style="display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;">
+                            <div style="width: 32px; height: 32px; border-radius: 8px; background: ${color}15; color: ${color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas ${icon}" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                    <strong style="font-size: 0.85rem; color: #fff;">${n.title}</strong>
+                                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.3);">${n.time}</span>
+                                </div>
+                                <p style="font-size: 0.82rem; color: rgba(255,255,255,0.5); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${n.message}</p>
+                            </div>
+                        </div>`;
+                    });
+                    feedBody.innerHTML = feedHtml;
+                }
+            }
         } catch (e) { console.warn("Live update failed:", e); }
     }
 
     // Iniciar auto-refresh a cada 15 seg
-    if (document.getElementById('stat-balance')) {
-        setInterval(refreshDashboard, 15000);
+    if (document.querySelector('.main-content')) {
+        setInterval(() => {
+            refreshDashboard();
+            checkNotifications();
+        }, 15000);
     }
 
     // --- WIDGET DE SUPORTE FLUTUANTE ---

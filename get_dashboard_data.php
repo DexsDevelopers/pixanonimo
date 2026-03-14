@@ -117,11 +117,27 @@ foreach ($rows as $t) {
     ];
 }
 
+// --- 4. NOTIFICAÇÕES TIPO DASHBOARD ---
+$stmtNotif = $pdo->prepare("SELECT title, message, type, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+$stmtNotif->execute([$userId]);
+$notifs = $stmtNotif->fetchAll();
+
+$formattedNotifs = [];
+foreach ($notifs as $n) {
+    $formattedNotifs[] = [
+        'title' => $n['title'],
+        'message' => $n['message'],
+        'type' => $n['type'],
+        'time' => date('H:i', strtotime($n['created_at']))
+    ];
+}
+
 header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'balance' => $stats['balance_fmt'],
     'stats' => $stats,
-    'transactions' => $formattedRows
+    'transactions' => $formattedRows,
+    'notifications' => $formattedNotifs
 ]);
 
