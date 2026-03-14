@@ -89,11 +89,47 @@ try {
         }
     }
 } catch (PDOException $e) {
-    // Se a coluna 'method' não existir ou houver outro erro, fallback para 100% Pix se houver vendas totais
     if ($stats['total_paid'] > 0) {
         $percPix = 100;
     }
 }
+
+// --- FASE 1: Dados para Gráfico de Vendas (últimos 7 dias) ---
+$chartLabels = [];
+$chartValues = [];
+for ($i = 6; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $chartLabels[] = date('d/m', strtotime($date));
+    
+    if ($user['is_demo'] == 1) {
+        $chartValues[] = round(($stats['total_paid'] / 7) * (0.7 + (rand(0, 60) / 100)), 2);
+    } else {
+        $stmtChart = $pdo->prepare("SELECT COALESCE(SUM(amount_brl), 0) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND DATE(created_at) = ?");
+        $stmtChart->execute([$userId, $date]);
+        $chartValues[] = (float)$stmtChart->fetchColumn();
+    }
+}
+
+// --- FASE 1: Taxa de Aprovação ---
+$approvalRate = 0;
+if ($user['is_demo'] == 1) {
+    $approvalRate = 78.5;
+} else {
+    $stmtTotalTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stmtTotalTx->execute([$userId]);
+    $totalTx = (int)$stmtTotalTx->fetchColumn();
+    
+    $stmtPaidTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stmtPaidTx->execute([$userId]);
+    $paidTx = (int)$stmtPaidTx->fetchColumn();
+    
+    $approvalRate = $totalTx > 0 ? round(($paidTx / $totalTx) * 100, 1) : 0;
+}
+
+// Badge color based on approval rate
+$approvalBadgeClass = 'ghost-red';
+if ($approvalRate >= 70) $approvalBadgeClass = 'ghost-green';
+elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -107,6 +143,7 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <?php include 'includes/sidebar.php'; ?>
@@ -129,9 +166,16 @@ try {
                     <h1>Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
                     <p>Bem-vindo ao seu painel Ghost Pix.</p>
                 </div>
-                <div class="wallet-status">
-                    <span class="status-indicator"></span>
-                    Taxa do Sistema: <strong><?php echo $user['commission_rate']; ?>%</strong>
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <div class="period-filter" style="display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 3px;">
+                        <button class="period-btn active" data-period="7d" style="padding: 6px 14px; border-radius: 8px; border: none; background: var(--accent); color: #000; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">7 dias</button>
+                        <button class="period-btn" data-period="30d" style="padding: 6px 14px; border-radius: 8px; border: none; background: transparent; color: var(--text-2); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">30 dias</button>
+                        <button class="period-btn" data-period="all" style="padding: 6px 14px; border-radius: 8px; border: none; background: transparent; color: var(--text-2); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">Todos</button>
+                    </div>
+                    <div class="wallet-status">
+                        <span class="status-indicator"></span>
+                        Taxa: <strong><?php echo $user['commission_rate']; ?>%</strong>
+                    </div>
                 </div>
             </header>
 
@@ -215,6 +259,31 @@ try {
                     <span class="stat-label">Aguardando</span>
                     <div class="stat-value"><?php echo $stats['pending_count']; ?></div>
                     <div class="stat-sub">Vendas Pendentes</div>
+                </div>
+
+                <!-- Taxa de Aprovação -->
+                <div class="stat-card <?php echo $approvalBadgeClass; ?>">
+                    <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+                    <span class="stat-label">Aprovação</span>
+                    <div class="stat-value"><?php echo $approvalRate; ?>%</div>
+                    <div class="stat-sub"><?php echo $approvalRate >= 70 ? 'Excelente' : ($approvalRate >= 50 ? 'Regular' : 'Baixa'); ?></div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Vendas (Últimos 7 dias) -->
+            <div class="card" style="margin-bottom: 0; padding: 1.5rem;">
+                <div class="card-header" style="margin-bottom: 1rem;">
+                    <div class="card-title-group">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3 class="card-title">Performance de Vendas</h3>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-3);">Últimos 7 dias</span>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s infinite;"></div>
+                    </div>
+                </div>
+                <div style="position: relative; height: 220px; width: 100%;">
+                    <canvas id="salesChart"></canvas>
                 </div>
             </div>
 
@@ -470,7 +539,116 @@ try {
                     .catch(err => console.log('SW Error', err));
             });
         }
+
+        // --- Chart.js: Gráfico de Vendas ---
+        (function() {
+            const ctx = document.getElementById('salesChart');
+            if (!ctx) return;
+
+            const chartLabels = <?php echo json_encode($chartLabels); ?>;
+            const chartValues = <?php echo json_encode($chartValues); ?>;
+
+            const gradient = ctx.getContext('2d');
+            const bg = gradient.createLinearGradient(0, 0, 0, 220);
+            bg.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+            bg.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: chartValues,
+                        borderColor: '#10b981',
+                        backgroundColor: bg,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#000',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#10b981',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            titleColor: '#fff',
+                            bodyColor: '#10b981',
+                            bodyFont: { weight: '700', size: 14 },
+                            borderColor: 'rgba(16, 185, 129, 0.3)',
+                            borderWidth: 1,
+                            cornerRadius: 10,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                            ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 11, family: 'Outfit' } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                            ticks: {
+                                color: 'rgba(255,255,255,0.35)',
+                                font: { size: 11, family: 'Outfit' },
+                                callback: function(value) { return 'R$ ' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+
+        // --- Period Filter Toggle ---
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.period-btn').forEach(b => {
+                    b.style.background = 'transparent';
+                    b.style.color = 'var(--text-2)';
+                    b.classList.remove('active');
+                });
+                this.style.background = 'var(--accent)';
+                this.style.color = '#000';
+                this.classList.add('active');
+            });
+        });
     </script>
+    <style>
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+        .analytics-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+        }
+        .ghost-red .stat-icon { color: #ef4444 !important; }
+        .ghost-red .stat-value { color: #ef4444 !important; }
+        .ghost-red .stat-sub { color: #ef4444 !important; }
+        @media (max-width: 768px) {
+            .period-filter { order: -1; }
+        }
+    </style>
 </body>
 </html>
 
