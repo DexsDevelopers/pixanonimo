@@ -19,8 +19,15 @@ if (!$user) {
 }
 
 // --- 2. ESTATÍSTICAS ---
+// Para admin: usar lucro da plataforma como saldo
+$displayBalance = $user['balance'];
+if (isAdmin()) {
+    $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
+    $displayBalance = $stmtProfit->fetchColumn() ?: 0;
+}
+
 $stats = [
-    'balance_fmt' => number_format($user['balance'], 2, ',', '.'),
+    'balance_fmt' => number_format($displayBalance, 2, ',', '.'),
     'today_volume' => 0,
     'month_volume' => 0,
     'total_paid' => 0,

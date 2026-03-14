@@ -56,6 +56,13 @@ if ($user['is_demo'] == 1) {
     $totalOrdersCount = $stmtOrders->fetch()['qtd'] ?? 0;
 }
 
+// Para admin: calcular lucro da plataforma (mesma fórmula do painel admin)
+$displayBalance = $user['balance'];
+if ($user['is_admin']) {
+    $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
+    $displayBalance = $stmtProfit->fetchColumn() ?: 0;
+}
+
 $transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
@@ -261,7 +268,7 @@ try {
 
                     <div class="balance-display" style="margin: 1.5rem 0;">
                         <span style="font-size: 1.5rem; opacity: 0.5; font-weight: 500;">R$</span> 
-                        <span style="font-size: 2.8rem; font-weight: 800; letter-spacing: -1px;"><?php echo number_format($user['balance'], 2, ',', '.'); ?></span>
+                        <span style="font-size: 2.8rem; font-weight: 800; letter-spacing: -1px;"><?php echo number_format($displayBalance, 2, ',', '.'); ?></span>
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 1rem;">
