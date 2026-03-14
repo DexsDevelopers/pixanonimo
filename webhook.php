@@ -1,6 +1,4 @@
-<?php
 require_once 'includes/db.php';
-require_once 'includes/notify.php';
 require_once 'includes/PushService.php';
 require_once 'includes/MailService.php';
 

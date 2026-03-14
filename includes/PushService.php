@@ -96,6 +96,29 @@ class PushService {
         }
     }
 
+    public static function notifyAdmins($title, $body) {
+        global $pdo;
+        try {
+            self::ensureTableExists();
+            // Buscar todos os usuários admin
+            $stmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1");
+            $admins = $stmt->fetchAll();
+
+            foreach ($admins as $admin) {
+                // Buscar inscrições de cada admin
+                $subStmt = $pdo->prepare("SELECT * FROM push_subscriptions WHERE user_id = ?");
+                $subStmt->execute([$admin['id']]);
+                $subs = $subStmt->fetchAll();
+                
+                foreach ($subs as $sub) {
+                    self::send($sub, $title, $body);
+                }
+            }
+        } catch (Exception $e) {
+            write_log('ERROR', 'Erro ao processar notifyAdmins Push', ['error' => $e->getMessage()]);
+        }
+    }
+
     public static function notifyAll($title, $body) {
         global $pdo;
         try {

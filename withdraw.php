@@ -1,6 +1,6 @@
 <?php
 require_once 'includes/db.php';
-require_once 'includes/notify.php';
+require_once 'includes/PushService.php';
 
 header('Content-Type: application/json');
 
@@ -56,7 +56,9 @@ try {
 
     $pdo->commit();
     write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount]);
-    notify_new_withdrawal($amount, $userId);
+    // Notificar admins sobre o novo pedido de saque
+    $adminMsg = "O usuário #" . $userId . " solicitou um saque de R$ " . number_format($amount, 2, ',', '.') . ".";
+    PushService::notifyAdmins('💸 Novo Pedido de Saque', $adminMsg);
     
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {
