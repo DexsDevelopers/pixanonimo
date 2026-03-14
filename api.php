@@ -1,46 +1,55 @@
 <?php
-// 1. Cabeçalhos CORS (Devem ser os primeiros a serem enviados para evitar erros de pré-venda/preflight)
+// 1. Cabeçalhos CORS (Devem ser os primeiros a serem enviados)
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token');
 header('Content-Type: application/json');
 
-// 2. Responder imediatamente às requisições OPTIONS (Preflight do navegador)
+// 2. Responder imediatamente às requisições OPTIONS (Preflight)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-ob_start();
-set_time_limit(60);
-require_once 'includes/db.php';
-require_once 'includes/PushService.php';
-
-// Autenticação Híbrida 
-$userId = null;
-if (isLoggedIn()) {
-    $userId = $_SESSION['user_id'];
-    $headers = getallheaders();
-    $csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
-    check_csrf($csrfToken);
-} else {
-    $headers = getallheaders();
-    $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
-    if (preg_match('/Bearer\s+(ghost_\S+)/', $authHeader, $matches)) {
-        $apiKey = $matches[1];
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE api_key = ? AND status = 'approved'");
-        $stmt->execute([$apiKey]);
-        $userAuth = $stmt->fetch();
-        if ($userAuth) $userId = $userAuth['id'];
-    }
-}
-
-if (!$userId) {
-    Response::error('Não autorizado.', 401);
-}
-
+// 3. Início do processamento com proteção total contra erros 500
 try {
-    $input = json_decode(file_get_contents('php://input'), true);
+    ob_start();
+    set_time_limit(60);
+    
+    require_once 'includes/db.php';
+    require_once 'includes/PushService.php';
+
+    // Autenticação Híbrida 
+    $userId = null;
+    if (isLoggedIn()) {
+        $userId = $_SESSION['user_id'];
+        $headers = getallheaders();
+        $csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
+        check_csrf($csrfToken);
+    } else {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
+        if (preg_match('/Bearer\s+(ghost_\S+)/', $authHeader, $matches)) {
+            $apiKey = $matches[1];
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE api_key = ? AND status = 'approved'");
+            $stmt->execute([$apiKey]);
+            $userAuth = $stmt->fetch();
+            if ($userAuth) $userId = $userAuth['id'];
+        }
+    }
+
+    if (!$userId) {
+        throw new Exception('Não autorizado.', 401);
+    }
+
+    $inputRaw = file_get_contents('php://input');
+    $input = json_decode($inputRaw, true);
+    
+    // Verificando erro de parsing JSON
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputRaw && json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Erro no formato JSON: ' . json_last_error_msg());
+    }
+
     $callbackUrl = $input['callback_url'] ?? null;
     $amount = (float)($input['amount'] ?? 0);
 
@@ -68,8 +77,10 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        // Notificar via Push
-        PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+        // Notificar via Push (não-bloqueante)
+        try {
+            PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+        } catch (Throwable $e) {}
 
         Response::success([
             'qr_image' => $qrImage, 
@@ -92,7 +103,7 @@ try {
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $currentPixGoKey, 'Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // 30 segundos de timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -113,12 +124,9 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        // Notificar via Push (Opcional, não deve travar a geração do PIX)
         try {
             PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
-        } catch (Throwable $e) {
-            write_log('error', 'Falha ao enviar Push no api.php: ' . $e->getMessage());
-        }
+        } catch (Throwable $e) {}
 
         Response::success([
             'pix_id' => $pixId, 
@@ -132,7 +140,12 @@ try {
     }
 
 } catch (Throwable $e) {
-    write_log('error', 'Falha API: ' . $e->getMessage());
-    Response::error($e->getMessage());
+    if (ob_get_level() > 0) ob_end_clean();
+    write_log('error', 'Falha API Crítica: ' . $e->getMessage());
+    
+    $status = 400;
+    if ($e->getCode() >= 400 && $e->getCode() < 600) $status = $e->getCode();
+    
+    Response::error($e->getMessage(), $status);
 }
 ?>

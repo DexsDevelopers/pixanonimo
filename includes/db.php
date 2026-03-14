@@ -7,6 +7,19 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Polyfill para getallheaders() caso não exista (comum em Nginx/FPM)
+if (!function_exists('getallheaders')) {
+    function getallheaders() {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
+    }
+}
+
 date_default_timezone_set('America/Sao_Paulo');
 require_once __DIR__ . '/../config.php';
 
