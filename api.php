@@ -1,19 +1,20 @@
 <?php
-ob_start();
-set_time_limit(60);
-require_once 'includes/db.php';
-require_once 'includes/PushService.php';
-
+// 1. Cabeçalhos CORS (Devem ser os primeiros a serem enviados para evitar erros de pré-venda/preflight)
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token');
 header('Content-Type: application/json');
 
-// Handle preflight OPTIONS request
+// 2. Responder imediatamente às requisições OPTIONS (Preflight do navegador)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
+
+ob_start();
+set_time_limit(60);
+require_once 'includes/db.php';
+require_once 'includes/PushService.php';
 
 // Autenticação Híbrida 
 $userId = null;
