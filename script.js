@@ -524,13 +524,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 let html = '';
                 data.transactions.forEach(t => {
                     html += `
-                    <tr>
-                        <td>${t.date}</td>
-                        <td>R$ ${t.amount_brl}</td>
-                        <td>R$ ${t.amount_net_brl}</td>
-                        <td><span class="badge ${t.badge}">${t.status}</span></td>
-                        <td>
-                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <tr class="responsive-row">
+                        <td data-label="Data">${t.date}</td>
+                        <td data-label="Bruto">R$ ${t.amount_brl}</td>
+                        <td data-label="Líquido">R$ ${t.amount_net_brl}</td>
+                        <td data-label="Status"><span class="badge ${t.badge}">${t.status}</span></td>
+                        <td class="actions-cell" data-label="Ações">
+                            <div class="action-row">
                                 <button class="btn-history-action btn-view-qr" 
                                         data-qr="${t.qr_image}" 
                                         data-code="${t.pix_code}"
@@ -602,6 +602,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- WIDGET DE SUPORTE FLUTUANTE ---
 
     const supportWidgetHTML = `
+    <style>
+        @media (max-width: 768px) {
+            #support-widget { bottom: 15px !important; right: 15px !important; }
+            #support-btn { width: 50px !important; height: 50px !important; }
+            #support-balloon { bottom: 60px !important; width: 280px !important; }
+        }
+    </style>
     <div id="support-widget" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
         <div id="support-balloon" class="glass" style="display: none; position: absolute; bottom: 70px; right: 0; width: 320px; padding: 1.8rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.6); background: rgba(10,10,10,0.98); backdrop-filter: blur(20px);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
