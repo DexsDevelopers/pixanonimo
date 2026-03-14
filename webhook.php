@@ -74,16 +74,9 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
             write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
             // 3.5 Enviar Notificações
             $notifMsg = 'Você recebeu R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' via Pix.';
-            try {
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, '💰 Venda Confirmada!', ?, 'success')")
-                    ->execute([$transaction['user_id'], $notifMsg]);
-            } catch (PDOException $e) {
-                write_log('ERROR', 'Falha ao inserir notificação interna no webhook', ['error' => $e->getMessage()]);
-            }
-
             if (class_exists('PushService')) {
                 try {
-                    PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg);
+                    PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg, 'success');
                 } catch (Throwable $e) {}
             }
             

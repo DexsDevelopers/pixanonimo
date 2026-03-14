@@ -93,9 +93,18 @@ class PushService {
         }
     }
 
-    public static function notifyUser($userId, $title, $body) {
+    public static function notifyUser($userId, $title, $body, $type = 'info') {
         global $pdo;
         try {
+            // 1. Notificação Interna (Sempre funciona, independente de vendor)
+            try {
+                $stmtInternal = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
+                $stmtInternal->execute([$userId, $title, $body, $type]);
+            } catch (Throwable $e) {
+                if (function_exists('write_log')) write_log('ERROR', 'Falha ao inserir notificação interna', ['error' => $e->getMessage()]);
+            }
+
+            // 2. Notificação Push (Opcional, depende de vendor íntegro)
             self::ensureTableExists();
             $stmt = $pdo->prepare("SELECT * FROM push_subscriptions WHERE user_id = ?");
             $stmt->execute([$userId]);
@@ -105,20 +114,26 @@ class PushService {
                 self::send($sub, $title, $body);
             }
         } catch (Throwable $e) {
-            write_log('ERROR', 'Erro ao processar notifyUser Push', ['error' => $e->getMessage()]);
+            if (function_exists('write_log')) write_log('ERROR', 'Erro ao processar notifyUser', ['error' => $e->getMessage()]);
         }
     }
 
-    public static function notifyAdmins($title, $body) {
+    public static function notifyAdmins($title, $body, $type = 'warning') {
         global $pdo;
         try {
-            self::ensureTableExists();
-            // Buscar todos os usuários admin
+            // 1. Buscar todos os usuários admin
             $stmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1");
             $admins = $stmt->fetchAll();
 
             foreach ($admins as $admin) {
-                // Buscar inscrições de cada admin
+                // Notificação Interna para Admin
+                try {
+                    $stmtInternal = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
+                    $stmtInternal->execute([$admin['id'], $title, $body, $type]);
+                } catch (Throwable $e) {}
+
+                // Notificação Push para Admin
+                self::ensureTableExists();
                 $subStmt = $pdo->prepare("SELECT * FROM push_subscriptions WHERE user_id = ?");
                 $subStmt->execute([$admin['id']]);
                 $subs = $subStmt->fetchAll();
@@ -128,7 +143,7 @@ class PushService {
                 }
             }
         } catch (Throwable $e) {
-            write_log('ERROR', 'Erro ao processar notifyAdmins Push', ['error' => $e->getMessage()]);
+            if (function_exists('write_log')) write_log('ERROR', 'Erro ao processar notifyAdmins', ['error' => $e->getMessage()]);
         }
     }
 

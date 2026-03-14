@@ -556,12 +556,42 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
 
         @media (max-width: 1100px) {
-            .hero-container { flex-direction: column; text-align: center; gap: 40px; padding-top: 20px; padding-bottom: 60px; }
-            .hero-text-side, .lp-responsive-title, .lp-hero p { text-align: center !important; margin-left: auto; margin-right: auto; }
-            .lp-responsive-title { font-size: 2.2rem !important; gap: 5px; }
-            .lp-responsive-title span { font-size: 0.65em !important; margin-top: 5px; }
-            .lp-hero p { font-size: 1rem; line-height: 1.6; margin-bottom: 30px; padding: 0 10px; }
-            .hero-feed-side { width: 100%; max-width: 400px; margin: 0 auto; order: -1; } /* Feed em cima no mobile */
+            .hero-container { 
+                flex-direction: column; 
+                text-align: center; 
+                gap: 60px; /* Mais espaço entre feed e texto */
+                padding-top: 40px; 
+                padding-bottom: 80px; 
+            }
+            .hero-text-side, .lp-responsive-title, .lp-hero p { 
+                text-align: center !important; 
+                margin-left: auto; 
+                margin-right: auto; 
+            }
+            .lp-responsive-title { 
+                font-size: 2.1rem !important; 
+                gap: 15px; /* Mais espaço entre as linhas do título */
+                margin-bottom: 25px;
+            }
+            .lp-responsive-title span { 
+                font-size: 0.6em !important; 
+                margin-top: 8px; 
+                color: var(--text-2); /* Cor um pouco mais suave */
+            }
+            .lp-hero p { 
+                font-size: 0.95rem; 
+                line-height: 1.7; 
+                margin-bottom: 40px; 
+                padding: 0 15px; 
+                opacity: 0.8;
+            }
+            .hero-feed-side { 
+                width: 100%; 
+                max-width: 400px; 
+                margin: 0 auto; 
+                order: -1; 
+                height: 160px; /* Aumentar espaço para os cards não cortarem */
+            }
         }
     </style>
     <!-- SEO & Premium Fonts -->
