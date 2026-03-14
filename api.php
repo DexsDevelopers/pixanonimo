@@ -17,7 +17,13 @@ try {
     set_time_limit(60);
     
     require_once 'includes/db.php';
-    require_once 'includes/PushService.php';
+    
+    // Tenta carregar o serviço de Push, mas ignora se o vendor estiver quebrado
+    try {
+        require_once 'includes/PushService.php';
+    } catch (Throwable $e) {
+        write_log('WARNING', 'PushService desativado devido a erro no vendor: ' . $e->getMessage());
+    }
 
     // Autenticação Híbrida 
     $userId = null;
@@ -78,9 +84,11 @@ try {
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
         // Notificar via Push (não-bloqueante)
-        try {
-            PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) {
+            try {
+                PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+            } catch (Throwable $e) {}
+        }
 
         Response::success([
             'qr_image' => $qrImage, 
@@ -124,9 +132,11 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        try {
-            PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) {
+            try {
+                PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+            } catch (Throwable $e) {}
+        }
 
         Response::success([
             'pix_id' => $pixId, 

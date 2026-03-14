@@ -1,5 +1,7 @@
 require_once 'includes/db.php';
-require_once 'includes/PushService.php';
+try {
+    require_once 'includes/PushService.php';
+} catch (Throwable $e) {}
 require_once 'includes/MailService.php';
 
 $input = file_get_contents('php://input');
@@ -79,7 +81,11 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
                 write_log('ERROR', 'Falha ao inserir notificação interna no webhook', ['error' => $e->getMessage()]);
             }
 
-            PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg);
+            if (class_exists('PushService')) {
+                try {
+                    PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg);
+                } catch (Throwable $e) {}
+            }
             
             // Enviar e-mail para o usuário
             $userData = getUser($transaction['user_id']);
