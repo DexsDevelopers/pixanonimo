@@ -51,6 +51,14 @@ class PushService {
                 ],
             ];
 
+            // Proteção contra vendor quebrado/incompleto (Verifica se a classe principal existe)
+            if (!class_exists('\Minishlink\WebPush\WebPush')) {
+                if (function_exists('write_log')) {
+                    write_log('WARNING', 'Biblioteca WebPush não carregada (Vendor possivelmente incompleto). Ignorando envio.');
+                }
+                return false;
+            }
+
             $webPush = new \Minishlink\WebPush\WebPush($auth_config);
 
             $payload = json_encode([

@@ -520,6 +520,9 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             line-height: 1.1 !important;
             letter-spacing: -2px !important;
             font-weight: 800;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .lp-hero p { margin: 0 0 40px 0; text-align: left; font-size: 1.1rem; opacity: 0.7; }
 
@@ -553,9 +556,12 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
 
         @media (max-width: 1100px) {
-            .hero-container { flex-direction: column; text-align: center; gap: 30px; padding-top: 0px; }
-            .hero-text-side, .lp-responsive-title, .lp-hero p { text-align: center !important; }
-            .hero-feed-side { width: 100%; max-width: 400px; margin: 0 auto; }
+            .hero-container { flex-direction: column; text-align: center; gap: 40px; padding-top: 20px; padding-bottom: 60px; }
+            .hero-text-side, .lp-responsive-title, .lp-hero p { text-align: center !important; margin-left: auto; margin-right: auto; }
+            .lp-responsive-title { font-size: 2.2rem !important; gap: 5px; }
+            .lp-responsive-title span { font-size: 0.65em !important; margin-top: 5px; }
+            .lp-hero p { font-size: 1rem; line-height: 1.6; margin-bottom: 30px; padding: 0 10px; }
+            .hero-feed-side { width: 100%; max-width: 400px; margin: 0 auto; order: -1; } /* Feed em cima no mobile */
         }
     </style>
     <!-- SEO & Premium Fonts -->
