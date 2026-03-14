@@ -2,6 +2,7 @@
 ob_start();
 set_time_limit(60);
 require_once 'includes/db.php';
+require_once 'includes/PushService.php';
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
@@ -66,6 +67,9 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
+        // Notificar via Push
+        PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+
         Response::success([
             'qr_image' => $qrImage, 
             'pix_code' => $pixCode, 
@@ -107,6 +111,9 @@ try {
         
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
+
+        // Notificar via Push
+        PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
 
         Response::success([
             'pix_id' => $pixId, 

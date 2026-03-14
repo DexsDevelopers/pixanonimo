@@ -498,7 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function refreshDashboard() {
         try {
-            const res = await fetch('get_dashboard_data.php');
+            const urlParams = new URLSearchParams(window.location.search);
+            const period = urlParams.get('p') || '7d';
+            const res = await fetch(`get_dashboard_data.php?p=${period}`);
             const data = await res.json();
             if (!data.success) return;
 

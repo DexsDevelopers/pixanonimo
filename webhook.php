@@ -81,7 +81,6 @@ if (isset($data['event']) && $data['event'] === 'payment.completed') {
                 write_log('ERROR', 'Falha ao inserir notificação interna no webhook', ['error' => $e->getMessage()]);
             }
 
-            notify_new_payment($transaction['amount_brl'], $transaction['user_id']);
             PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg);
             
             // Enviar e-mail para o usuário
