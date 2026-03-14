@@ -585,9 +585,9 @@ a,
 ══════════════════════════════════════════════════════ */
 .analytics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2.5rem;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
@@ -710,6 +710,17 @@ a,
     background: rgba(59, 130, 246, 0.15);
     color: #60a5fa;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.stat-card.ghost-red {
+    border-bottom: 2px solid rgba(239, 68, 68, 0.5);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.stat-card.ghost-red .stat-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 
 .stat-card:hover .stat-icon {

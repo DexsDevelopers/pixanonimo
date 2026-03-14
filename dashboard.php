@@ -271,10 +271,10 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
             </div>
 
             <!-- Gráfico de Vendas (Últimos 7 dias) -->
-            <div class="card" style="margin-bottom: 0; padding: 1.5rem;">
+            <div class="card" style="margin-bottom: 0; padding: 1.5rem; border: 1px solid rgba(16, 185, 129, 0.1);">
                 <div class="card-header" style="margin-bottom: 1rem;">
                     <div class="card-title-group">
-                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.2); color: #10b981;"><i class="fas fa-chart-line"></i></div>
                         <h3 class="card-title">Performance de Vendas</h3>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -291,8 +291,8 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
                 <!-- Main Balance Card -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title-group">
-                            <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                <div class="card-title-group">
+                            <div class="card-icon" style="background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.2); color: #4ade80;"><i class="fas fa-wallet"></i></div>
                             <h3 class="card-title">Saldo Disponível</h3>
                         </div>
                         <div class="wallet-status">
