@@ -42,6 +42,11 @@ try {
     $callbackUrl = $input['callback_url'] ?? null;
     $amount = (float)($input['amount'] ?? 0);
 
+    // Anti-bot: Rate Limit check
+    if (!checkRateLimit($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0')) {
+        throw new Exception('Limite de geração excedido. Tente novamente em 1 minuto.');
+    }
+
     if ($amount < 10) throw new Exception('Mínimo R$ 10,00.');
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");

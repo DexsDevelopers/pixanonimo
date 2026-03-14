@@ -19,9 +19,12 @@ try {
     // Auto-Migração: Adicionar coluna is_demo se não existir
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN is_demo TINYINT(1) DEFAULT 0");
-    } catch (PDOException $e) {
-        // Ignora se a coluna já existir
-    }
+    } catch (PDOException $e) {}
+
+    // Auto-Migração: Adicionar ip nas transações para anti-bot
+    try {
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN customer_ip VARCHAR(45) AFTER user_id");
+    } catch (PDOException $e) {}
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
@@ -118,18 +121,48 @@ function getActivePixGoKey() {
 }
 
 /**
+ * Verifica se um IP atingiu o limite de geração de PIX (3 por minuto)
+ */
+function checkRateLimit($ip) {
+    global $pdo;
+    if (empty($ip) || $ip === '0.0.0.0') return true;
+
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE customer_ip = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
+    $stmt->execute([$ip]);
+    $count = (int)$stmt->fetchColumn();
+
+    if ($count >= 3) {
+        write_log('security', 'Rate limit atingido pelo IP: ' . $ip);
+        return false;
+    }
+    return true;
+}
+
+/**
  * Salva transação de forma resiliente e performática.
  */
-function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null) {
+function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null, $type = 'pix') {
     global $pdo;
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
     
-    // Tenta o insert completo primeiro (padrão atual)
+    // Log da tentativa
+    write_log('info', "Gerando PIX R$ $amount para User $userId (IP: $ip)");
+
+    // Tenta o insert completo primeiro (padrão atual com IP)
     try {
-        $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
-                VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)";
+        $sql = "INSERT INTO transactions (user_id, customer_ip, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
+                VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
+        return $stmt->execute([$userId, $ip, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
     } catch (PDOException $e) {
+        // Fallback sem o novo campo de IP se der erro (caso a migração falhe por algum motivo no host do usuário)
+        try {
+            $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
+                    VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
+        } catch (PDOException $e_old) {
+            // ... resto do fallback já existente ...
         // Se falhar (provavelmente coluna callback_url ausente), tenta o fallback v2
         try {
             $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) 

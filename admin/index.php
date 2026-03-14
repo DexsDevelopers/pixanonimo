@@ -71,8 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pix_key = strip_tags(trim($_POST['pix_key'] ?? 'influencer@pix.com'));
         $ref_token = bin2hex(random_bytes(8));
 
-        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, balance, status, referral_token, is_demo) VALUES (?, ?, ?, ?, ?, 'approved', ?, 1)");
-        $stmt->execute([$email, $password, $full_name, $pix_key, $balance, $ref_token]);
+        // Buscar taxa padrão
+        $defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
+        $defaultTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
+
+        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, balance, status, referral_token, is_demo, commission_rate) VALUES (?, ?, ?, ?, ?, 'approved', ?, 1, ?)");
+        $stmt->execute([$email, $password, $full_name, $pix_key, $balance, $ref_token, $defaultTax]);
         
         header("Location: index.php?success=1");
         exit;
@@ -239,15 +243,26 @@ $users = $stmt->fetchAll();
 // Lógica de Configurações Globais (Processamento no topo para redirecionamento limpo)
 if (isset($_POST['update_settings'])) {
     $aff_rate = (float)$_POST['affiliate_rate'];
+    $def_tax = (float)$_POST['default_user_tax'];
     
-    // Verificar se a chave existe
-    $check = $pdo->prepare("SELECT `key` FROM settings WHERE `key` = 'affiliate_commission_rate'");
-    $check->execute();
-    if ($check->fetch()) {
+    // Atualizar Comissão Afiliados
+    $checkAff = $pdo->prepare("SELECT `key` FROM settings WHERE `key` = 'affiliate_commission_rate'");
+    $checkAff->execute();
+    if ($checkAff->fetch()) {
         $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'affiliate_commission_rate'")->execute([$aff_rate]);
     } else {
         $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('affiliate_commission_rate', ?)")->execute([$aff_rate]);
     }
+
+    // Atualizar Taxa Padrão
+    $checkTax = $pdo->prepare("SELECT `key` FROM settings WHERE `key` = 'default_user_tax'");
+    $checkTax->execute();
+    if ($checkTax->fetch()) {
+        $pdo->prepare("UPDATE settings SET `value` = ? WHERE `key` = 'default_user_tax'")->execute([$def_tax]);
+    } else {
+        $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('default_user_tax', ?)")->execute([$def_tax]);
+    }
+
     header("Location: index.php?success=1");
     exit;
 }
@@ -255,6 +270,9 @@ if (isset($_POST['update_settings'])) {
 // Buscar taxa atual para o formulário
 $affRateStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'affiliate_commission_rate'");
 $currentAffRate = $affRateStmt->fetchColumn() ?: '10';
+
+$defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
+$currentDefTax = $defTaxStmt->fetchColumn() ?: '4.0';
 
 // Calcular Lucro Total da Plataforma (Lucro líquido após taxa de 2% do PixGo)
 $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
@@ -442,16 +460,30 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                             </div>
                         </div>
 
-                        <form method="POST" class="stat-card ghost-purple" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; border: 1px solid rgba(168, 85, 247, 0.2);">
-                            <div class="stat-icon" style="margin-bottom: 0;"><i class="fas fa-percent"></i></div>
-                            <div style="display: flex; flex-direction: column;">
-                                <label style="font-size: 0.65rem; color: var(--text-3); text-transform: uppercase; font-weight: 800;">Comissão Afiliados</label>
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1.1rem; outline: none; padding: 0;">
-                                    <span style="font-size: 0.9rem; color: var(--text-3);">%</span>
-                                    <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; margin-left: 10px;">Salvar</button>
+                        <form method="POST" class="stat-card ghost-purple" style="padding: 1rem; flex-direction: row; gap: 1.5rem; align-items: center; margin-bottom: 0; border: 1px solid rgba(168, 85, 247, 0.2); min-width: 320px;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 1rem;">
+                                <div class="stat-icon" style="margin-bottom: 0; width: 32px; height: 32px; font-size: 0.9rem;"><i class="fas fa-percent"></i></div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <label style="font-size: 0.6rem; color: var(--text-3); text-transform: uppercase; font-weight: 800; white-space: nowrap;">Afiliados</label>
+                                    <div style="display: flex; align-items: center; gap: 3px;">
+                                        <input type="number" name="affiliate_rate" value="<?php echo $currentAffRate; ?>" step="1" style="width: 35px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1rem; outline: none; padding: 0;">
+                                        <span style="font-size: 0.8rem; color: var(--text-3);">%</span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                                <div class="stat-icon" style="margin-bottom: 0; width: 32px; height: 32px; font-size: 0.9rem; background: rgba(74, 222, 128, 0.1); color: #4ade80;"><i class="fas fa-hand-holding-dollar"></i></div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <label style="font-size: 0.6rem; color: var(--text-3); text-transform: uppercase; font-weight: 800; white-space: nowrap;">Taxa Padrão</label>
+                                    <div style="display: flex; align-items: center; gap: 3px;">
+                                        <input type="number" name="default_user_tax" value="<?php echo $currentDefTax; ?>" step="0.1" style="width: 45px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 1rem; outline: none; padding: 0;">
+                                        <span style="font-size: 0.8rem; color: var(--text-3);">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" name="update_settings" class="badge paid" style="border: none; cursor: pointer; padding: 8px 12px; font-size: 0.7rem; font-weight: 700; background: var(--primary);">Salvar</button>
                         </form>
 
                         <button onclick="document.getElementById('modal-create-demo').style.display='flex'" class="btn-demo">

@@ -13,6 +13,11 @@ try {
         throw new Exception('Checkout inválido.');
     }
 
+    // Anti-bot: Rate Limit check
+    if (!checkRateLimit($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0')) {
+        throw new Exception('Limite de geração excedido. Tente novamente em 1 minuto.');
+    }
+
     // Buscar Checkout
     $stmt = $pdo->prepare("SELECT * FROM checkouts WHERE id = ? AND active = 1");
     $stmt->execute([$checkoutId]);

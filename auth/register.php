@@ -42,8 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token) VALUES (?, ?, ?, ?, 'approved', ?, ?)");
-    $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8))]);
+    // Buscar taxa padrão
+    $defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
+    $defaultTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
+
+    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token, commission_rate) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?)");
+    $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax]);
     $newUserId = $pdo->lastInsertId();
 
     // Notificação Interna de Aprovação
