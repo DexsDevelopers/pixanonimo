@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
 
     // --- PUSH NOTIFICATION SETUP ---
-    const PUBLIC_VAPID_KEY = 'BF4Lpx8H-7V_A7y3_F-Z9yY-1HlRz1Z-N-H-H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1';
+    const PUBLIC_VAPID_KEY = 'BIgbMcD2y9lwIjmif8b21m-MdjyxYaAL5wWj0mu4tQeigYEV91Ajp-e3hVkaw5WRL2Zj19XIuV_lAqkq4h-dJ9o';
 
     const pushCard = document.getElementById('push-control-card');
     const pushStatusText = document.getElementById('push-status-text');
