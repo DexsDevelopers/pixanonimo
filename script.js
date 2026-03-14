@@ -502,6 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const period = urlParams.get('p') || '7d';
             const res = await fetch(`get_dashboard_data.php?p=${period}`);
             const data = await res.json();
+            console.log("Dashboard data received:", data);
             if (!data.success) return;
 
             // Atualizar Saldo e Stats
@@ -579,10 +580,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>`;
                     });
+                    console.log("Updating activity feed with", data.notifications.length, "items");
                     feedBody.innerHTML = feedHtml;
                 }
+            } else {
+                console.log("Activity feed element or notifications data missing:", { feedBody: !!feedBody, hasNotifs: !!data.notifications });
             }
-        } catch (e) { console.warn("Live update failed:", e); }
+        } catch (e) {
+            console.error("Live update failed:", e);
+        }
     }
 
     // Iniciar auto-refresh a cada 15 seg
