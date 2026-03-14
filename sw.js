@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ghost-pix-v9.1';
+const CACHE_NAME = 'ghost-pix-v9.3';
 const ASSETS = [
-    'style.css?v=125.0',
-    'script.js?v=124.0',
-    'logo_premium.png?v=9.0',
-    'manifest.json?v=3.0'
+    'style.css?v=125.1',
+    'script.js?v=125.1',
+    'logo_premium.png?v=9.1',
+    'manifest.json?v=3.1'
 ];
 
 self.addEventListener('install', (event) => {
@@ -35,8 +35,14 @@ self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
-        fetch(event.request).catch(() => {
-            return caches.match(event.request);
+        fetch(event.request).catch(async () => {
+            const cached = await caches.match(event.request);
+            if (cached) return cached;
+            // Se falhar e não estiver no cache, deixa a rede lidar ou retorna erro
+            return new Response('Network error occurred', {
+                status: 408,
+                headers: { 'Content-Type': 'text/plain' }
+            });
         })
     );
 });
