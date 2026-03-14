@@ -1,17 +1,22 @@
 <?php
 require_once 'includes/db.php';
 
-// Buscar taxa padrão
-$defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
-$defaultTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
+// Listar todas as taxas dos usuários
+$stmt = $pdo->query("SELECT id, full_name, email, commission_rate FROM users WHERE is_admin = 0 ORDER BY id DESC LIMIT 10");
+$users = $stmt->fetchAll();
 
-// Contar usuários afetados (taxa <= 0 ou NULL)
-$countStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE (commission_rate <= 0 OR commission_rate IS NULL) AND is_admin = 0");
-$count = $countStmt->fetchColumn();
+echo "<h3>Últimos 10 usuários:</h3>";
+echo "<table border='1' cellpadding='5'><tr><th>ID</th><th>Nome</th><th>Email</th><th>commission_rate</th></tr>";
+foreach ($users as $u) {
+    echo "<tr><td>{$u['id']}</td><td>{$u['full_name']}</td><td>{$u['email']}</td><td>{$u['commission_rate']}</td></tr>";
+}
+echo "</table>";
 
-// Atualizar todos os usuários com taxa 0 para a taxa padrão
-$stmt = $pdo->prepare("UPDATE users SET commission_rate = ? WHERE (commission_rate <= 0 OR commission_rate IS NULL) AND is_admin = 0");
-$stmt->execute([$defaultTax]);
-
-echo "✅ $count usuários atualizados para taxa padrão de {$defaultTax}%";
+// Verificar settings
+$stmt2 = $pdo->query("SELECT * FROM settings");
+echo "<h3>Settings:</h3><pre>";
+while ($s = $stmt2->fetch()) {
+    echo "{$s['key']} = {$s['value']}\n";
+}
+echo "</pre>";
 ?>
