@@ -38,7 +38,11 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
     <link rel="stylesheet" href="css/mobile-menu.css?v=107.0">
     <style>
         /* Force dark theme even if CSS is cached */
-        .lp-body { background: #000 !important; color: #fff !important; }
+        .lp-body { 
+            background: #000 !important; 
+            color: #fff !important; 
+            font-family: 'Outfit', sans-serif !important;
+        }
         .lp-hero-bg { display: none !important; }
         #canvas-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
         
@@ -364,22 +368,33 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         .step-visual {
-            height: 180px;
-            background: linear-gradient(135deg, #222 0%, #000 100%);
+            height: 140px;
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
-            color: #fff;
+            font-size: 2.2rem;
+            color: var(--primary);
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
         }
-        .step-visual i { opacity: 0.9; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
-        .step-card h3 { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 15px; }
-        .step-card p { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
+        .step-card:hover .step-visual {
+            background: var(--primary);
+            color: #000;
+            transform: scale(1.05);
+        }
+        .step-card h3 { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+        .step-card p { font-size: 0.95rem; color: rgba(255, 255, 255, 0.5); line-height: 1.6; }
+        .step-card {
+            min-height: 320px;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
         
         @media (max-width: 1024px) {
             .steps-grid { grid-template-columns: repeat(2, 1fr); }
@@ -512,19 +527,33 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
         }
 
         /* Overriding old hero styles for new structure */
-        .lp-hero { padding: 0 20px; text-align: left; min-height: auto; }
+        .lp-hero { 
+            padding: 80px 20px; 
+            text-align: center; 
+            min-height: 80vh; 
+            display: flex;
+            align-items: center;
+        }
         .lp-responsive-title { 
-            text-align: left; 
-            margin: 20px 0; 
-            font-size: 3.2rem !important; /* Smaller text */
-            line-height: 1.1 !important;
-            letter-spacing: -2px !important;
+            text-align: center; 
+            margin: 0 auto 30px; 
+            font-size: 4.5rem !important; 
+            line-height: 1.0;
+            letter-spacing: -3px !important;
             font-weight: 800;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
+            max-width: 900px;
         }
-        .lp-hero p { margin: 0 0 40px 0; text-align: left; font-size: 1.1rem; opacity: 0.7; }
+        .lp-hero p { 
+            margin: 0 auto 40px; 
+            text-align: center; 
+            font-size: 1.25rem; 
+            opacity: 0.8; 
+            max-width: 700px;
+            font-weight: 400;
+        }
 
         /* Dynamic Feed Items */
         .static-sales-feed { margin: 0; } /* Reset margin */
@@ -559,9 +588,9 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
             .hero-container { 
                 flex-direction: column; 
                 text-align: center; 
-                gap: 60px; /* Mais espaço entre feed e texto */
-                padding-top: 40px; 
-                padding-bottom: 80px; 
+                gap: 40px;
+                padding-top: 20px; 
+                padding-bottom: 60px; 
             }
             .hero-text-side, .lp-responsive-title, .lp-hero p { 
                 text-align: center !important; 
@@ -569,29 +598,75 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
                 margin-right: auto; 
             }
             .lp-responsive-title { 
-                font-size: 2.1rem !important; 
-                gap: 15px; /* Mais espaço entre as linhas do título */
-                margin-bottom: 25px;
+                font-size: 2.8rem !important; 
+                gap: 10px;
+                margin-bottom: 20px;
             }
             .lp-responsive-title span { 
-                font-size: 0.6em !important; 
-                margin-top: 8px; 
-                color: var(--text-2); /* Cor um pouco mais suave */
+                font-size: 0.5em !important; 
+                margin-top: 5px; 
             }
             .lp-hero p { 
-                font-size: 0.95rem; 
-                line-height: 1.7; 
-                margin-bottom: 40px; 
-                padding: 0 15px; 
-                opacity: 0.8;
+                font-size: 1rem; 
+                line-height: 1.6; 
+                margin-bottom: 30px; 
             }
             .hero-feed-side { 
                 width: 100%; 
-                max-width: 400px; 
+                max-width: 380px; 
                 margin: 0 auto; 
                 order: -1; 
-                height: 160px; /* Aumentar espaço para os cards não cortarem */
+                height: 140px;
             }
+        }
+
+        /* PREMIUM CARDS SYSTEM */
+        .benefit-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 60px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .b-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: left;
+            transition: all 0.4s var(--spring);
+            position: relative;
+            overflow: hidden;
+        }
+        .b-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+        .b-card i {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: block;
+        }
+        .b-card h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .b-card p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+            margin: 0;
+        }
+        @media (max-width: 850px) {
+            .benefit-cards { grid-template-columns: 1fr; padding: 0 20px; }
         }
     </style>
     <!-- SEO & Premium Fonts -->
@@ -737,23 +812,41 @@ if (isLoggedIn() && (isset($_GET['utm_source']) && $_GET['utm_source'] === 'pwa'
 
     <!-- Hero Section -->
     <header class="lp-hero">
-        <div class="hero-container">
-            <div class="hero-text-side">
+        <div class="hero-container" style="justify-content: center; flex-direction: column;">
+            <div class="hero-text-side" style="max-width: 1000px; text-align: center;">
                 <div class="lp-hero-badge" data-aos="fade-down">
-                    <span></span> Plataforma de vendas completa
+                    <span></span> Infraestrutura de pagamentos mais segura do Brasil
                 </div>
-                <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA <br><span class="lp-gradient-text" style="font-size: 0.8em; display: block; margin-top: 10px; color: #aaa;">PLATAFORMA BLINDADA PARA ALTA PERFORMANCE</span></h1>
-                <p>Receba via Pix com total privacidade. <strong>Não precisa de CPF ou CNPJ</strong>, saques para qualquer conta, <strong>aprovação na mesma hora</strong> e proteção absoluta: <strong>Sem MED ou reembolso.</strong></p>
+                <h1 class="lp-responsive-title">ESCALE COM CONFIANÇA <br><span class="lp-gradient-text" style="font-size: 0.7em; display: block; margin-top: 10px; color: #fff; font-weight: 900; letter-spacing: 0;">PROTEÇÃO TOTAL PARA ALTA PERFORMANCE</span></h1>
+                <p>Receba via Pix com <strong>anonimato garantido</strong>. Sem exposição de CPF/CNPJ, saques instantâneos para qualquer conta e <strong>blindagem contra MED ou reembolsos</strong>.</p>
                 
-                <?php if(isLoggedIn()): ?>
-                    <a href="dashboard.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Acessar Meu Painel</a>
-                <?php else: ?>
-                    <a href="auth/register.php" class="btn-lp-primary" style="padding: 18px 40px; font-size: 1rem;">Quero minha conta blindada</a>
-                <?php endif; ?>
-            </div>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <?php if(isLoggedIn()): ?>
+                        <a href="dashboard.php" class="btn-lp-primary" style="padding: 18px 45px; font-size: 1.1rem; font-weight: 800; border-radius: 100px;">Acessar Meu Painel</a>
+                    <?php else: ?>
+                        <a href="auth/register.php" class="btn-lp-primary" style="padding: 18px 45px; font-size: 1.1rem; font-weight: 800; border-radius: 100px;">Quero minha conta blindada</a>
+                    <?php endif; ?>
+                    <a href="#vsl" class="btn-lp-outline" style="padding: 18px 45px; font-size: 1.1rem; font-weight: 700; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff;">Ver como funciona</a>
+                </div>
 
-            <div class="hero-feed-side" id="static-sales-feed" data-aos="fade-left">
-                <!-- Items driven by JS -->
+                <!-- PREMIUM BENEFIT CARDS -->
+                <div class="benefit-cards" data-aos="fade-up" data-aos-delay="200">
+                    <div class="b-card">
+                        <i class="fas fa-user-secret"></i>
+                        <h4>100% Anônimo</h4>
+                        <p>Venda sem expor seus dados pessoais no checkout. Proxy financeiro de última geração.</p>
+                    </div>
+                    <div class="b-card">
+                        <i class="fas fa-bolt-lightning"></i>
+                        <h4>Saque Instantâneo</h4>
+                        <p>Recebeu, sacou. Liquidação imediata via API direto para sua chave Pix cadastrada.</p>
+                    </div>
+                    <div class="b-card">
+                        <i class="fas fa-shield-halved"></i>
+                        <h4>Anti-MED & Chargeback</h4>
+                        <p>Proteção absoluta contra estornos maliciosos. Seu saldo é protegido pelo Ghost Protocol.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
