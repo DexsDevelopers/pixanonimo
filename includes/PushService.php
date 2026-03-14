@@ -4,7 +4,10 @@
  * Implementação nativa simplificada do protocolo Web Push (VAPID)
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
+$autoloadFile = __DIR__ . '/../vendor/autoload.php';
+if (file_exists($autoloadFile)) {
+    require_once $autoloadFile;
+}
 
 class PushService {
     

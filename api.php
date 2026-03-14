@@ -112,8 +112,12 @@ try {
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
 
-        // Notificar via Push
-        PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+        // Notificar via Push (Opcional, não deve travar a geração do PIX)
+        try {
+            PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
+        } catch (Throwable $e) {
+            write_log('error', 'Falha ao enviar Push no api.php: ' . $e->getMessage());
+        }
 
         Response::success([
             'pix_id' => $pixId, 
@@ -126,7 +130,7 @@ try {
         throw new Exception('Erro PixGo: ' . ($res['message'] ?? 'Resposta inesperada') . ' (CS: ' . $httpCode . ')');
     }
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     write_log('error', 'Falha API: ' . $e->getMessage());
     Response::error($e->getMessage());
 }
