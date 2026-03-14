@@ -162,23 +162,23 @@ function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImag
             $stmt = $pdo->prepare($sql);
             return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
         } catch (PDOException $e_old) {
-            // ... resto do fallback já existente ...
-        // Se falhar (provavelmente coluna callback_url ausente), tenta o fallback v2
-        try {
-            $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) 
-                    VALUES (?, ?, ?, ?, 'pending', ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
-        } catch (PDOException $e2) {
-            // Se falhar de novo (provavelmente colunas pix_code/qr_image ausentes no legado extremo)
+            // Se falhar (provavelmente coluna callback_url ausente), tenta o fallback v2
             try {
-                $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) 
-                        VALUES (?, ?, ?, ?, 'pending')";
+                $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image) 
+                        VALUES (?, ?, ?, ?, 'pending', ?, ?)";
                 $stmt = $pdo->prepare($sql);
-                return $stmt->execute([$userId, $amount, $netAmount, $pixId]);
-            } catch (PDOException $e3) {
-                write_log('error', 'Falha crítica ao salvar transação: ' . $e3->getMessage());
-                return false;
+                return $stmt->execute([$userId, $amount, $netAmount, $pixId, $pixCode, $qrImage]);
+            } catch (PDOException $e2) {
+                // Se falhar de novo (provavelmente colunas pix_code/qr_image ausentes no legado extremo)
+                try {
+                    $sql = "INSERT INTO transactions (user_id, amount_brl, amount_net_brl, pix_id, status) 
+                            VALUES (?, ?, ?, ?, 'pending')";
+                    $stmt = $pdo->prepare($sql);
+                    return $stmt->execute([$userId, $amount, $netAmount, $pixId]);
+                } catch (PDOException $e3) {
+                    write_log('error', 'Falha crítica ao salvar transação: ' . $e3->getMessage());
+                    return false;
+                }
             }
         }
     }
