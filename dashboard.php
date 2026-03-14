@@ -10,7 +10,37 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-// Estatísticas do Usuário
+// --- Período selecionado ---
+$period = $_GET['p'] ?? '7d';
+if (!in_array($period, ['today', '7d', '30d', 'all'])) $period = '7d';
+
+$periodSQL = '';
+$periodLabel = 'Todos';
+$chartDays = 7;
+switch ($period) {
+    case 'today':
+        $periodSQL = " AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+        $periodLabel = 'Hoje';
+        $chartDays = 1;
+        break;
+    case '7d':
+        $periodSQL = " AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        $periodLabel = 'Últimos 7 dias';
+        $chartDays = 7;
+        break;
+    case '30d':
+        $periodSQL = " AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+        $periodLabel = 'Últimos 30 dias';
+        $chartDays = 30;
+        break;
+    case 'all':
+        $periodSQL = '';
+        $periodLabel = 'Todo período';
+        $chartDays = 30;
+        break;
+}
+
+// Estatísticas do Usuário (filtradas por período)
 $stats = [
     'today_volume' => 0,
     'month_volume' => 0,
@@ -23,24 +53,23 @@ $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHER
 $stmtToday->execute([$userId]);
 $stats['today_volume'] = $stmtToday->fetch()['vol'] ?? 0;
 
-// Volume Mês Atual
-$stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())");
+// Volume no Período Selecionado
+$stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
 $stmtMonth->execute([$userId]);
 $stats['month_volume'] = $stmtMonth->fetch()['vol'] ?? 0;
 
-// Total Acumulado (Pago)
-$stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'");
+// Total Acumulado no Período
+$stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
 $stmtTotal->execute([$userId]);
 $stats['total_paid'] = $stmtTotal->fetch()['vol'] ?? 0;
 
 // Cobranças Pendentes
-$stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'");
+$stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'" . $periodSQL);
 $stmtPending->execute([$userId]);
 $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
 
 $totalOrdersCount = 0;
 if ($user['is_demo'] == 1) {
-    // Lógica Demo: Receita Total = Saldo Atual + Saques Concluídos
     $stmtW = $pdo->prepare("SELECT SUM(amount) as total FROM withdrawals WHERE user_id = ? AND status = 'completed'");
     $stmtW->execute([$userId]);
     $totalWithdrawn = $stmtW->fetch()['total'] ?? 0;
@@ -48,18 +77,18 @@ if ($user['is_demo'] == 1) {
     $stats['total_paid'] = $user['balance'] + $totalWithdrawn;
     $stats['month_volume'] = $stats['total_paid'] * 0.82;
     $stats['today_volume'] = $stats['total_paid'] * 0.14;
-    $totalOrdersCount = floor($stats['total_paid'] / 42) + 7; // Média de R$ 42 por pedido + offset
+    $totalOrdersCount = floor($stats['total_paid'] / 42) + 7;
     $stats['pending_count'] = floor($totalOrdersCount * 0.3);
 } else {
-    $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'");
+    $stmtOrders = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
     $stmtOrders->execute([$userId]);
     $totalOrdersCount = $stmtOrders->fetch()['qtd'] ?? 0;
 }
 
-// Para admin: calcular lucro da plataforma (mesma fórmula do painel admin)
+// Para admin: calcular lucro da plataforma
 $displayBalance = $user['balance'];
 if ($user['is_admin']) {
-    $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
+    $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'" . $periodSQL);
     $displayBalance = $stmtProfit->fetchColumn() ?: 0;
 }
 
@@ -67,21 +96,18 @@ $transactions = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP
 $transactions->execute([$userId]);
 $rows = $transactions->fetchAll();
 
-// Cálculo Real de Receita por Método (Pago)
+// Receita por Método
 $percPix = 0; $percCard = 0; $percBoleto = 0;
-
 try {
     $stmtMethod = $pdo->prepare("SELECT 
         SUM(CASE WHEN method = 'pix' THEN amount_brl ELSE 0 END) as pix_vol,
         SUM(CASE WHEN method = 'card' THEN amount_brl ELSE 0 END) as card_vol,
         SUM(CASE WHEN method = 'boleto' THEN amount_brl ELSE 0 END) as boleto_vol
-        FROM transactions WHERE user_id = ? AND status = 'paid'");
+        FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
     $stmtMethod->execute([$userId]);
     $methodVol = $stmtMethod->fetch();
-
     if ($methodVol) {
         $totalPaidVol = ($methodVol['pix_vol'] + $methodVol['card_vol'] + $methodVol['boleto_vol']) ?: 0;
-        
         if ($totalPaidVol > 0) {
             $percPix = round(($methodVol['pix_vol'] / $totalPaidVol) * 100, 1);
             $percCard = round(($methodVol['card_vol'] / $totalPaidVol) * 100, 1);
@@ -89,20 +115,18 @@ try {
         }
     }
 } catch (PDOException $e) {
-    if ($stats['total_paid'] > 0) {
-        $percPix = 100;
-    }
+    if ($stats['total_paid'] > 0) $percPix = 100;
 }
 
-// --- FASE 1: Dados para Gráfico de Vendas (últimos 7 dias) ---
+// --- Gráfico de Vendas ---
 $chartLabels = [];
 $chartValues = [];
-for ($i = 6; $i >= 0; $i--) {
+for ($i = $chartDays - 1; $i >= 0; $i--) {
     $date = date('Y-m-d', strtotime("-$i days"));
-    $chartLabels[] = date('d/m', strtotime($date));
+    $chartLabels[] = $chartDays <= 7 ? date('D d', strtotime($date)) : date('d/m', strtotime($date));
     
     if ($user['is_demo'] == 1) {
-        $chartValues[] = round(($stats['total_paid'] / 7) * (0.7 + (rand(0, 60) / 100)), 2);
+        $chartValues[] = round(($stats['total_paid'] / max($chartDays, 1)) * (0.7 + (rand(0, 60) / 100)), 2);
     } else {
         $stmtChart = $pdo->prepare("SELECT COALESCE(SUM(amount_brl), 0) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND DATE(created_at) = ?");
         $stmtChart->execute([$userId, $date]);
@@ -110,23 +134,22 @@ for ($i = 6; $i >= 0; $i--) {
     }
 }
 
-// --- FASE 1: Taxa de Aprovação ---
+// --- Taxa de Aprovação ---
 $approvalRate = 0;
 if ($user['is_demo'] == 1) {
     $approvalRate = 78.5;
 } else {
-    $stmtTotalTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stmtTotalTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ?" . $periodSQL);
     $stmtTotalTx->execute([$userId]);
     $totalTx = (int)$stmtTotalTx->fetchColumn();
     
-    $stmtPaidTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stmtPaidTx = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
     $stmtPaidTx->execute([$userId]);
     $paidTx = (int)$stmtPaidTx->fetchColumn();
     
     $approvalRate = $totalTx > 0 ? round(($paidTx / $totalTx) * 100, 1) : 0;
 }
 
-// Badge color based on approval rate
 $approvalBadgeClass = 'ghost-red';
 if ($approvalRate >= 70) $approvalBadgeClass = 'ghost-green';
 elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
@@ -166,11 +189,12 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
                     <h1>Olá, <?php echo explode(' ', $_SESSION['full_name'] ?? 'Usuário')[0]; ?> 👋</h1>
                     <p>Bem-vindo ao seu painel Ghost Pix.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                    <div class="period-filter" style="display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 3px;">
-                        <button class="period-btn active" data-period="7d" style="padding: 6px 14px; border-radius: 8px; border: none; background: var(--accent); color: #000; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">7 dias</button>
-                        <button class="period-btn" data-period="30d" style="padding: 6px 14px; border-radius: 8px; border: none; background: transparent; color: var(--text-2); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">30 dias</button>
-                        <button class="period-btn" data-period="all" style="padding: 6px 14px; border-radius: 8px; border: none; background: transparent; color: var(--text-2); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s;">Todos</button>
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <div class="period-filter" style="display: inline-flex; gap: 0; background: rgba(15, 15, 15, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; backdrop-filter: blur(10px);">
+                        <a href="?p=today" class="period-btn <?php echo $period=='today'?'active':''; ?>">Hoje</a>
+                        <a href="?p=7d" class="period-btn <?php echo $period=='7d'?'active':''; ?>">7 dias</a>
+                        <a href="?p=30d" class="period-btn <?php echo $period=='30d'?'active':''; ?>">30 dias</a>
+                        <a href="?p=all" class="period-btn <?php echo $period=='all'?'active':''; ?>">Todos</a>
                     </div>
                     <div class="wallet-status">
                         <span class="status-indicator"></span>
@@ -278,7 +302,7 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
                         <h3 class="card-title">Performance de Vendas</h3>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <span style="font-size: 0.8rem; color: var(--text-3);">Últimos 7 dias</span>
+                        <span style="font-size: 0.8rem; color: var(--text-3);"><?php echo $periodLabel; ?></span>
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s infinite;"></div>
                     </div>
                 </div>
@@ -620,19 +644,6 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
             });
         })();
 
-        // --- Period Filter Toggle ---
-        document.querySelectorAll('.period-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.period-btn').forEach(b => {
-                    b.style.background = 'transparent';
-                    b.style.color = 'var(--text-2)';
-                    b.classList.remove('active');
-                });
-                this.style.background = 'var(--accent)';
-                this.style.color = '#000';
-                this.classList.add('active');
-            });
-        });
     </script>
     <style>
         @keyframes pulse-dot {
@@ -642,11 +653,41 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
         .analytics-grid {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
         }
-        .ghost-red .stat-icon { color: #ef4444 !important; }
-        .ghost-red .stat-value { color: #ef4444 !important; }
-        .ghost-red .stat-sub { color: #ef4444 !important; }
+
+        /* Period Filter Buttons */
+        .period-btn {
+            padding: 7px 16px;
+            border-radius: 9px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .period-btn:hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.8);
+        }
+        .period-btn.active {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+
+        /* Ghost Red variant overrides */
+        .ghost-red .stat-icon { color: #f87171 !important; }
+        .ghost-red .stat-value { color: #f87171 !important; }
+        .ghost-red .stat-sub { color: #f87171 !important; }
+
         @media (max-width: 768px) {
             .period-filter { order: -1; }
+            .top-header { flex-direction: column; gap: 1rem; }
         }
     </style>
 </body>
