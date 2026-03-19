@@ -32,6 +32,7 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
     $stmt->execute([$pixId]);
     $transaction = $stmt->fetch();
 
+    if ($transaction) {
         $pdo->beginTransaction();
         try {
             // Tentar extrair o nome real do pagador enviado pelo PixGo
