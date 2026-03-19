@@ -112,6 +112,7 @@ foreach ($rows as $t) {
         'amount_net_brl' => number_format($t['amount_net_brl'], 2, ',', '.'),
         'status' => $displayStatus,
         'badge' => $badgeClass,
+        'customer_name' => $t['customer_name'] ?? 'Sem nome',
         'qr_image' => $t['qr_image'] ?? '',
         'pix_code' => $t['pix_code'] ?? ''
     ];

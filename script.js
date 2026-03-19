@@ -525,7 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.transactions.forEach(t => {
                     html += `
                     <tr class="responsive-row">
-                        <td data-label="Data">${t.date}</td>
+                        <td data-label="Data">
+                            ${t.date}
+                            <br><small style="color: var(--text-3); font-size: 0.75rem;">${t.customer_name || 'Sem nome'}</small>
+                        </td>
                         <td data-label="Bruto">R$ ${t.amount_brl}</td>
                         <td data-label="Líquido">R$ ${t.amount_net_brl}</td>
                         <td data-label="Status"><span class="badge ${t.badge}">${t.status}</span></td>

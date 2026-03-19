@@ -459,7 +459,10 @@ elseif ($approvalRate >= 50) $approvalBadgeClass = 'ghost-yellow';
                         <tbody>
                             <?php foreach($rows as $t): ?>
                             <tr class="responsive-row">
-                                <td data-label="Data"><?php echo date('d/m H:i', strtotime($t['created_at'])); ?></td>
+                                <td data-label="Data">
+                                    <?php echo date('d/m H:i', strtotime($t['created_at'])); ?>
+                                    <br><small style="color: var(--text-3); font-size: 0.75rem;"><?php echo htmlspecialchars($t['customer_name'] ?? 'Sem nome'); ?></small>
+                                </td>
                                 <td data-label="Bruto">R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></td>
                                 <td data-label="Líquido">R$ <?php echo number_format($t['amount_net_brl'], 2, ',', '.'); ?></td>
                                 <td data-label="Status">
