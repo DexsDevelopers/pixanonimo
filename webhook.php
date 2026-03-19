@@ -32,12 +32,19 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
     $stmt->execute([$pixId]);
     $transaction = $stmt->fetch();
 
-    if ($transaction) {
         $pdo->beginTransaction();
         try {
-            // 1. Atualizar status da transação
-            $upd = $pdo->prepare("UPDATE transactions SET status = 'paid' WHERE id = ?");
-            $upd->execute([$transaction['id']]);
+            // Tentar extrair o nome real do pagador enviado pelo PixGo
+            $realPayerName = $pixData['payer']['name'] ?? ($pixData['payer_name'] ?? ($pixData['customer_name'] ?? null));
+
+            // 1. Atualizar status da transação e nome do pagador (se disponível)
+            if ($realPayerName) {
+                $upd = $pdo->prepare("UPDATE transactions SET status = 'paid', customer_name = ? WHERE id = ?");
+                $upd->execute([$realPayerName, $transaction['id']]);
+            } else {
+                $upd = $pdo->prepare("UPDATE transactions SET status = 'paid' WHERE id = ?");
+                $upd->execute([$transaction['id']]);
+            }
 
             // 2. Adicionar valor ao saldo do usuário (valor líquido calculado no api.php)
             $balanceUpd = $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");

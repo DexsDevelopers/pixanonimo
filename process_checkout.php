@@ -109,7 +109,7 @@ try {
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
         $netAmount = $totalAmount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, 'pix');
+        saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, 'pix');
 
         echo json_encode([
             'success' => true,

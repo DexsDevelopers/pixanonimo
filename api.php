@@ -81,7 +81,7 @@ try {
         $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
         $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', 'pix');
 
         // Notificar via Push (não-bloqueante)
         if (class_exists('PushService')) {
@@ -130,7 +130,7 @@ try {
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl);
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', 'pix');
 
         if (class_exists('PushService')) {
             try {
