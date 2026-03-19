@@ -43,6 +43,11 @@ try {
     try {
         $pdo->exec("ALTER TABLE transactions ADD COLUMN customer_name VARCHAR(255) AFTER customer_ip");
     } catch (PDOException $e) {}
+
+    // Auto-Migração: Adicionar external_id nas transações
+    try {
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN external_id VARCHAR(100) AFTER customer_name");
+    } catch (PDOException $e) {}
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
@@ -159,26 +164,26 @@ function checkRateLimit($ip) {
 /**
  * Salva transação de forma resiliente e performática.
  */
-function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null, $customerName = null, $type = 'pix') {
+function saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl = null, $customerName = null, $externalId = null, $type = 'pix') {
     global $pdo;
     $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
     
     // Log da tentativa
     write_log('info', "Gerando PIX R$ $amount para User $userId (IP: $ip)");
 
-    // Tenta o insert completo primeiro (padrão atual com IP e Name)
+    // Tenta o insert completo primeiro (padrão atual com IP, Name e ExternalID)
     try {
-        $sql = "INSERT INTO transactions (user_id, customer_ip, customer_name, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO transactions (user_id, customer_ip, customer_name, external_id, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        return $stmt->execute([$userId, $ip, $customerName, $amount, $netAmount, $pixId, 'pending', $pixCode, $qrImage, $callbackUrl]);
+        return $stmt->execute([$userId, $ip, $customerName, $externalId, $amount, $netAmount, $pixId, 'pending', $pixCode, $qrImage, $callbackUrl]);
     } catch (PDOException $e) {
-        // Fallback sem o campo de nome se der erro (caso a migração falhe por algum motivo)
+        // Fallback sem o campo de external_id se der erro
         try {
-            $sql = "INSERT INTO transactions (user_id, customer_ip, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
-                    VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?)";
+            $sql = "INSERT INTO transactions (user_id, customer_ip, customer_name, amount_brl, amount_net_brl, pix_id, status, pix_code, qr_image, callback_url) 
+                    VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            return $stmt->execute([$userId, $ip, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
+            return $stmt->execute([$userId, $ip, $customerName, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl]);
         } catch (PDOException $e_orig) {
             // Se falhar (provavelmente coluna callback_url ausente), tenta o fallback v2
             try {

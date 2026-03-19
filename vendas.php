@@ -56,7 +56,7 @@ $pageStats = $stmtStats->fetch();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="theme-color" content="#000000">
     <title>Vendas - Ghost Pix</title>
-    <link rel="stylesheet" href="style.css?v=125.0">
+    <link rel="stylesheet" href="style.css?v=125.3">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -139,8 +139,8 @@ $pageStats = $stmtStats->fetch();
                             <tr class="responsive-row">
                                 <td data-label="ID">#<?php echo $t['id']; ?></td>
                                 <td data-label="Produto / Referência">
-                                    <strong><?php echo $t['external_id'] ?: 'Pagamento Pix'; ?></strong>
-                                    <br><small style="color: var(--text-3); font-size: 0.75rem;"><?php echo $t['customer_name'] ?: 'Sem nome'; ?></small>
+                                    <strong><?php echo isset($t['external_id']) ? $t['external_id'] : 'Pagamento Pix'; ?></strong>
+                                    <br><small style="color: var(--text-3); font-size: 0.75rem;"><?php echo htmlspecialchars($t['customer_name'] ?? 'Sem nome'); ?></small>
                                 </td>
                                 <td data-label="Valor">
                                     <span style="font-weight: 700; color: #fff;">R$ <?php echo number_format($t['amount_brl'], 2, ',', '.'); ?></span>
@@ -159,6 +159,6 @@ $pageStats = $stmtStats->fetch();
         </div>
     </main>
 
-    <script src="script.js?v=124.0"></script>
+    <script src="script.js?v=125.3"></script>
 </body>
 </html>

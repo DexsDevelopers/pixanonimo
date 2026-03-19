@@ -80,8 +80,9 @@ try {
         $pixId = 'sim_' . time();
         $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
         $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
+        $externalId = 'user_' . $userId . '_' . time();
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', 'pix');
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', $externalId, 'pix');
 
         // Notificar via Push (não-bloqueante)
         if (class_exists('PushService')) {
@@ -129,8 +130,9 @@ try {
         $qrImage = $pixData['qr_image_url'] ?? '';
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
+        $externalId = 'user_' . $userId . '_' . time();
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', 'pix');
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', $externalId, 'pix');
 
         if (class_exists('PushService')) {
             try {

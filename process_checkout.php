@@ -108,8 +108,9 @@ try {
         $qrImage = $pixData['qr_image_url'] ?? '';
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
+        $externalId = 'chk_' . $checkoutId . '_' . time();
         $netAmount = $totalAmount * (1 - ($user['commission_rate'] / 100));
-        saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, 'pix');
+        saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, $externalId, 'pix');
 
         echo json_encode([
             'success' => true,
