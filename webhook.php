@@ -7,15 +7,25 @@ require_once 'includes/MailService.php';
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-write_log('INFO', 'Webhook PixGo Recebido', ['payload' => $data]);
+// Log imediato de depuração para qualquer hit no webhook
+write_log('INFO', 'Webhook Hit Recebido', [
+    'input_raw' => $input,
+    'headers' => getallheaders(),
+    'ip' => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'
+]);
 
 // O PixGo V1 envia um campo 'event' e os dados em 'data'
-if (isset($data['event']) && $data['event'] === 'payment.completed') {
+if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['event'] === 'payment.paid')) {
     $pixData = $data['data'] ?? [];
-    $pixId = $pixData['payment_id'] ?? '';
-    $status = $pixData['status'] ?? '';
     
-    if ($status === 'completed' && !empty($pixId)) {
+    // Suporte a diferentes chaves de ID (payment_id ou id)
+    $pixId = $pixData['payment_id'] ?? ($pixData['id'] ?? ($data['id'] ?? ''));
+    
+    // Suporte a diferentes nomes de status (completed ou paid)
+    $status = $pixData['status'] ?? ($data['status'] ?? '');
+    
+    if (($status === 'completed' || $status === 'paid' || $status === 'PAID') && !empty($pixId)) {
+        write_log('INFO', 'Webhook Identificado para Processamento', ['pix_id' => $pixId, 'status' => $status]);
 
     // Buscar a transação pendente
     $stmt = $pdo->prepare("SELECT * FROM transactions WHERE pix_id = ? AND status = 'pending'");

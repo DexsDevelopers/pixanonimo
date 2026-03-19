@@ -74,7 +74,7 @@ try {
     $data = [
         'amount' => $totalAmount,
         'description' => 'Pedido em ' . mb_substr($checkout['title'], 0, 30),
-        'webhook_url' => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . dirname($_SERVER['PHP_SELF']) . "/webhook.php",
+        'webhook_url' => getFullUrl('webhook.php'),
         'external_id' => 'chk_' . $checkoutId . '_' . time(),
         'payer' => [
             'name' => empty($customerName) ? 'Cliente Checkout' : $customerName

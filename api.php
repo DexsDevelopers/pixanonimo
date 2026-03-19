@@ -102,7 +102,7 @@ try {
     $data = [
         'amount' => $amount,
         'description' => 'Recarga Ghost Pix',
-        'webhook_url' => (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]/webhook.php",
+        'webhook_url' => getFullUrl('webhook.php'),
         'external_id' => 'user_' . $userId . '_' . time()
     ];
 

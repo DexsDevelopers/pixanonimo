@@ -217,5 +217,24 @@ class Response {
         self::json(array_merge(['success' => true], $data));
     }
 }
+
+/**
+ * Gera uma URL completa (absoluta) de forma robusta,
+ * detectando protocolo e subpastas automaticamente.
+ */
+function getFullUrl($path = '') {
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    
+    // dirname($_SERVER['PHP_SELF']) pode retornar '\' em Windows ou '/' em Linux no root.
+    // Uniformizamos para '/' e removemos barras extras.
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
+    $scriptDir = rtrim($scriptDir, '/');
+    
+    // Se o path já começa com barra, removemos para evitar "//"
+    $path = ltrim($path, '/');
+    
+    return $protocol . '://' . $host . $scriptDir . '/' . $path;
+}
 ?>
 
