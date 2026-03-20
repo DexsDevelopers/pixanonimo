@@ -27,6 +27,7 @@ import AdminApisPage from './pages/AdminApisPage';
 import CheckoutsPage from './pages/CheckoutsPage';
 import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
 import ApiDocsPage from './pages/ApiDocsPage';
+import ReportsPage from './pages/ReportsPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -191,6 +192,14 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="vendas">
               <SalesPage transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/relatorios" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="relatorios">
+              <ReportsPage />
             </DashboardLayout>
           </PrivateRoute>
         } />
