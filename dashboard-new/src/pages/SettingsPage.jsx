@@ -332,15 +332,83 @@ export default function SettingsPage({ userData }) {
                         )}
 
                         {activeSubTab === 'seguranca' && (
-                            <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 text-center py-10">
-                                <Key className="mx-auto text-white/20 mb-4" size={48} />
-                                <h3 className="text-xl font-bold">Gerenciamento de Senha</h3>
-                                <p className="text-white/40 max-w-sm mx-auto mb-8">Por questões de segurança, para alterar sua senha você receberá um código em seu e-mail.</p>
-                                <button className="lp-btn-outline px-10">Enviar E-mail de Recuperação</button>
-                            </div>
+                            <SecurityTab />
                         )}
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function SecurityTab() {
+    const [sending, setSending] = useState(false);
+    const [result, setResult] = useState(null);
+
+    const handleSendReset = async () => {
+        setSending(true);
+        setResult(null);
+        try {
+            const res = await fetch('/send_password_reset.php', { method: 'POST' });
+            const data = await res.json();
+            setResult(data);
+        } catch {
+            setResult({ success: false, error: 'Erro de conexão. Tente novamente.' });
+        } finally {
+            setSending(false);
+        }
+    };
+
+    return (
+        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="text-center py-6">
+                <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-white/10">
+                    <Key className="text-white/20" size={36} />
+                </div>
+                <h3 className="text-xl font-black">Gerenciamento de Senha</h3>
+                <p className="text-white/40 max-w-sm mx-auto mt-2 text-sm">
+                    Por segurança, enviaremos um link de redefinição para o seu e-mail cadastrado. O link expira em 30 minutos.
+                </p>
+            </div>
+
+            {result && (
+                <div className={cn(
+                    "p-4 rounded-2xl text-sm font-bold text-center",
+                    result.success
+                        ? "bg-primary/10 border border-primary/20 text-primary"
+                        : "bg-red-500/10 border border-red-500/20 text-red-400"
+                )}>
+                    {result.success ? result.message : result.error}
+                </div>
+            )}
+
+            <div className="flex justify-center">
+                <button
+                    onClick={handleSendReset}
+                    disabled={sending}
+                    className={cn(
+                        "flex items-center gap-3 px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all",
+                        sending
+                            ? "bg-white/5 text-white/30 cursor-wait"
+                            : "bg-white text-black hover:scale-105 active:scale-95"
+                    )}
+                >
+                    {sending ? (
+                        <><Loader2 size={18} className="animate-spin" /> Enviando...</>
+                    ) : (
+                        <><Lock size={18} /> Enviar E-mail de Recuperação</>
+                    )}
+                </button>
+            </div>
+
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-3 max-w-md mx-auto">
+                <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Como funciona</p>
+                <ul className="space-y-2 text-xs text-white/30">
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">1.</span> Clique no botão acima</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">2.</span> Abra o e-mail que enviaremos</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">3.</span> Clique no link e defina a nova senha</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">4.</span> Faça login com a nova senha</li>
+                </ul>
             </div>
         </div>
     );
