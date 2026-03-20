@@ -22,7 +22,7 @@ const AnnouncementBar = ({ onClose }) => {
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="relative overflow-hidden shrink-0 z-50 border-b border-[#25D366]/10"
+          className="relative overflow-hidden shrink-0 z-20 border-b border-[#25D366]/10"
           style={{ background: 'linear-gradient(135deg, #071a0e 0%, #0a0a0c 40%, #0a0a0c 60%, #071a0e 100%)' }}
         >
           {/* Shimmer sweep */}
