@@ -77,7 +77,7 @@ export default function Header({ onMenuClick, notifications = [], userData }) {
                 <div className="flex items-center gap-3 pl-2">
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-semibold leading-none">{userData?.name || 'Usuário'}</p>
-                        <p className="text-[10px] text-white/40 uppercase tracking-tighter mt-1 font-bold">Plano Premium</p>
+                        <p className="text-[10px] text-white/40 uppercase tracking-tighter mt-1 font-bold">Plano Classic</p>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-green-400 p-[1.5px] cursor-pointer hover:rotate-12 transition-transform">
                         <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center font-black text-sm italic text-primary">
