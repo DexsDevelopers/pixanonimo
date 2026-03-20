@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         <motion.aside
             initial={false}
             animate={{ width: isOpen ? 280 : 0, opacity: isOpen ? 1 : 0 }}
-            className="fixed lg:relative z-50 h-full bg-[#111111] border-r border-white/5 flex flex-col overflow-hidden"
+            className="fixed z-50 h-full bg-[#111111] border-r border-white/5 flex flex-col overflow-hidden"
         >
             <div className="p-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -51,7 +51,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
                 {/* Botão Fechar - Mobile Only */}
                 <button
                     onClick={onClose}
-                    className="lg:hidden p-2 text-white/40 hover:text-white transition-colors"
+                    className="p-2 text-white/40 hover:text-white transition-colors"
                 >
                     <X size={24} />
                 </button>

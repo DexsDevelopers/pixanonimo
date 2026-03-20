@@ -44,12 +44,12 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
   return (
     <div className="flex h-screen bg-black text-white font-['Outfit'] overflow-hidden">
       <AnimatePresence>
-        {(isSidebarOpen && window.innerWidth < 1024) && (
+        {isSidebarOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
@@ -61,7 +61,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
         userData={userData}
         onTabChange={(tab) => {
           setActiveTab(tab);
-          if (window.innerWidth < 1024) setIsSidebarOpen(false);
+          setIsSidebarOpen(false);
         }}
         onClose={() => setIsSidebarOpen(false)}
       />
@@ -92,7 +92,7 @@ function PrivateRoute({ children }) {
 export default function App() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePix, setActivePix] = useState(null);

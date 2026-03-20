@@ -9,7 +9,7 @@ export default function Header({ onMenuClick, notifications = [], userData }) {
             <div className="flex items-center gap-4">
                 <button
                     onClick={onMenuClick}
-                    className="p-2 hover:bg-white/5 rounded-lg transition-colors lg:hidden"
+                    className="p-2 hover:bg-white/5 rounded-lg transition-colors"
                 >
                     <Menu size={24} />
                 </button>
