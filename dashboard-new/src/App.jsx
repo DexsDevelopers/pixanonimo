@@ -176,14 +176,14 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="space-y-8 order-first lg:order-last">
+                    <GeneratePixCard onGenerate={handleManualPix} />
+                  </div>
                   <div className="lg:col-span-2 space-y-6">
                     <h2 className="text-xl font-black flex items-center gap-2 border-b border-white/5 pb-4">
                       <History className="text-primary" size={20} /> Vendas Recentes
                     </h2>
                     <TransactionsTable transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
-                  </div>
-                  <div className="space-y-8">
-                    <GeneratePixCard onGenerate={handleManualPix} />
                   </div>
                 </div>
               </div>
