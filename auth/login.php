@@ -16,6 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
         if ($user['status'] == 'blocked') {
+            if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+                echo json_encode(['success' => false, 'error' => 'Sua conta está bloqueada.']);
+                exit;
+            }
             die("Sua conta está bloqueada.");
         }
         
@@ -30,8 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $updateToken->execute([$token, $user['id']]);
         setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
         
+        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
         redirect('../dashboard.php');
     } else {
+        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            echo json_encode(['success' => false, 'error' => 'Email ou senha incorretos.']);
+            exit;
+        }
         header("Location: login.php?error=1");
         exit;
     }

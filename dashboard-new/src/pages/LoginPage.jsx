@@ -6,12 +6,46 @@ import { Lock, Mail, ArrowRight, Shield, ChevronLeft } from 'lucide-react';
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Simulação de login para desenvolvimento da SPA
-        navigate('/dashboard');
+        setLoading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            formData.append('csrf_token', csrfToken);
+
+            const res = await fetch('auth/login.php', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                navigate('/dashboard');
+                // Pequeno delay para garantir que o redirecionamento inicie antes do reload se necessário, 
+                // ou apenas reload no dashboard se ele precisar re-checar a sessão PHP.
+                window.location.reload();
+            } else {
+                setError(data.error || 'Email ou senha inválidos.');
+            }
+        } catch (err) {
+            setError('Erro ao conectar com o servidor.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -46,6 +80,11 @@ export default function LoginPage() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[40px] -z-10" />
 
                         <form onSubmit={handleLogin} className="space-y-6">
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold p-4 rounded-2xl text-center animate-in fade-in zoom-in duration-300">
+                                    {error}
+                                </div>
+                            )}
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Endereço de E-mail</label>
                                 <div className="relative group">
@@ -81,9 +120,10 @@ export default function LoginPage() {
 
                             <button
                                 type="submit"
-                                className="w-full h-16 bg-white text-black rounded-full font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl"
+                                disabled={loading}
+                                className="w-full h-16 bg-white text-black rounded-full font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Entrar no Painel <ArrowRight size={20} />
+                                {loading ? 'Autenticando...' : 'Entrar no Painel'} <ArrowRight size={20} />
                             </button>
                         </form>
                     </div>

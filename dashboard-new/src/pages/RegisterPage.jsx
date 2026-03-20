@@ -4,12 +4,46 @@ import { motion } from 'framer-motion';
 import { User, Mail, Lock, ArrowRight, ShieldAlert, ChevronLeft, Check } from 'lucide-react';
 
 export default function RegisterPage() {
-    const [step, setStep] = useState(1);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [pixKey, setPixKey] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        navigate('/dashboard');
+        setLoading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('full_name', name);
+            formData.append('email', email);
+            formData.append('pix_key', pixKey);
+            formData.append('password', password);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            formData.append('csrf_token', csrfToken);
+
+            const res = await fetch('auth/register.php', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                navigate('/login');
+            } else {
+                setError(data.error || 'Erro ao criar conta.');
+            }
+        } catch (err) {
+            setError('Erro de conexão.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -39,21 +73,56 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="glass p-10 rounded-[56px] border-white/10">
-                        <form onSubmit={handleRegister} className="space-y-8">
+                        <form onSubmit={handleRegister} className="space-y-6">
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold p-4 rounded-2xl text-center animate-in fade-in zoom-in duration-300">
+                                    {error}
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Seu Nome</label>
                                     <div className="relative group">
                                         <User className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
-                                        <input required type="text" placeholder="Nome" className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="Nome Completo"
+                                            value={name}
+                                            onChange={e => setName(e.target.value)}
+                                            className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all"
+                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Seu E-mail</label>
                                     <div className="relative group">
                                         <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
-                                        <input required type="email" placeholder="E-mail" className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                        <input
+                                            required
+                                            type="email"
+                                            placeholder="E-mail"
+                                            value={email}
+                                            onChange={e => setEmail(e.target.value)}
+                                            className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all"
+                                        />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Chave PIX (Qualquer Tipo)</label>
+                                <div className="relative group">
+                                    <Check className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="E-mail, CPF, Telefone ou Aleatória"
+                                        value={pixKey}
+                                        onChange={e => setPixKey(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all"
+                                    />
                                 </div>
                             </div>
 
@@ -61,7 +130,14 @@ export default function RegisterPage() {
                                 <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Defina uma Senha Segura</label>
                                 <div className="relative group">
                                     <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />
-                                    <input required type="password" placeholder="Mínimo 8 caracteres" className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                    <input
+                                        required
+                                        type="password"
+                                        placeholder="Mínimo 6 caracteres"
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-14 pr-6 font-bold focus:outline-none focus:border-primary/50 transition-all"
+                                    />
                                 </div>
                             </div>
 
@@ -72,9 +148,10 @@ export default function RegisterPage() {
 
                             <button
                                 type="submit"
-                                className="w-full h-18 bg-primary text-black rounded-full font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_rgba(74,222,128,0.3)]"
+                                disabled={loading}
+                                className="w-full h-18 bg-primary text-black rounded-full font-black text-xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_rgba(74,222,128,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Começar Gratuitamente <ArrowRight size={24} />
+                                {loading ? 'Criando Conta...' : 'Começar Gratuitamente'} <ArrowRight size={24} />
                             </button>
                         </form>
                     </div>

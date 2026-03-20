@@ -24,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
+        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            echo json_encode(['success' => false, 'error' => 'Este email já está cadastrado.']);
+            exit;
+        }
         header("Location: register.php?error=exists");
         exit;
     }
@@ -47,22 +51,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $defaultTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
 
     $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token, commission_rate) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?)");
-    $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax]);
-    $newUserId = $pdo->lastInsertId();
+    if ($stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax])) {
+        $newUserId = $pdo->lastInsertId();
 
-    // Notificação Interna de Aprovação
-    try {
-        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Conta Aprovada! ✅', 'Sua conta foi verificada e aprovada automaticamente. Já pode começar a operar!', 'success')")
-            ->execute([$newUserId]);
-    } catch (PDOException $e) {
-        write_log('error', 'Falha ao inserir notificação automática no registro: ' . $e->getMessage());
+        // Notificação Interna de Aprovação
+        try {
+            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Conta Aprovada! ✅', 'Sua conta foi verificada e aprovada automaticamente. Já pode começar a operar!', 'success')")
+                ->execute([$newUserId]);
+        } catch (PDOException $e) {
+            write_log('error', 'Falha ao inserir notificação automática no registro: ' . $e->getMessage());
+        }
+
+        // Enviar E-mail de Aprovação
+        MailService::notifyApproval($email, $full_name);
+
+        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
+        header("Location: login.php?registered=1");
+        exit;
+    } else {
+        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            echo json_encode(['success' => false, 'error' => 'Erro ao criar conta. Tente novamente.']);
+            exit;
+        }
+        header("Location: register.php?error=unknown");
+        exit;
     }
-
-    // Enviar E-mail de Aprovação
-    MailService::notifyApproval($email, $full_name);
-
-    header("Location: login.php?registered=1");
-    exit;
 }
 ?>
 <!DOCTYPE html>
