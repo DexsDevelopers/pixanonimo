@@ -67,7 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         redirect('../dashboard.php');
     } else {
-        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+        // Log detalhado para diagnóstico
+        write_log('WARN', 'Login falhou', [
+            'email' => $email,
+            'user_found' => $user ? true : false,
+            'password_length' => strlen($password),
+            'stored_hash_length' => $user ? strlen($user['password']) : 0,
+            'stored_hash_prefix' => $user ? substr($user['password'], 0, 10) : 'N/A',
+            'password_verify' => $user ? password_verify($password, $user['password']) : false
+        ]);
+        if ($isJsonRequest) {
             echo json_encode(['success' => false, 'error' => 'Email ou senha incorretos.']);
             exit;
         }

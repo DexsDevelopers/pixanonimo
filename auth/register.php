@@ -58,7 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
     // Garantir que coluna password tem tamanho suficiente para bcrypt hash (60 chars)
-    try { $pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NOT NULL"); } catch (PDOException $e) {}
+    try { $pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255)"); } catch (PDOException $e) {
+        write_log('WARN', 'ALTER TABLE password falhou: ' . $e->getMessage());
+    }
 
     // Log para diagnóstico
     write_log('DEBUG', 'Registro - hash gerado', [
@@ -88,6 +90,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token, commission_rate) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?)");
         $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax]);
         $newUserId = $pdo->lastInsertId();
+
+        // Verificar se o hash foi salvo corretamente (detectar truncamento)
+        $verifyStmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+        $verifyStmt->execute([$newUserId]);
+        $storedHash = $verifyStmt->fetchColumn();
+        $hashOk = password_verify($password, $storedHash);
+        write_log('DEBUG', 'Verificação pós-registro', [
+            'user_id' => $newUserId,
+            'hash_length_original' => strlen($hash),
+            'hash_length_stored' => strlen($storedHash),
+            'hash_match' => $hash === $storedHash,
+            'verify_ok' => $hashOk
+        ]);
+        if (!$hashOk) {
+            // Hash foi truncado - forçar update com hash completo
+            $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")->execute([$hash, $newUserId]);
+            write_log('WARN', 'Hash truncado detectado, corrigido via UPDATE', ['user_id' => $newUserId]);
+        }
 
         // Notificação Interna de Aprovação
         try {
