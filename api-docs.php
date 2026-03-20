@@ -221,37 +221,10 @@ require_once 'includes/db.php';
                     <p style="font-size: 0.8rem; color: var(--text-3);"><i class="fas fa-info-circle"></i> Recomendamos retornar o código HTTP 200 para confirmar o recebimento.</p>
                 </section>
 
-                <!-- Erros -->
-                <section id="erros" style="margin-bottom: 5rem;" data-aos="fade-up">
-                    <h2 style="color: var(--red);">5. Códigos de Erro</h2>
-                    <p>Lista de erros que a API pode retornar.</p>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-                        <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-2);">
-                            <th style="padding: 1rem;">HTTP</th>
-                            <th style="padding: 1rem;">Código</th>
-                            <th style="padding: 1rem;">Descrição</th>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 1rem;"><code>401</code></td>
-                            <td style="padding: 1rem;">Não autorizado</td>
-                            <td style="padding: 1rem;">Ghost Key vazia ou inválida.</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 1rem;"><code>400</code></td>
-                            <td style="padding: 1rem;">Valor mínimo</td>
-                            <td style="padding: 1rem;">O montante enviado é menor que R$ 10,00.</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 1rem;"><code>403</code></td>
-                            <td style="padding: 1rem;">CSRF Error</td>
-                            <td style="padding: 1rem;">Chamada via browser sem token de segurança.</td>
-                        </tr>
-                    </table>
-                </section>
 
                 <!-- Exemplos de Integração -->
                 <section id="exemplos" style="margin-bottom: 5rem;" data-aos="fade-up">
-                    <h2 style="color: var(--green);">6. Exemplos de Integração</h2>
+                    <h2 style="color: var(--green);">5. Exemplos de Integração</h2>
                     <p>Escolha sua linguagem e veja como é fácil integrar o Ghost Pix.</p>
                     
                     <div class="tabs-container" style="margin-top: 2rem;">
@@ -377,7 +350,7 @@ bot = telebot.TeleBot(<span class="code-string">'TOKEN_DO_BOT'</span>)<br><br>
 
                 <!-- Telegram Bots Detalhado -->
                 <section id="telegram" style="margin-bottom: 5rem;" data-aos="fade-up">
-                    <h2 style="color: var(--green);">7. Bots do Telegram Dinâmicos</h2>
+                    <h2 style="color: var(--green);">6. Bots do Telegram Dinâmicos</h2>
                     <p>Vá além do básico: aprenda a trocar seu token Ghost direto pelo celular através do bot.</p>
                     <div class="code-block">
 <span class="code-keyword">@bot.message_handler</span>(commands=[<span class="code-string">'token'</span>])<br>
@@ -393,7 +366,7 @@ bot = telebot.TeleBot(<span class="code-string">'TOKEN_DO_BOT'</span>)<br><br>
 
                 <!-- Apps Mobile Detalhado -->
                 <section id="mobile" style="margin-bottom: 5rem;" data-aos="fade-up">
-                    <h2 style="color: var(--green);">8. Boas Práticas para Mobile</h2>
+                    <h2 style="color: var(--green);">7. Boas Práticas para Mobile</h2>
                     <p>Foque na experiência do usuário em dispositivos móveis.</p>
                     <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
                         <div class="card glass-card" style="padding: 1.5rem;">
@@ -409,7 +382,7 @@ bot = telebot.TeleBot(<span class="code-string">'TOKEN_DO_BOT'</span>)<br><br>
 
                 <!-- Segurança e Boas Práticas -->
                 <section id="seguranca" style="margin-bottom: 5rem;" data-aos="fade-up">
-                    <h2 style="color: var(--blue);">7. Segurança e Boas Práticas</h2>
+                    <h2 style="color: var(--blue);">8. Segurança e Boas Práticas</h2>
                     <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                         <div class="card glass-card" style="padding: 1.5rem;">
                             <h4 style="color: var(--green);"><i class="fas fa-shield-alt"></i> Proteção de Chaves</h4>
@@ -427,6 +400,34 @@ bot = telebot.TeleBot(<span class="code-string">'TOKEN_DO_BOT'</span>)<br><br>
                     <div class="card glass-card" style="padding: 1.5rem; margin-top: 1.5rem; border-left: 4px solid var(--green);">
                         <p style="margin: 0;"><strong>Dica de Lucro:</strong> Deixe o código "Pix Copia e Cola" bem visível. A maioria dos usuários prefere copiar o código do que escanear o QR Code.</p>
                     </div>
+                </section>
+
+                <!-- Erros -->
+                <section id="erros" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--red);">9. Códigos de Erro</h2>
+                    <p>Consulte os códigos de retorno para tratar exceções em sua integração.</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-2);">
+                            <th style="padding: 1rem;">HTTP</th>
+                            <th style="padding: 1rem;">Código</th>
+                            <th style="padding: 1rem;">Descrição</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>401</code></td>
+                            <td style="padding: 1rem;">Não autorizado</td>
+                            <td style="padding: 1rem;">Ghost Key vazia ou inválida.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>400</code></td>
+                            <td style="padding: 1rem;">Valor mínimo</td>
+                            <td style="padding: 1rem;">O montante enviado é menor que R$ 10,00.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;"><code>403</code></td>
+                            <td style="padding: 1rem;">CSRF Error</td>
+                            <td style="padding: 1rem;">Chamada via browser sem token de segurança.</td>
+                        </tr>
+                    </table>
                 </section>
 
                 <div class="card glass-card" style="padding: 2rem; margin-top: 4rem;">
