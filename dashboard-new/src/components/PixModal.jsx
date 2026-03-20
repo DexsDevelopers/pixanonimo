@@ -68,16 +68,17 @@ export default function PixModal({ pixData, onClose, statusEndpoint }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 backdrop-blur-md"
             onClick={onClose}
         >
-            <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="glass w-full max-width-[440px] max-w-md rounded-[32px] overflow-hidden border border-white/10"
-                onClick={e => e.stopPropagation()}
-            >
+            <div className="min-h-full flex items-center justify-center p-4">
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    className="glass w-full max-w-md rounded-[32px] overflow-hidden border border-white/10 my-4"
+                    onClick={e => e.stopPropagation()}
+                >
                 <div className="p-8">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
@@ -172,6 +173,7 @@ export default function PixModal({ pixData, onClose, statusEndpoint }) {
                     )}
                 </div>
             </motion.div>
-        </motion.div>
-    );
+        </div>
+    </motion.div>
+);
 }
