@@ -1,11 +1,50 @@
 import React, { useState } from 'react';
-import { Wallet, ArrowUpRight, ShieldCheck, History } from 'lucide-react';
-import StatCard from '../components/StatCard';
+import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 export default function WithdrawalsPage({ balance, transactions = [] }) {
     const [amount, setAmount] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
 
     const recentWithdrawals = transactions.filter(t => t.badge === 'approved').slice(0, 3);
+
+    const handleWithdraw = async () => {
+        const val = parseFloat(amount);
+        if (!val || val < 50) {
+            setResult({ success: false, error: 'O valor mínimo para saque é R$ 50,00.' });
+            return;
+        }
+
+        const balanceNum = parseFloat(String(balance).replace(/\./g, '').replace(',', '.'));
+        if (val > balanceNum) {
+            setResult({ success: false, error: `Saldo insuficiente. Seu saldo é R$ ${balance}.` });
+            return;
+        }
+
+        setLoading(true);
+        setResult(null);
+        try {
+            const res = await fetch('/withdraw.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ amount: val })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                setResult({ success: true, message: `Saque de R$ ${val.toFixed(2).replace('.', ',')} solicitado com sucesso! Prazo: até 2 dias úteis.` });
+                setAmount('');
+            } else {
+                setResult({ success: false, error: data.error || 'Erro ao processar saque.' });
+            }
+        } catch {
+            setResult({ success: false, error: 'Erro de conexão. Tente novamente.' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -36,6 +75,13 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
                             </div>
                         </div>
 
+                        {result && (
+                            <div className={`flex items-center gap-3 p-4 rounded-2xl text-sm font-bold ${result.success ? 'bg-primary/10 border border-primary/20 text-primary' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`}>
+                                {result.success ? <CheckCircle size={18} /> : <XCircle size={18} />}
+                                {result.success ? result.message : result.error}
+                            </div>
+                        )}
+
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-white/60 ml-2">Valor do Resgate</label>
@@ -46,15 +92,24 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
                                         placeholder="0,00"
+                                        min="50"
+                                        step="0.01"
                                         className="w-full bg-white/5 border border-white/10 rounded-[24px] py-6 pl-16 pr-8 text-2xl font-black focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all"
                                     />
                                 </div>
-                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: R$ 0,00 (Grátis para seu plano)</p>
+                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: R$ 0,00 (Grátis para seu plano) • Mínimo: R$ 50,00</p>
                             </div>
 
-                            <button className="w-full h-18 bg-white text-black rounded-[24px] font-black text-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
-                                Confirmar Saque
-                                <ArrowUpRight size={24} />
+                            <button
+                                onClick={handleWithdraw}
+                                disabled={loading}
+                                className="w-full h-18 bg-white text-black rounded-[24px] font-black text-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                            >
+                                {loading ? (
+                                    <><Loader2 size={22} className="animate-spin" /> Processando...</>
+                                ) : (
+                                    <>Confirmar Saque <ArrowUpRight size={24} /></>
+                                )}
                             </button>
                         </div>
                     </div>
