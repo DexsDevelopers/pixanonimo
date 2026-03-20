@@ -70,13 +70,16 @@ function AccordionItem({ title, content }) {
 
 export default function LandingPage() {
     const [onlineUsers, setOnlineUsers] = useState(2348);
+    const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
         console.log("LANDING PAGE COMPONENT MOUNTED");
         const interval = setInterval(() => {
             setOnlineUsers(prev => prev + (Math.random() > 0.4 ? Math.floor(Math.random() * 5) : -Math.floor(Math.random() * 3)));
         }, 3000);
-        return () => clearInterval(interval);
+        const handleScroll = () => setScrolled(window.scrollY > 60);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => { clearInterval(interval); window.removeEventListener('scroll', handleScroll); };
     }, []);
 
     return (
@@ -98,7 +101,7 @@ export default function LandingPage() {
             </div>
 
             {/* Navbar Global */}
-            <nav className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-6xl h-16 sm:h-20 bg-[#0a0a0a]/60 backdrop-blur-3xl border border-white/10 rounded-[32px] px-6 sm:px-10 flex items-center justify-between shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all overflow-hidden group">
+            <nav className={`fixed left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-6xl h-16 sm:h-20 bg-[#0a0a0a]/60 backdrop-blur-3xl border border-white/10 rounded-[32px] px-6 sm:px-10 flex items-center justify-between shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all duration-300 overflow-hidden group ${scrolled ? 'top-4' : 'top-20 sm:top-24'}`}>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
                 <div className="flex items-center gap-3 relative">
