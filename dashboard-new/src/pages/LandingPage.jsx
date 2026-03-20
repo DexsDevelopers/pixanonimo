@@ -327,13 +327,13 @@ export default function LandingPage() {
             </section>
 
             {/* CTA Final */}
-            <section className="py-32 px-6">
-                <div className="max-w-6xl mx-auto glass p-12 md:p-32 rounded-[64px] relative overflow-hidden text-center border-white/10 group">
+            <section className="py-16 sm:py-32 px-4 sm:px-6">
+                <div className="max-w-6xl mx-auto glass p-8 sm:p-12 md:p-32 rounded-[32px] sm:rounded-[64px] relative overflow-hidden text-center border-white/10 group">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent opacity-30 -z-10 group-hover:scale-110 transition-transform duration-1000" />
                     <div className="space-y-12">
-                        <h2 className="text-5xl md:text-8xl font-black leading-[0.9] tracking-[-0.05em] uppercase">O futuro dos <br /> <span className="text-primary">pagamentos</span> <br /> é hoje.</h2>
+                        <h2 className="text-3xl sm:text-5xl md:text-8xl font-black leading-[0.95] tracking-[-0.04em] uppercase">O futuro dos <span className="text-primary">pagamentos</span> é hoje.</h2>
                         <div className="pt-6">
-                            <Link to="/register" className="lp-btn-primary h-20 md:h-24 px-16 md:px-20 rounded-[32px] text-xl md:text-2xl font-black inline-flex shadow-[0_30px_70px_-10px_rgba(74,222,128,0.4)] hover:brightness-110 transition-all border-none">
+                            <Link to="/register" className="lp-btn-primary h-14 sm:h-20 md:h-24 px-10 sm:px-16 md:px-20 rounded-[20px] sm:rounded-[32px] text-sm sm:text-xl md:text-2xl font-black inline-flex shadow-[0_30px_70px_-10px_rgba(74,222,128,0.4)] hover:brightness-110 transition-all border-none whitespace-nowrap">
                                 CRIAR CONTA AGORA
                             </Link>
                         </div>
