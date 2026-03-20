@@ -59,8 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
     $defaultTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
 
-    $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token, commission_rate) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?)");
-    if ($stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax])) {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, affiliate_id, referral_token, commission_rate) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?)");
+        $stmt->execute([$email, $hash, $full_name, $pix_key, $affiliateId, bin2hex(random_bytes(8)), $defaultTax]);
         $newUserId = $pdo->lastInsertId();
 
         // Notificação Interna de Aprovação
@@ -72,16 +73,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Enviar E-mail de Aprovação
-        MailService::notifyApproval($email, $full_name);
+        try {
+            MailService::notifyApproval($email, $full_name);
+        } catch (Exception $e) {
+            write_log('error', 'Falha ao enviar email de aprovação: ' . $e->getMessage());
+        }
 
-        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
-            echo json_encode(['success' => true]);
+        write_log('INFO', 'Novo usuário registrado', ['user_id' => $newUserId, 'email' => $email]);
+
+        if ($isJsonRequest) {
+            echo json_encode(['success' => true, 'message' => 'Conta criada com sucesso!']);
             exit;
         }
         header("Location: login.php?registered=1");
         exit;
-    } else {
-        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+    } catch (PDOException $e) {
+        write_log('error', 'Erro ao criar conta: ' . $e->getMessage());
+        if ($isJsonRequest) {
             echo json_encode(['success' => false, 'error' => 'Erro ao criar conta. Tente novamente.']);
             exit;
         }
