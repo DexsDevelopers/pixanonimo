@@ -86,42 +86,88 @@ if ($user['is_demo'] == 1) {
 }
 
 // --- 3. ÚLTIMAS TRANSAÇÕES ---
-$stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
-$stmtRows->execute([$userId]);
-$rows = $stmtRows->fetchAll();
-
-$formattedRows = [];
-foreach ($rows as $t) {
-    // Lógica de status
-    $status = $t['status'];
-    $displayStatus = 'Pendente';
-    $badgeClass = 'pending';
-
-    if ($status == 'paid') {
-        $displayStatus = 'Pago';
-        $badgeClass = 'approved';
-    } elseif ($status == 'pending') {
-        if ($t['seconds_old'] > 1200) {
-            $displayStatus = 'Expirado';
-            $badgeClass = 'expired';
-        }
-    } elseif ($status == 'rejected') {
-        $displayStatus = 'Rejeitado';
-        $badgeClass = 'rejected';
-    }
-
-    $formattedRows[] = [
-        'id' => $t['id'],
-        'date' => date('d/m/Y H:i', strtotime($t['created_at'])),
-        'amount_brl' => number_format($t['amount_brl'], 2, ',', '.'),
-        'amount_net_brl' => number_format($t['amount_net_brl'], 2, ',', '.'),
-        'status' => $displayStatus,
-        'badge' => $badgeClass,
-        'customer_name' => $t['customer_name'] ?? 'Sem nome',
-        'qr_image' => $t['qr_image'] ?? '',
-        'pix_code' => $t['pix_code'] ?? '',
-        'seconds_old' => (int)$t['seconds_old']
+if ($user['is_demo'] == 1) {
+    // Gerar transações fake para conta demo
+    $fakeNames = ['João Silva', 'Maria Oliveira', 'Pedro Santos', 'Ana Costa', 'Lucas Ferreira', 'Juliana Souza', 'Carlos Lima', 'Fernanda Rocha', 'Rafael Almeida', 'Camila Ribeiro', 'Bruno Martins', 'Patrícia Gomes', 'Diego Araújo', 'Larissa Pereira', 'Thiago Barbosa'];
+    $fakeStatuses = [
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pago', 'badge' => 'approved'],
+        ['status' => 'Pendente', 'badge' => 'pending'],
+        ['status' => 'Expirado', 'badge' => 'expired'],
     ];
+    
+    // Seed baseado no user_id para manter consistência entre reloads
+    srand($userId * 1000 + (int)date('Ymd'));
+    
+    $formattedRows = [];
+    $txCount = rand(8, 12);
+    for ($i = 0; $i < $txCount; $i++) {
+        $amount = rand(1000, 50000) / 100; // R$10 a R$500
+        $commRate = $user['commission_rate'] ?: 4;
+        $netAmount = $amount * (1 - $commRate / 100);
+        $statusInfo = $fakeStatuses[array_rand($fakeStatuses)];
+        $hoursAgo = $i * rand(1, 4);
+        $date = date('d/m/Y H:i', strtotime("-{$hoursAgo} hours"));
+        $secondsOld = $statusInfo['badge'] === 'pending' ? rand(60, 600) : rand(3600, 86400);
+        
+        $formattedRows[] = [
+            'id' => 90000 + $i,
+            'date' => $date,
+            'amount_brl' => number_format($amount, 2, ',', '.'),
+            'amount_net_brl' => number_format($netAmount, 2, ',', '.'),
+            'status' => $statusInfo['status'],
+            'badge' => $statusInfo['badge'],
+            'customer_name' => $fakeNames[array_rand($fakeNames)],
+            'qr_image' => '',
+            'pix_code' => '',
+            'seconds_old' => $secondsOld
+        ];
+    }
+    
+    // Restaurar seed aleatório
+    srand();
+} else {
+    $stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
+    $stmtRows->execute([$userId]);
+    $rows = $stmtRows->fetchAll();
+
+    $formattedRows = [];
+    foreach ($rows as $t) {
+        // Lógica de status
+        $status = $t['status'];
+        $displayStatus = 'Pendente';
+        $badgeClass = 'pending';
+
+        if ($status == 'paid') {
+            $displayStatus = 'Pago';
+            $badgeClass = 'approved';
+        } elseif ($status == 'pending') {
+            if ($t['seconds_old'] > 1200) {
+                $displayStatus = 'Expirado';
+                $badgeClass = 'expired';
+            }
+        } elseif ($status == 'rejected') {
+            $displayStatus = 'Rejeitado';
+            $badgeClass = 'rejected';
+        }
+
+        $formattedRows[] = [
+            'id' => $t['id'],
+            'date' => date('d/m/Y H:i', strtotime($t['created_at'])),
+            'amount_brl' => number_format($t['amount_brl'], 2, ',', '.'),
+            'amount_net_brl' => number_format($t['amount_net_brl'], 2, ',', '.'),
+            'status' => $displayStatus,
+            'badge' => $badgeClass,
+            'customer_name' => $t['customer_name'] ?? 'Sem nome',
+            'qr_image' => $t['qr_image'] ?? '',
+            'pix_code' => $t['pix_code'] ?? '',
+            'seconds_old' => (int)$t['seconds_old']
+        ];
+    }
 }
 
 // --- 4. NOTIFICAÇÕES TIPO DASHBOARD ---
