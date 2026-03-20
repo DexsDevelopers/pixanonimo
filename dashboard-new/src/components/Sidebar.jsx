@@ -23,6 +23,11 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'settings', icon: <Settings size={20} />, label: 'Configurações', path: '/config' },
     ];
 
+    const adminItems = [
+        { id: 'admin', icon: <LayoutDashboard size={20} className="text-primary" />, label: 'Admin Geral', path: '/admin' },
+        { id: 'apis', icon: <Settings size={20} className="text-primary" />, label: 'Gestão de APIs', path: '/admin/apis' },
+    ];
+
     return (
         <motion.aside
             initial={false}
@@ -69,6 +74,25 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
                         {location.pathname === item.path && <ChevronRight size={14} className="opacity-50" />}
                     </Link>
                 ))}
+
+                {userData?.is_admin && (
+                    <div className="pt-6 animate-in slide-in-from-left duration-500">
+                        <p className="px-6 pb-2 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Administração</p>
+                        {adminItems.map((item) => (
+                            <a
+                                key={item.id}
+                                href={`../${item.path}`}
+                                className="w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group mb-1 text-white/60 hover:bg-white/5 hover:text-white"
+                            >
+                                <div className="flex items-center gap-3">
+                                    {item.icon}
+                                    <span className="text-[13px] font-bold uppercase tracking-widest">{item.label}</span>
+                                </div>
+                                <ChevronRight size={14} className="opacity-20 group-hover:opacity-50 transition-opacity" />
+                            </a>
+                        ))}
+                    </div>
+                )}
             </nav>
 
             <div className="p-4 mt-auto border-t border-white/5 bg-white/[0.01]">

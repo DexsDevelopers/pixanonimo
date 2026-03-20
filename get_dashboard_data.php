@@ -9,7 +9,7 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 // --- 1. DADOS DO USUÁRIO (SALDO) ---
-$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, full_name, email, referral_token FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -142,7 +142,8 @@ echo json_encode([
     'user' => [
         'name' => $user['full_name'] ?? 'Usuário',
         'email' => $user['email'] ?? '',
-        'api_token' => $user['referral_token'] ?? ''
+        'api_token' => $user['referral_token'] ?? '',
+        'is_admin' => (bool)$user['is_admin']
     ],
     'transactions' => $formattedRows,
     'notifications' => $formattedNotifs
