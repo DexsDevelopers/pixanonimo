@@ -119,8 +119,8 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex items-center gap-3 sm:gap-6 relative">
-                    <Link to="/login" className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors px-2">Entrar</Link>
-                    <Link to="/register" className="bg-white text-black text-[11px] font-black uppercase tracking-[0.2em] px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-2xl hover:bg-primary hover:text-black transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)]">Criar Conta</Link>
+                    <Link to="/login" className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 hover:text-white transition-colors px-1 sm:px-2 hidden sm:block">Entrar</Link>
+                    <Link to="/register" className="bg-white text-black text-[9px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] px-4 sm:px-8 py-2 sm:py-3.5 rounded-xl sm:rounded-2xl hover:bg-primary hover:text-black transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)] whitespace-nowrap">Conta</Link>
                 </div>
             </nav>
 
@@ -144,9 +144,9 @@ export default function LandingPage() {
                         <motion.h1
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-5xl sm:text-7xl lg:text-[130px] font-[1000] leading-[0.95] tracking-[-0.06em] uppercase"
+                            className="text-4xl sm:text-7xl lg:text-[130px] font-[1000] leading-[0.9] tracking-[-0.06em] uppercase"
                         >
-                            Privacidade <br /> <span className="text-primary italic animate-pulse">é Poder.</span>
+                            Privacidade<br /><span className="text-primary italic animate-pulse">é Poder.</span>
                         </motion.h1>
                         <motion.p
                             initial={{ opacity: 0 }}
@@ -164,11 +164,11 @@ export default function LandingPage() {
                         transition={{ delay: 0.5 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-8"
                     >
-                        <Link to="/register" className="w-full sm:w-auto bg-primary text-black h-18 sm:h-20 px-12 rounded-[24px] flex items-center justify-center text-lg font-black hover:scale-105 transition-all shadow-[0_20px_50px_rgba(74,222,128,0.2)] active:scale-95 group">
+                        <Link to="/register" className="w-full sm:w-auto bg-primary text-black h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] flex items-center justify-center text-sm sm:text-lg font-black hover:scale-105 transition-all shadow-[0_20px_50px_rgba(74,222,128,0.2)] active:scale-95 group whitespace-nowrap">
                             COMEÇAR AGORA
                             <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={20} />
                         </Link>
-                        <a href="#sistema" className="w-full sm:w-auto bg-white/5 border border-white/10 h-18 sm:h-20 px-12 rounded-[24px] text-white font-black hover:bg-white/10 transition-all active:scale-95 text-lg flex items-center justify-center">
+                        <a href="#sistema" className="w-full sm:w-auto bg-white/5 border border-white/10 h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] text-white font-black hover:bg-white/10 transition-all active:scale-95 text-sm sm:text-lg flex items-center justify-center whitespace-nowrap">
                             VER DEMO
                         </a>
                     </motion.div>
