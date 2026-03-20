@@ -25,8 +25,8 @@ export default function Sidebar({ isOpen, activeTab, onTabChange }) {
             className="fixed lg:relative z-50 h-full bg-[#111111] border-r border-white/5 flex flex-col overflow-hidden"
         >
             <div className="p-6 flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(0,255,136,0.15)]">
-                    <span className="text-primary font-bold text-xl">G</span>
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                    <span className="text-white font-bold text-xl">G</span>
                 </div>
                 <span className="font-bold text-xl tracking-tight">GHOST<span className="text-primary italic">PIX</span></span>
             </div>
@@ -37,9 +37,9 @@ export default function Sidebar({ isOpen, activeTab, onTabChange }) {
                         key={item.id}
                         onClick={() => onTabChange(item.id)}
                         className={cn(
-                            "w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group",
+                            "w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group",
                             activeTab === item.id
-                                ? 'bg-primary text-black font-semibold shadow-[0_4px_20px_rgba(0,255,136,0.2)]'
+                                ? 'bg-white text-black font-bold shadow-[0_4px_20px_rgba(255,255,255,0.1)]'
                                 : 'text-white/60 hover:bg-white/5 hover:text-white'
                         )}
                     >

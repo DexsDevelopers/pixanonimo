@@ -22,8 +22,35 @@ body {
 /* Custom Utilities for Premium Look */
 @utility glass {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@utility lp-btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 9999px;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff;
+}
+
+@utility lp-btn-outline {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @utility custom-scrollbar {

@@ -114,7 +114,8 @@ foreach ($rows as $t) {
         'badge' => $badgeClass,
         'customer_name' => $t['customer_name'] ?? 'Sem nome',
         'qr_image' => $t['qr_image'] ?? '',
-        'pix_code' => $t['pix_code'] ?? ''
+        'pix_code' => $t['pix_code'] ?? '',
+        'seconds_old' => (int)$t['seconds_old']
     ];
 }
 
