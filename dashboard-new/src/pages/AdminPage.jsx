@@ -211,7 +211,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full min-w-[900px]">
                         <thead>
                             <tr className="text-left border-b border-white/5">
                                 <th className="p-6 text-[10px] font-black text-white/20 uppercase tracking-widest pl-10">ID/Usuário</th>
