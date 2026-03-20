@@ -29,6 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $full_name = strip_tags(trim($_POST['full_name'] ?? ''));
     $pix_key = strip_tags(trim($_POST['pix_key'] ?? ''));
 
+    // Validar provedor de e-mail (bloquear e-mails temporários)
+    $allowedDomains = [
+        'gmail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+        'yahoo.com', 'yahoo.com.br', 'icloud.com', 'me.com', 'mac.com',
+        'protonmail.com', 'proton.me', 'aol.com',
+        'uol.com.br', 'bol.com.br', 'terra.com.br', 'ig.com.br', 'globo.com', 'globomail.com',
+        'zoho.com', 'yandex.com', 'mail.com', 'gmx.com', 'gmx.net'
+    ];
+    $emailDomain = strtolower(substr(strrchr($email, '@'), 1));
+    if (!in_array($emailDomain, $allowedDomains)) {
+        if ($isJsonRequest) {
+            echo json_encode(['success' => false, 'error' => 'Use um e-mail de provedor confiável (Gmail, Outlook, Hotmail, Yahoo, iCloud, etc). E-mails temporários não são permitidos.']);
+            exit;
+        }
+        header("Location: register.php?error=invalid_email");
+        exit;
+    }
+
     // Verificar se o email já existe
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute([$email]);

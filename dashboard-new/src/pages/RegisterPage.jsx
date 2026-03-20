@@ -12,10 +12,25 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    const allowedDomains = [
+        'gmail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+        'yahoo.com', 'yahoo.com.br', 'icloud.com', 'me.com', 'mac.com',
+        'protonmail.com', 'proton.me', 'aol.com',
+        'uol.com.br', 'bol.com.br', 'terra.com.br', 'ig.com.br', 'globo.com', 'globomail.com',
+        'zoho.com', 'yandex.com', 'mail.com', 'gmx.com', 'gmx.net'
+    ];
+
     const handleRegister = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+
+        const emailDomain = email.split('@')[1]?.toLowerCase();
+        if (!emailDomain || !allowedDomains.includes(emailDomain)) {
+            setError('Use um e-mail de provedor confiável (Gmail, Outlook, Hotmail, Yahoo, iCloud, etc). E-mails temporários não são permitidos.');
+            setLoading(false);
+            return;
+        }
 
         try {
             const formData = new FormData();
