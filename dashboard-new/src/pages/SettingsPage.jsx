@@ -1,19 +1,53 @@
 import React, { useState, useRef } from 'react';
-import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2 } from 'lucide-react';
+import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 export default function SettingsPage({ userData }) {
     const [activeSubTab, setActiveSubTab] = useState('perfil');
     const [copied, setCopied] = useState(false);
+    const [copiedCurl, setCopiedCurl] = useState(false);
+    const [showToken, setShowToken] = useState(false);
+    const [apiToken, setApiToken] = useState(userData?.api_token || '');
+    const [regenerating, setRegenerating] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(userData?.avatar_url || null);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleCopyToken = () => {
-        if (!userData?.api_token) return;
-        navigator.clipboard.writeText(userData.api_token);
+        if (!apiToken) return;
+        navigator.clipboard.writeText(apiToken);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), 2500);
+    };
+
+    const handleCopyCurl = () => {
+        const curl = `curl -X POST https://pixghost.site/api.php \\
+  -H "Authorization: Bearer ${apiToken || 'SUA_API_KEY'}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"amount": 25.00, "customer_name": "Cliente Teste"}'`;
+        navigator.clipboard.writeText(curl);
+        setCopiedCurl(true);
+        setTimeout(() => setCopiedCurl(false), 2500);
+    };
+
+    const handleRegenerateKey = async () => {
+        if (!confirm('Tem certeza? A chave atual será invalidada permanentemente.')) return;
+        setRegenerating(true);
+        try {
+            const res = await fetch('/generate_key.php', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                setApiToken(data.api_key);
+                setShowToken(true);
+            } else {
+                alert(data.error || 'Erro ao gerar nova chave');
+            }
+        } catch {
+            alert('Erro de conexão');
+        } finally {
+            setRegenerating(false);
+        }
     };
 
     const handleAvatarClick = () => {
@@ -153,33 +187,146 @@ export default function SettingsPage({ userData }) {
 
                         {activeSubTab === 'api' && (
                             <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                                {/* Header */}
                                 <div className="bg-primary/10 border border-primary/20 p-6 rounded-3xl flex gap-4">
-                                    <Shield className="text-primary shrink-0" size={24} />
+                                    <Shield className="text-primary shrink-0 mt-0.5" size={24} />
                                     <div>
-                                        <h4 className="font-bold text-primary italic">Acesso Desenvolvedor</h4>
-                                        <p className="text-xs text-primary/70 font-medium">Use estas chaves para integrar o Ghost Pix ao seu sistema ou checkout externo.</p>
+                                        <h4 className="font-bold text-primary italic text-lg">Acesso Desenvolvedor</h4>
+                                        <p className="text-xs text-primary/70 font-medium mt-1">Use sua chave API para integrar o Ghost Pix ao seu sistema, bot, site ou checkout externo.</p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Chave Privada (API Token)</label>
-                                        <div className="flex gap-2">
+                                {/* API Key Section */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4 flex items-center gap-2">
+                                        <Key size={12} /> Chave Privada (API Token)
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 relative">
                                             <input
-                                                type="password"
-                                                value={userData?.api_token || "Gerando token..."}
+                                                type={showToken ? "text" : "password"}
+                                                value={apiToken || "Nenhuma chave gerada"}
                                                 readOnly
-                                                className="flex-1 bg-white/5 border border-white/10 rounded-full px-6 py-4 font-mono text-sm text-white/60"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-mono text-sm text-white/60 pr-14 select-all focus:outline-none focus:border-primary/30"
+                                                onClick={(e) => { if (apiToken) e.target.select(); }}
                                             />
                                             <button
-                                                onClick={handleCopyToken}
-                                                className="w-14 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 transition-all"
+                                                onClick={() => setShowToken(!showToken)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                                             >
-                                                {copied ? <Check size={20} className="text-green-600" /> : <Copy size={20} />}
+                                                {showToken ? <EyeOff size={18} /> : <Eye size={18} />}
                                             </button>
                                         </div>
-                                        <p className="text-[10px] text-red-500 font-bold ml-4">AVISO: Nunca compartilhe esta chave com ninguém!</p>
+                                        <button
+                                            onClick={handleCopyToken}
+                                            disabled={!apiToken}
+                                            className={cn(
+                                                "w-14 rounded-2xl flex items-center justify-center transition-all shrink-0",
+                                                copied ? "bg-primary text-black" : "bg-white text-black hover:scale-105"
+                                            )}
+                                        >
+                                            {copied ? <Check size={18} /> : <Copy size={18} />}
+                                        </button>
                                     </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[10px] font-bold ml-4 flex items-center gap-1.5">
+                                            <AlertTriangle size={10} className="text-red-500" />
+                                            <span className="text-red-500/80">Nunca compartilhe esta chave com ninguém!</span>
+                                        </p>
+                                        <button
+                                            onClick={handleRegenerateKey}
+                                            disabled={regenerating}
+                                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors mr-2"
+                                        >
+                                            {regenerating ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+                                            {regenerating ? 'Gerando...' : 'Gerar Nova Chave'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Quick Start */}
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black uppercase tracking-widest text-white/50 flex items-center gap-2 ml-1">
+                                        <Zap size={14} className="text-primary" /> Quick Start
+                                    </h4>
+                                    <div className="bg-[#0a0a0b] border border-white/5 rounded-2xl overflow-hidden">
+                                        <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
+                                            <div className="flex items-center gap-2">
+                                                <Terminal size={14} className="text-primary" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-white/30">cURL — Criar Cobrança Pix</span>
+                                            </div>
+                                            <button
+                                                onClick={handleCopyCurl}
+                                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-primary transition-colors"
+                                            >
+                                                {copiedCurl ? <><Check size={12} className="text-primary" /> Copiado</> : <><Copy size={12} /> Copiar</>}
+                                            </button>
+                                        </div>
+                                        <pre className="p-5 text-xs text-white/50 font-mono leading-relaxed overflow-x-auto">
+{`curl -X POST https://pixghost.site/api.php \\
+  -H "Authorization: Bearer ${apiToken ? (showToken ? apiToken : '••••••••••••') : 'SUA_API_KEY'}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "amount": 25.00,
+    "customer_name": "Cliente Teste"
+  }'`}
+                                        </pre>
+                                    </div>
+                                </div>
+
+                                {/* Info Cards */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-2">
+                                        <Globe size={18} className="text-primary" />
+                                        <p className="text-xs font-black text-white/60">Base URL</p>
+                                        <p className="text-[11px] font-mono text-white/30">https://pixghost.site/api.php</p>
+                                    </div>
+                                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-2">
+                                        <Shield size={18} className="text-primary" />
+                                        <p className="text-xs font-black text-white/60">Autenticação</p>
+                                        <p className="text-[11px] font-mono text-white/30">Bearer Token no Header</p>
+                                    </div>
+                                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 space-y-2">
+                                        <Zap size={18} className="text-primary" />
+                                        <p className="text-xs font-black text-white/60">Rate Limit</p>
+                                        <p className="text-[11px] font-mono text-white/30">3 req/min (cobranças)</p>
+                                    </div>
+                                </div>
+
+                                {/* Response Example */}
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black uppercase tracking-widest text-white/50 flex items-center gap-2 ml-1">
+                                        <Code size={14} className="text-primary" /> Resposta de Sucesso
+                                    </h4>
+                                    <div className="bg-[#0a0a0b] border border-white/5 rounded-2xl overflow-hidden">
+                                        <div className="px-5 py-3 border-b border-white/5 flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">200 OK — JSON</span>
+                                        </div>
+                                        <pre className="p-5 text-xs text-white/50 font-mono leading-relaxed overflow-x-auto">
+{`{
+  "success": true,
+  "pix_id": "abc123",
+  "amount": 25.00,
+  "pix_code": "00020126...",
+  "qr_image": "https://...",
+  "status": "pending"
+}`}
+                                        </pre>
+                                    </div>
+                                </div>
+
+                                {/* CTA */}
+                                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                                    <Link to="/docs" className="flex-1 flex items-center justify-center gap-2 bg-primary text-black font-black text-xs uppercase tracking-widest py-4 rounded-2xl hover:brightness-110 transition-all">
+                                        <ExternalLink size={14} />
+                                        Documentação Completa
+                                    </Link>
+                                    <a href="https://pixghost.site/check_status.php" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/60 font-black text-xs uppercase tracking-widest py-4 rounded-2xl hover:bg-white/10 transition-all">
+                                        <Globe size={14} />
+                                        Testar Status Endpoint
+                                    </a>
                                 </div>
                             </div>
                         )}
