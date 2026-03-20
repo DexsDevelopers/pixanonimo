@@ -15,8 +15,6 @@ export default function GeneratePixCard({ onGenerate, disabled = false }) {
 
         setLoading(true);
         try {
-            // O CSRF token pode ser passado via meta tag se necessário, 
-            // ou apenas o fetch normal se o site não estiver usando validação rígida de origem no api.php
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             const response = await fetch('/api.php', {
@@ -29,16 +27,29 @@ export default function GeneratePixCard({ onGenerate, disabled = false }) {
             });
 
             const data = await response.json();
+            console.log('API Response:', JSON.stringify(data));
 
             if (data.error) {
-                alert('Erro: ' + data.error);
-            } else if (data.success || data.status === 'success' || data.pix_id) {
-                onGenerate({
-                    id: data.pix_id,
-                    amount: data.amount || val,
-                    code: data.pix_code || data.qr_code || data.payload || data.qrcodepix || '',
-                    image: data.qr_image || data.qr_code_url || ''
-                });
+                alert('Erro: ' + (data.message || data.error));
+            } else if (data.success || data.pix_id) {
+                // Dados podem estar no nível raiz ou dentro de data.data
+                const pixInfo = data.data || data;
+                const pixResult = {
+                    id: pixInfo.pix_id || pixInfo.payment_id || '',
+                    amount: pixInfo.amount || val,
+                    code: pixInfo.pix_code || pixInfo.qr_code || pixInfo.payload || '',
+                    image: pixInfo.qr_image || pixInfo.qr_image_url || pixInfo.qr_code_url || ''
+                };
+                console.log('Pix Result para Modal:', JSON.stringify(pixResult));
+                if (pixResult.id) {
+                    onGenerate(pixResult);
+                } else {
+                    console.warn('PIX gerado mas sem ID:', data);
+                    alert('PIX gerado mas houve um problema ao exibir. Verifique suas vendas.');
+                }
+            } else {
+                alert('Resposta inesperada da API. Verifique o console.');
+                console.error('Resposta inesperada:', data);
             }
         } catch (err) {
             console.error('Fetch Error:', err);
