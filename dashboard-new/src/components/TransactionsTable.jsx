@@ -2,7 +2,7 @@ import React from 'react';
 import { History } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-export function TransactionsTable({ transactions, loading }) {
+export default function TransactionsTable({ transactions = [], loading = false }) {
     if (loading) {
         return (
             <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 min-h-[400px] flex items-center justify-center">

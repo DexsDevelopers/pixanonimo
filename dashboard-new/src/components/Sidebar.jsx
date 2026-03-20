@@ -10,7 +10,7 @@ import {
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 
-export function Sidebar({ isOpen, activeTab, onTabChange }) {
+export default function Sidebar({ isOpen, activeTab, onTabChange }) {
     const menuItems = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
         { id: 'vendas', icon: <History size={20} />, label: 'Vendas' },

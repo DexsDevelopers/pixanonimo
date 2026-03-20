@@ -8,16 +8,19 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Componentes
-import { Sidebar } from './components/Sidebar.jsx';
-import { Header } from './components/Header.jsx';
-import { StatCard } from './components/StatCard.jsx';
-import { TransactionsTable } from './components/TransactionsTable.jsx';
+import Sidebar from './components/Sidebar.jsx';
+import Header from './components/Header.jsx';
+import StatCard from './components/StatCard.jsx';
+import TransactionsTable from './components/TransactionsTable.jsx';
+import GeneratePixCard from './components/GeneratePixCard.jsx';
+import PixModal from './components/PixModal.jsx';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activePix, setActivePix] = useState(null); // Estado para o Pix gerado
 
   const fetchData = async () => {
     try {
@@ -125,26 +128,39 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <History className="text-primary" size={20} />
-                Vendas Recentes
-              </h2>
-              <button
-                onClick={fetchData}
-                className="text-xs font-bold text-primary hover:underline"
-              >
-                ATUALIZAR STATUS
-              </button>
-            </div>
+            {/* GRID PRINCIPAL */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Card de Geração de Pix - Ocupa 1 coluna */}
+              <GeneratePixCard onGenerate={(pix) => setActivePix(pix)} />
 
-            <TransactionsTable
-              transactions={data?.transactions}
-              loading={loading}
-            />
+              {/* Tabela de Transações - Ocupa 2 colunas no desktop */}
+              <div className="lg:col-span-2">
+                <div className="glass p-6 rounded-2xl border border-white/5 h-full">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-bold text-white text-lg">Histórico Recente</h3>
+                    <button
+                      onClick={fetchData}
+                      className="text-primary text-sm font-medium hover:underline"
+                    >
+                      ATUALIZAR STATUS
+                    </button>
+                  </div>
+                  <TransactionsTable transactions={data?.transactions || []} loading={loading} />
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {activePix && (
+          <PixModal
+            pixData={activePix}
+            onClose={() => setActivePix(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Bell, Search, User } from 'lucide-react';
 
-export function Header({ onToggleSidebar, notificationsCount = 0 }) {
+export default function Header({ onToggleSidebar, notificationsCount }) {
     return (
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-[#08080a]/50 backdrop-blur-md sticky top-0 z-30">
             <div className="flex items-center gap-4">

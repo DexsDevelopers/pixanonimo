@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 
-export function StatCard({ label, value, icon, trend, loading, className }) {
+export default function StatCard({ label, value, icon, trend, loading = false, className }) {
     return (
         <motion.div
             whileHover={{ translateY: -4 }}
