@@ -78,3 +78,14 @@ CREATE TABLE IF NOT EXISTS checkout_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (checkout_id) REFERENCES checkouts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabela de Domínios Permitidos para Checkout Transparente
+CREATE TABLE IF NOT EXISTS merchant_domains (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    domain VARCHAR(255) NOT NULL,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_domain (user_id, domain)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
