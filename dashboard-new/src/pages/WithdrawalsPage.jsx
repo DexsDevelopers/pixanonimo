@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Wallet, ArrowUpRight, ShieldCheck, History } from 'lucide-react';
 import StatCard from '../components/StatCard';
 
-export default function WithdrawalsPage({ balance }) {
+export default function WithdrawalsPage({ balance, transactions = [] }) {
     const [amount, setAmount] = useState('');
+
+    const recentWithdrawals = transactions.filter(t => t.badge === 'approved').slice(0, 3);
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -65,16 +67,20 @@ export default function WithdrawalsPage({ balance }) {
                             Status Recentes
                         </h3>
                         <div className="space-y-6">
-                            {[1, 2].map(i => (
-                                <div key={i} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                                    <div>
-                                        <p className="text-sm font-bold text-white">R$ 450,00</p>
-                                        <p className="text-[10px] text-white/40">20/03/2026 14:30</p>
+                            {recentWithdrawals.length > 0 ? (
+                                recentWithdrawals.map((tx, i) => (
+                                    <div key={i} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                                        <div>
+                                            <p className="text-sm font-bold text-white">R$ {tx.amount_brl}</p>
+                                            <p className="text-[10px] text-white/40">{tx.date}</p>
+                                        </div>
+                                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-wider border border-primary/20">{tx.status}</span>
                                     </div>
-                                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-wider border border-primary/20">Pago</span>
-                                </div>
-                            ))}
-                            <p className="text-[10px] text-center text-white/20 font-bold uppercase tracking-widest pt-4">Ver histórico completo</p>
+                                ))
+                            ) : (
+                                <p className="text-xs text-white/20 text-center py-4">Nenhum saque recente.</p>
+                            )}
+                            <p className="text-[10px] text-center text-white/20 font-bold uppercase tracking-widest pt-4 cursor-pointer hover:text-white transition-colors">Ver histórico completo</p>
                         </div>
                     </div>
                 </div>

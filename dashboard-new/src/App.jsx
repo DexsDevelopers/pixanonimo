@@ -190,7 +190,7 @@ export default function App() {
       <Route path="/saques" element={
         <PrivateRoute>
           <DashboardLayout {...commonProps} activeTab="saques">
-            <WithdrawalsPage balance={commonProps.balance} />
+            <WithdrawalsPage balance={commonProps.balance} transactions={dashboardData?.transactions} />
           </DashboardLayout>
         </PrivateRoute>
       } />
@@ -198,7 +198,7 @@ export default function App() {
       <Route path="/config" element={
         <PrivateRoute>
           <DashboardLayout {...commonProps} activeTab="settings">
-            <SettingsPage />
+            <SettingsPage userData={commonProps.userData} />
           </DashboardLayout>
         </PrivateRoute>
       } />

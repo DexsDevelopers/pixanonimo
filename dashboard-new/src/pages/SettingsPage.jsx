@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-export default function SettingsPage() {
+export default function SettingsPage({ userData }) {
     const [activeSubTab, setActiveSubTab] = useState('perfil');
     const [copied, setCopied] = useState(false);
 
     const handleCopyToken = () => {
-        navigator.clipboard.writeText('pk_f07a39496a7a22c7d7e1694cdf28baee4a7aeae7a4133cc0fec23a1b627d8d56');
+        if (!userData?.api_token) return;
+        navigator.clipboard.writeText(userData.api_token);
         setCopied(true);
-        setTimeout(() => setCopied(null), 2000);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const tabs = [
@@ -67,11 +68,11 @@ export default function SettingsPage() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Nome Completo</label>
-                                        <input type="text" defaultValue="Ghost Pix Vendor" className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                        <input type="text" defaultValue={userData?.name || "Ghost Pix Vendor"} className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">E-mail Principal</label>
-                                        <input type="email" defaultValue="vendedor@ghostpix.site" disabled className="w-full bg-white/[0.02] border border-white/5 rounded-full px-6 py-4 font-bold opacity-50 cursor-not-allowed" />
+                                        <input type="email" defaultValue={userData?.email || "vendedor@ghostpix.site"} disabled className="w-full bg-white/[0.02] border border-white/5 rounded-full px-6 py-4 font-bold opacity-50 cursor-not-allowed" />
                                     </div>
                                 </div>
 
@@ -98,7 +99,7 @@ export default function SettingsPage() {
                                         <div className="flex gap-2">
                                             <input
                                                 type="password"
-                                                value="pk_f07a39496a7a22c7d7e1694cdf28baee4a7aeae7a4133cc0fec23a1b627d8d56"
+                                                value={userData?.api_token || "Gerando token..."}
                                                 readOnly
                                                 className="flex-1 bg-white/5 border border-white/10 rounded-full px-6 py-4 font-mono text-sm text-white/60"
                                             />
