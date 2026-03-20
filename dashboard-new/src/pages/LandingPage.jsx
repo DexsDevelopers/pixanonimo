@@ -101,7 +101,7 @@ export default function LandingPage() {
             </div>
 
             {/* Navbar Global */}
-            <nav className={`fixed left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-6xl h-16 sm:h-20 bg-[#0a0a0a]/60 backdrop-blur-3xl border border-white/10 rounded-[32px] px-6 sm:px-10 flex items-center justify-between shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all duration-300 overflow-hidden group ${scrolled ? 'top-4' : 'top-20 sm:top-24'}`}>
+            <nav className={`fixed left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-6xl h-16 sm:h-20 bg-[#0a0a0a]/60 backdrop-blur-3xl border border-white/10 rounded-[32px] px-6 sm:px-10 flex items-center justify-between shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all duration-300 overflow-hidden group ${scrolled ? 'top-3' : 'top-32 sm:top-24'}`}>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
                 <div className="flex items-center gap-3 relative">
@@ -125,7 +125,7 @@ export default function LandingPage() {
             </nav>
 
             {/* Hero Section */}
-            <section className="pt-64 pb-32 px-6 relative overflow-hidden">
+            <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-7xl aspect-square bg-primary/5 rounded-full blur-[200px] -z-10 pointer-events-none animate-pulse" />
                 <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
