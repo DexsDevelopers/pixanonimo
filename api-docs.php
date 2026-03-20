@@ -132,6 +132,8 @@ require_once 'includes/db.php';
                     <a href="#status-check" class="nav-link-side">Consultar Status</a>
                     <a href="#webhooks" class="nav-link-side">Webhooks</a>
                     <a href="#exemplos" class="nav-link-side">Exemplos de Código</a>
+                    <a href="#telegram" class="nav-link-side">Telegram Bots</a>
+                    <a href="#mobile" class="nav-link-side">Apps Mobile</a>
                     <a href="#seguranca" class="nav-link-side">Segurança e Dicas</a>
                     <a href="#erros" class="nav-link-side">Erros Comuns</a>
                 </nav>
@@ -258,6 +260,8 @@ require_once 'includes/db.php';
                             <button class="tab-btn" onclick="showTab('node')">Node.js</button>
                             <button class="tab-btn" onclick="showTab('python')">Python</button>
                             <button class="tab-btn" onclick="showTab('php')">PHP / JS</button>
+                            <button class="tab-btn" onclick="showTab('telegram')">Telegram</button>
+                            <button class="tab-btn" onclick="showTab('mobile')">Mobile</button>
                         </div>
 
                         <!-- Go -->
@@ -332,6 +336,73 @@ curl_setopt(<span class="code-keyword">$ch</span>, CURLOPT_HTTPHEADER, [<br>
 ]);<br>
 curl_exec(<span class="code-keyword">$ch</span>);
                             </div>
+                        </div>
+
+                        <!-- Telegram -->
+                        <div id="tab-telegram" class="tab-content" style="display: none;">
+                            <p>Crie bots que vendem sozinhos no Telegram usando Python e <code>telebot</code>.</p>
+                            <div class="code-block">
+<span class="code-keyword">import</span> telebot, requests<br><br>
+bot = telebot.TeleBot(<span class="code-string">'TOKEN_DO_BOT'</span>)<br><br>
+<span class="code-keyword">@bot.message_handler</span>(commands=[<span class="code-string">'comprar'</span>])<br>
+<span class="code-keyword">def</span> comprar(message):<br>
+&nbsp;&nbsp;res = requests.post(<span class="code-string">"https://pixghost.site/api.php"</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers={<span class="code-string">"Authorization"</span>: <span class="code-string">"Bearer ghost_KEY"</span>},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;json={<span class="code-string">"amount"</span>: <span class="code-string">15.00</span>}).json()<br><br>
+&nbsp;&nbsp;<span class="code-keyword">if</span> res.get(<span class="code-string">'success'</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bot.send_photo(message.chat.id, res[<span class="code-string">'qr_image'</span>])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bot.send_message(message.chat.id, <span class="code-string">f"Pix:\n`{res['pix_code']}`"</span>, parse_mode=<span class="code-string">"Markdown"</span>)
+                            </div>
+                        </div>
+
+                        <!-- Mobile -->
+                        <div id="tab-mobile" class="tab-content" style="display: none;">
+                            <p>Integração nativa para aplicativos Android/iOS (React Native / Flutter).</p>
+                            <div class="code-block">
+<span class="code-keyword">const</span> fazerPix = <span class="code-keyword">async</span> (valor) => {<br>
+&nbsp;&nbsp;<span class="code-keyword">const</span> res = <span class="code-keyword">await</span> fetch(<span class="code-string">'https://pixghost.site/api.php'</span>, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method: <span class="code-string">'POST'</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">'Authorization'</span>: <span class="code-string">'Bearer ghost_KEY'</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({ amount: valor })<br>
+&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;...<br>
+};
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Telegram Bots Detalhado -->
+                <section id="telegram" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">7. Bots do Telegram Dinâmicos</h2>
+                    <p>Vá além do básico: aprenda a trocar seu token Ghost direto pelo celular através do bot.</p>
+                    <div class="code-block">
+<span class="code-keyword">@bot.message_handler</span>(commands=[<span class="code-string">'token'</span>])<br>
+<span class="code-keyword">def</span> configurar(message):<br>
+&nbsp;&nbsp;<span class="code-keyword">if</span> message.from_user.id != MEU_ID:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span><br>
+&nbsp;nova_chave = message.text.replace(<span class="code-string">'/token '</span>, <span class="code-string">''</span>).strip()<br>
+&nbsp;salvar_key(nova_chave) <span class="code-comment"># Salva em config.json</span><br>
+&nbsp;bot.reply_to(message, <span class="code-string">"✅ Chave atualizada!"</span>)
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-2);"><i class="fas fa-lightbulb"></i> Use o bot <code>@userinfobot</code> para descobrir seu ID e travar o comando apenas para você.</p>
+                </section>
+
+                <!-- Apps Mobile Detalhado -->
+                <section id="mobile" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">8. Boas Práticas para Mobile</h2>
+                    <p>Foque na experiência do usuário em dispositivos móveis.</p>
+                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                        <div class="card glass-card" style="padding: 1.5rem;">
+                            <h4 style="color: var(--blue);"><i class="fas fa-mobile-alt"></i> UX Mobile</h4>
+                            <p style="font-size: 0.85rem;">Ninguém gosta de escanear QR Code no próprio celular. <strong>Sempre destaque o botão de copiar código.</strong></p>
+                        </div>
+                        <div class="card glass-card" style="padding: 1.5rem;">
+                            <h4 style="color: var(--red);"><i class="fas fa-server"></i> Segurança</h4>
+                            <p style="font-size: 0.85rem;">Evite deixar o <code>ghost_token</code> no código do app. O ideal é usar seu servidor como ponte.</p>
                         </div>
                     </div>
                 </section>
