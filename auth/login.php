@@ -77,7 +77,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'password_verify' => $user ? password_verify($password, $user['password']) : false
         ]);
         if ($isJsonRequest) {
-            echo json_encode(['success' => false, 'error' => 'Email ou senha incorretos.']);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Email ou senha incorretos.',
+                '_debug' => [
+                    'email_received' => $email,
+                    'password_length' => strlen($password),
+                    'user_found' => $user ? true : false,
+                    'hash_length' => $user ? strlen($user['password']) : 0,
+                    'verify' => $user ? password_verify($password, $user['password']) : null
+                ]
+            ]);
             exit;
         }
         header("Location: login.php?error=1");
