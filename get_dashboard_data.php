@@ -142,7 +142,7 @@ echo json_encode([
     'user' => [
         'name' => $user['full_name'] ?? 'Usuário',
         'email' => $user['email'] ?? '',
-        'api_token' => $user['referral_token'] ?? '',
+        'api_token' => $user['api_key'] ?? '',
         'is_admin' => (bool)$user['is_admin']
     ],
     'transactions' => $formattedRows,
