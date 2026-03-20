@@ -139,6 +139,8 @@ export default function App() {
     notifications: dashboardData?.notifications || []
   };
 
+  const { userData, balance, notifications } = commonProps;
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
