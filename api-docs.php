@@ -75,6 +75,23 @@ require_once 'includes/db.php';
             font-size: 0.85rem;
             color: var(--text);
         }
+        /* Tab Buttons Styling */
+        .tab-btn {
+            background: rgba(255,255,255,0.05) !important;
+            color: #fff !important;
+            border: 1px solid var(--border) !important;
+            transition: all 0.3s ease;
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.1) !important;
+            border-color: var(--green) !important;
+        }
+        .tab-btn.active {
+            background: var(--green) !important;
+            color: #000 !important;
+            border-color: var(--green) !important;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="lp-body">
@@ -237,10 +254,10 @@ require_once 'includes/db.php';
                     
                     <div class="tabs-container" style="margin-top: 2rem;">
                         <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                            <button class="btn-lp-outline-sm tab-btn active" onclick="showTab('go')">Go</button>
-                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('node')">Node.js</button>
-                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('python')">Python</button>
-                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('php')">PHP / JS</button>
+                            <button class="tab-btn active" onclick="showTab('go')">Go</button>
+                            <button class="tab-btn" onclick="showTab('node')">Node.js</button>
+                            <button class="tab-btn" onclick="showTab('python')">Python</button>
+                            <button class="tab-btn" onclick="showTab('php')">PHP / JS</button>
                         </div>
 
                         <!-- Go -->
