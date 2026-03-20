@@ -1,4 +1,9 @@
 RewriteEngine On
 
-# Checkouts customizados
+# Checkouts customizados (Legado)
 RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ pay.php?c=$1 [L,QSA]
+
+# Suporte a SPA: Redireciona todas as rotas não-arquivos para o index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
