@@ -114,6 +114,8 @@ require_once 'includes/db.php';
                     <a href="#gerar-pix" class="nav-link-side">Gerar Pix</a>
                     <a href="#status-check" class="nav-link-side">Consultar Status</a>
                     <a href="#webhooks" class="nav-link-side">Webhooks</a>
+                    <a href="#exemplos" class="nav-link-side">Exemplos de Código</a>
+                    <a href="#seguranca" class="nav-link-side">Segurança e Dicas</a>
                     <a href="#erros" class="nav-link-side">Erros Comuns</a>
                 </nav>
             </aside>
@@ -228,6 +230,117 @@ require_once 'includes/db.php';
                     </table>
                 </section>
 
+                <!-- Exemplos de Integração -->
+                <section id="exemplos" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--green);">6. Exemplos de Integração</h2>
+                    <p>Escolha sua linguagem e veja como é fácil integrar o Ghost Pix.</p>
+                    
+                    <div class="tabs-container" style="margin-top: 2rem;">
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <button class="btn-lp-outline-sm tab-btn active" onclick="showTab('go')">Go</button>
+                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('node')">Node.js</button>
+                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('python')">Python</button>
+                            <button class="btn-lp-outline-sm tab-btn" onclick="showTab('php')">PHP / JS</button>
+                        </div>
+
+                        <!-- Go -->
+                        <div id="tab-go" class="tab-content">
+                            <p>Go é excelente pra quem quer velocidade e processamento em massa.</p>
+                            <div class="code-block">
+<span class="code-keyword">package</span> main<br><br>
+<span class="code-keyword">import</span> (<br>
+&nbsp;&nbsp;<span class="code-string">"bytes"</span><br>
+&nbsp;&nbsp;<span class="code-string">"encoding/json"</span><br>
+&nbsp;&nbsp;<span class="code-string">"fmt"</span><br>
+&nbsp;&nbsp;<span class="code-string">"net/http"</span><br>
+)<br><br>
+<span class="code-keyword">func</span> main() {<br>
+&nbsp;&nbsp;url := <span class="code-string">"https://pixghost.site/api.php"</span><br>
+&nbsp;&nbsp;minhaChave := <span class="code-string">"ghost_SUA_CHAVE_AQUI"</span><br><br>
+&nbsp;&nbsp;dados := <span class="code-keyword">map</span>[<span class="code-keyword">string</span>]<span class="code-keyword">interface</span>{}{ <span class="code-string">"amount"</span>: <span class="code-string">100.00</span> }<br>
+&nbsp;&nbsp;corpo, _ := json.Marshal(dados)<br><br>
+&nbsp;&nbsp;req, _ := http.NewRequest(<span class="code-string">"POST"</span>, url, bytes.NewBuffer(corpo))<br>
+&nbsp;&nbsp;req.Header.Set(<span class="code-string">"Authorization"</span>, <span class="code-string">"Bearer "</span> + minhaChave)<br>
+&nbsp;&nbsp;req.Header.Set(<span class="code-string">"Content-Type"</span>, <span class="code-string">"application/json"</span>)<br><br>
+&nbsp;&nbsp;cliente := &http.Client{}<br>
+&nbsp;&nbsp;resp, err := cliente.Do(req)<br>
+&nbsp;&nbsp;...<br>
+}
+                            </div>
+                        </div>
+
+                        <!-- Node -->
+                        <div id="tab-node" class="tab-content" style="display: none;">
+                            <p>Use a biblioteca <strong>Axios</strong> para uma integração limpa e moderna.</p>
+                            <div class="code-block">
+<span class="code-keyword">const</span> axios = <span class="code-keyword">require</span>(<span class="code-string">'axios'</span>);<br><br>
+<span class="code-keyword">async function</span> gerarPix(valor) {<br>
+&nbsp;&nbsp;<span class="code-keyword">const</span> URL = <span class="code-string">'https://pixghost.site/api.php'</span>;<br>
+&nbsp;&nbsp;<span class="code-keyword">const</span> KEY = <span class="code-string">'ghost_SUA_CHAVE_AQUI'</span>;<br><br>
+&nbsp;&nbsp;<span class="code-keyword">try</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">const</span> res = <span class="code-keyword">await</span> axios.post(URL, { amount: valor }, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers: { <span class="code-string">'Authorization'</span>: <span class="code-string">`Bearer ${KEY}`</span> }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;} <span class="code-keyword">catch</span> (err) { ... }<br>
+}
+                            </div>
+                        </div>
+
+                        <!-- Python -->
+                        <div id="tab-python" class="tab-content" style="display: none;">
+                            <p>Com a biblioteca <code>requests</code>, você resolve a integração em segundos.</p>
+                            <div class="code-block">
+<span class="code-keyword">import</span> requests<br><br>
+<span class="code-keyword">def</span> criar_cobranca(valor):<br>
+&nbsp;&nbsp;url = <span class="code-string">"https://pixghost.site/api.php"</span><br>
+&nbsp;&nbsp;headers = { <span class="code-string">"Authorization"</span>: <span class="code-string">"Bearer ghost_SUA_CHAVE"</span> }<br><br>
+&nbsp;&nbsp;res = requests.post(url, headers=headers, json={<span class="code-string">"amount"</span>: valor}).json()<br>
+&nbsp;&nbsp;<span class="code-keyword">if</span> res.get(<span class="code-string">'success'</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Link do QR Code:"</span>, res[<span class="code-string">'qr_image'</span>])
+                            </div>
+                        </div>
+
+                        <!-- PHP / JS -->
+                        <div id="tab-php" class="tab-content" style="display: none;">
+                            <p>Use um arquivo PHP como ponte para proteger sua chave secreta.</p>
+                            <div class="code-block">
+<span class="code-comment">// pix.php (Ponte segura)</span><br>
+<span class="code-keyword">$SUA_CHAVE</span> = <span class="code-string">"ghost_SUA_CHAVE_AQUI"</span>;<br>
+<span class="code-keyword">$valor</span> = <span class="code-keyword">$_POST</span>[<span class="code-string">'v'</span>] ?? <span class="code-string">10.00</span>;<br><br>
+<span class="code-keyword">$ch</span> = curl_init(<span class="code-string">"https://pixghost.site/api.php"</span>);<br>
+curl_setopt(<span class="code-keyword">$ch</span>, CURLOPT_HTTPHEADER, [<br>
+&nbsp;&nbsp;<span class="code-string">"Authorization: Bearer $SUA_CHAVE"</span>,<br>
+&nbsp;&nbsp;<span class="code-string">"Content-Type: application/json"</span><br>
+]);<br>
+curl_exec(<span class="code-keyword">$ch</span>);
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Segurança e Boas Práticas -->
+                <section id="seguranca" style="margin-bottom: 5rem;" data-aos="fade-up">
+                    <h2 style="color: var(--blue);">7. Segurança e Boas Práticas</h2>
+                    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <div class="card glass-card" style="padding: 1.5rem;">
+                            <h4 style="color: var(--green);"><i class="fas fa-shield-alt"></i> Proteção de Chaves</h4>
+                            <p style="font-size: 0.85rem;">Jamais exponha sua <code>ghost_key</code> no frontend ou em repositórios públicos. Use variáveis de ambiente (<code>.env</code>).</p>
+                        </div>
+                        <div class="card glass-card" style="padding: 1.5rem;">
+                            <h4 style="color: var(--blue);"><i class="fas fa-lock"></i> Webhook Seguro</h4>
+                            <p style="font-size: 0.85rem;">Sempre utilize <strong>HTTPS</strong> para receber notificações. Webhooks não funcionam em <code>localhost</code>.</p>
+                        </div>
+                        <div class="card glass-card" style="padding: 1.5rem;">
+                            <h4 style="color: var(--red);"><i class="fas fa-check-double"></i> Confirmação</h4>
+                            <p style="font-size: 0.85rem;">Sempre responda com o código HTTP <strong>200</strong> após processar um Webhook para evitar reenvios.</p>
+                        </div>
+                    </div>
+                    <div class="card glass-card" style="padding: 1.5rem; margin-top: 1.5rem; border-left: 4px solid var(--green);">
+                        <p style="margin: 0;"><strong>Dica de Lucro:</strong> Deixe o código "Pix Copia e Cola" bem visível. A maioria dos usuários prefere copiar o código do que escanear o QR Code.</p>
+                    </div>
+                </section>
+
                 <div class="card glass-card" style="padding: 2rem; margin-top: 4rem;">
                     <h3>Dúvidas Técnicas?</h3>
                     <p>Nossa equipe de engenharia está disponível via Telegram para apoiar sua implementação.</p>
@@ -294,6 +407,33 @@ require_once 'includes/db.php';
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Tab System for Examples
+        function showTab(lang) {
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('tab-' + lang).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+
+        // Active link on scroll
+        window.addEventListener('scroll', () => {
+            let current = "";
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link-side').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href').includes(current)) {
+                    a.classList.add('active');
+                }
+            });
         });
     </script>
 </body>
