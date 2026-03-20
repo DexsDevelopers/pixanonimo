@@ -1,40 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     AreaChart, Area, PieChart, Pie, Cell
 } from 'recharts';
 import {
     TrendingUp, Users, DollarSign,
-    ShoppingBag, ArrowUpRight,
-    ArrowDownRight, Filter, Download, BarChart3, Monitor, Smartphone
+    ShoppingBag, ArrowUpRight, ArrowDownRight,
+    Download, BarChart3, Loader2
 } from 'lucide-react';
-
-const salesData = [
-    { name: '01/02', sales: 4000, orders: 120 },
-    { name: '02/02', sales: 3000, orders: 98 },
-    { name: '03/02', sales: 2000, orders: 86 },
-    { name: '04/02', sales: 2780, orders: 99 },
-    { name: '05/02', sales: 1890, orders: 75 },
-    { name: '06/02', sales: 2390, orders: 110 },
-    { name: '07/02', sales: 3490, orders: 145 },
-];
-
-const convData = [
-    { name: '01/02', conv: 2.4 },
-    { name: '02/02', conv: 1.8 },
-    { name: '03/02', conv: 1.2 },
-    { name: '04/02', conv: 2.1 },
-    { name: '05/02', conv: 1.5 },
-    { name: '06/02', conv: 1.9 },
-    { name: '07/02', conv: 2.8 },
-];
-
-const productData = [
-    { name: 'E-book Digital', value: 400, color: '#a78bfa' },
-    { name: 'Mentoria Express', value: 300, color: '#818cf8' },
-    { name: 'Pack de Ativos', value: 200, color: '#c084fc' },
-    { name: 'Upgrade Premium', value: 100, color: '#f472b6' },
-];
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -54,6 +27,31 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function ReportsPage() {
     const [dateRange, setDateRange] = useState('7d');
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const fetchReports = useCallback(async (period) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/get_reports_data.php?p=${period}`);
+            const json = await res.json();
+            if (json.success) setData(json);
+        } catch (err) {
+            console.error('Erro ao carregar relatórios:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchReports(dateRange);
+    }, [dateRange, fetchReports]);
+
+    const m = data?.metrics || {};
+    const salesData = data?.daily_sales || [];
+    const convData = data?.daily_conv || [];
+    const checkoutData = data?.top_checkouts || [];
+    const totalCheckoutValue = checkoutData.reduce((sum, c) => sum + c.value, 0);
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -69,7 +67,7 @@ export default function ReportsPage() {
 
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="flex bg-white/[0.03] rounded-full border border-white/10 p-1">
-                        {['7d', '30d', '90d', 'Anual'].map((range) => (
+                        {['7d', '30d', '90d', 'anual'].map((range) => (
                             <button
                                 key={range}
                                 onClick={() => setDateRange(range)}
@@ -79,48 +77,50 @@ export default function ReportsPage() {
                                         : 'text-white/50 hover:text-white/80'
                                 }`}
                             >
-                                {range}
+                                {range === 'anual' ? 'Anual' : range}
                             </button>
                         ))}
                     </div>
 
-                    <button className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-all" title="Filtros">
-                        <Filter size={18} className="text-white/60" />
-                    </button>
                     <button className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-all" title="Exportar">
                         <Download size={18} className="text-white/60" />
                     </button>
                 </div>
             </div>
 
+            {loading ? (
+                <div className="flex items-center justify-center py-32">
+                    <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                        <p className="text-white/40 font-medium">Carregando relatórios...</p>
+                    </div>
+                </div>
+            ) : (
+            <>
             {/* Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 <MetricCard
                     title="Volume Transacionado"
-                    value="R$ 19.540"
-                    change="+12.5%"
-                    isUp={true}
+                    value={`R$ ${m.volume || '0,00'}`}
+                    change={m.volume_change || 0}
                     icon={<DollarSign size={22} />}
                 />
                 <MetricCard
                     title="Custo de Taxas"
-                    value="R$ 586,20"
-                    change="-2.1%"
-                    isUp={false}
+                    value={`R$ ${m.taxes || '0,00'}`}
+                    change={m.taxes_change || 0}
                     icon={<TrendingUp size={22} />}
                 />
                 <MetricCard
                     title="Taxa de Conversão"
-                    value="2.4%"
-                    change="+0.8%"
-                    isUp={true}
+                    value={`${m.conversion || 0}%`}
+                    change={m.conversion_change || 0}
                     icon={<Users size={22} />}
                 />
                 <MetricCard
                     title="Vendas Realizadas"
-                    value="634"
-                    change="+18.3%"
-                    isUp={true}
+                    value={`${m.sales_count || 0}`}
+                    change={m.sales_change || 0}
                     icon={<ShoppingBag size={22} />}
                 />
             </div>
@@ -141,6 +141,7 @@ export default function ReportsPage() {
                     </div>
 
                     <div className="h-[320px] w-full">
+                        {salesData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={salesData}>
                                 <defs>
@@ -175,6 +176,11 @@ export default function ReportsPage() {
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center">
+                                <p className="text-white/20 font-medium">Sem dados no período selecionado</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -186,6 +192,7 @@ export default function ReportsPage() {
                     </div>
 
                     <div className="h-[220px] w-full">
+                        {convData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={convData}>
                                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
@@ -205,31 +212,36 @@ export default function ReportsPage() {
                                 />
                             </BarChart>
                         </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center">
+                                <p className="text-white/20 font-medium text-sm">Sem dados</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="mt-auto pt-5 border-t border-white/5 grid grid-cols-2 gap-3">
                         <div className="p-3 bg-white/[0.03] rounded-2xl text-center border border-white/5">
                             <p className="text-[11px] font-bold text-white/40 mb-0.5">Total Pedidos</p>
-                            <p className="text-xl font-black text-white">842</p>
+                            <p className="text-xl font-black text-white">{m.total_orders || 0}</p>
                         </div>
                         <div className="p-3 bg-white/[0.03] rounded-2xl text-center border border-white/5">
                             <p className="text-[11px] font-bold text-white/40 mb-0.5">Ticket Médio</p>
-                            <p className="text-xl font-black text-white">R$ 49</p>
+                            <p className="text-xl font-black text-white">R$ {m.avg_ticket || '0,00'}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Row */}
+            {/* Bottom Row - Top Checkouts */}
+            {checkoutData.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Pie Chart */}
                 <div className="bg-[#0a0a0b]/50 rounded-[32px] border border-white/5 backdrop-blur-md p-6">
-                    <h3 className="text-lg font-black text-white mb-4">Mix de Produtos</h3>
+                    <h3 className="text-lg font-black text-white mb-4">Top Checkouts</h3>
                     <div className="h-[250px] w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={productData}
+                                    data={checkoutData}
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={65}
@@ -238,7 +250,7 @@ export default function ReportsPage() {
                                     dataKey="value"
                                     stroke="none"
                                 >
-                                    {productData.map((entry, index) => (
+                                    {checkoutData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
@@ -254,61 +266,35 @@ export default function ReportsPage() {
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="text-center">
-                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">Receita</p>
-                                <p className="text-lg font-black text-white">100%</p>
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">Vendas</p>
+                                <p className="text-lg font-black text-white">{totalCheckoutValue}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="space-y-2.5 mt-3">
-                        {productData.map((item, i) => (
+                        {checkoutData.map((item, i) => (
                             <div key={i} className="flex items-center justify-between">
                                 <div className="flex items-center gap-2.5">
                                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></div>
                                     <span className="text-sm font-semibold text-white/60">{item.name}</span>
                                 </div>
-                                <span className="text-sm font-black text-white">{((item.value / 1000) * 100).toFixed(0)}%</span>
+                                <span className="text-sm font-black text-white">{totalCheckoutValue > 0 ? Math.round((item.value / totalCheckoutValue) * 100) : 0}%</span>
                             </div>
                         ))}
                     </div>
                 </div>
-
-                {/* Devices & Channels */}
-                <div className="lg:col-span-2 bg-[#0a0a0b]/50 rounded-[32px] border border-white/5 backdrop-blur-md p-6">
-                    <h3 className="text-lg font-black text-white mb-8">Dispositivos & Origem</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="space-y-5">
-                            <h4 className="flex items-center gap-2 text-xs font-black text-white/30 uppercase tracking-widest">
-                                <Monitor size={14} />
-                                Dispositivo
-                            </h4>
-                            <div className="space-y-4">
-                                <DeviceRow label="Celular (Mobile)" percentage={68} />
-                                <DeviceRow label="Desktop / PC" percentage={24} />
-                                <DeviceRow label="Tablet" percentage={8} />
-                            </div>
-                        </div>
-
-                        <div className="space-y-5">
-                            <h4 className="flex items-center gap-2 text-xs font-black text-white/30 uppercase tracking-widest">
-                                <Users size={14} />
-                                Canais
-                            </h4>
-                            <div className="space-y-3">
-                                <ChannelRow label="Tráfego Direto" value="R$ 12.450" percent={64} />
-                                <ChannelRow label="Social Media" value="R$ 4.230" percent={22} />
-                                <ChannelRow label="E-mail" value="R$ 2.860" percent={14} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+            )}
+            </>
+            )}
         </div>
     );
 }
 
-function MetricCard({ title, value, change, isUp, icon }) {
+function MetricCard({ title, value, change, icon }) {
+    const isUp = change >= 0;
+    const changeStr = change === 0 ? '0%' : `${isUp ? '+' : ''}${change}%`;
     return (
         <div className="bg-[#0a0a0b]/50 p-5 rounded-[24px] border border-white/5 backdrop-blur-md hover:border-white/10 transition-all duration-300 group">
             <div className="flex items-center justify-between mb-3">
@@ -319,40 +305,11 @@ function MetricCard({ title, value, change, isUp, icon }) {
                     isUp ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'
                 }`}>
                     {isUp ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
-                    {change}
+                    {changeStr}
                 </div>
             </div>
             <p className="text-white/40 text-xs font-bold uppercase tracking-wider">{title}</p>
             <h4 className="text-2xl font-black text-white mt-1">{value}</h4>
-        </div>
-    );
-}
-
-function DeviceRow({ label, percentage }) {
-    return (
-        <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-white/60">{label}</span>
-                <span className="text-sm font-black text-white">{percentage}%</span>
-            </div>
-            <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden">
-                <div
-                    className="h-full bg-gradient-to-r from-primary to-purple-400 rounded-full transition-all duration-700"
-                    style={{ width: `${percentage}%` }}
-                ></div>
-            </div>
-        </div>
-    );
-}
-
-function ChannelRow({ label, value, percent }) {
-    return (
-        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all">
-            <div>
-                <p className="text-sm font-bold text-white/80">{label}</p>
-                <p className="text-xs font-bold text-primary/70">{percent}% de participação</p>
-            </div>
-            <p className="text-sm font-black text-white">{value}</p>
         </div>
     );
 }
