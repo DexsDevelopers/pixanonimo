@@ -12,7 +12,7 @@ require_once 'includes/db.php';
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="/assets/dashboard-react/index-BqQoas93.js"></script>
+    <script type="module" crossorigin src="/assets/dashboard-react/index-DjQSHrVe.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-C85ORGtl.css">
     
     <!-- Preload fonts to avoid layout shift -->

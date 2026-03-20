@@ -40,7 +40,14 @@ export default function SettingsPage({ userData }) {
         if (!confirm('Tem certeza? A chave atual será invalidada permanentemente.')) return;
         setRegenerating(true);
         try {
-            const res = await fetch('/generate_key.php', { method: 'POST' });
+            const res = await fetch('/generate_key.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ action: 'generate' })
+            });
             const data = await res.json();
             if (data.success) {
                 setApiToken(data.api_key);
