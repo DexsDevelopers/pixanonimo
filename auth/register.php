@@ -10,11 +10,7 @@ if ($isJsonRequest) {
     header('Content-Type: application/json');
 }
 
-if (isLoggedIn()) {
-    if ($isJsonRequest) {
-        echo json_encode(['success' => false, 'error' => 'Você já está logado.']);
-        exit;
-    }
+if (isLoggedIn() && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../dashboard.php");
     exit;
 }
