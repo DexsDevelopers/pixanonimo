@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, Shield, ChevronLeft, KeyRound, Check } from 'lucide-react';
 
@@ -206,7 +206,7 @@ export default function LoginPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center ml-4">
                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Senha de Acesso</label>
-                                    <button type="button" className="text-[10px] font-black text-primary/60 uppercase tracking-widest hover:text-primary">Esqueci a senha</button>
+                                    <Link to="/forgot-password" className="text-[10px] font-black text-primary/60 uppercase tracking-widest hover:text-primary">Esqueci a senha</Link>
                                 </div>
                                 <div className="relative group">
                                     <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={18} />

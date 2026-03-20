@@ -30,6 +30,8 @@ import ApiDocsPage from './pages/ApiDocsPage';
 import ReportsPage from './pages/ReportsPage';
 import AffiliatePage from './pages/AffiliatePage';
 import DemoPage from './pages/DemoPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -155,6 +157,8 @@ export default function App() {
         <Route path="/docs" element={<ApiDocsPage />} />
         <Route path="/login" element={<LoginPage onLogin={fetchDashboard} />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         <Route path="/dashboard" element={
           <PrivateRoute>
