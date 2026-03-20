@@ -142,6 +142,7 @@ echo json_encode([
     'user' => [
         'name' => $user['full_name'] ?? 'Usuário',
         'email' => $user['email'] ?? '',
+        'pix_key' => $user['pix_key'] ?? '',
         'api_token' => $user['api_key'] ?? '',
         'is_admin' => (bool)$user['is_admin'],
         'avatar_url' => (function() use ($userId) {
