@@ -105,7 +105,12 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                                 <div className="flex items-center justify-end gap-2.5">
                                     {tx.badge === 'pending' && (
                                         <button
-                                            onClick={() => onViewQr && onViewQr(tx)}
+                                            onClick={() => onViewQr && onViewQr({
+                                                id: tx.pix_id || tx.id,
+                                                amount: tx.amount_brl ? tx.amount_brl.replace(/\./g, '').replace(',', '.') : 0,
+                                                code: tx.pix_code || '',
+                                                image: tx.qr_image || ''
+                                            })}
                                             className="p-2.5 rounded-full bg-white/5 text-primary hover:bg-primary hover:text-black transition-all duration-300 border border-white/5 hover:border-primary active:scale-95"
                                             title="Ver QR Code"
                                         >
