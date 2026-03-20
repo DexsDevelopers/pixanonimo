@@ -39,7 +39,7 @@ export default function Header({ onMenuClick, notifications = [], userData }) {
                     {showNotifications && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                            <div className="absolute right-0 mt-2 w-80 glass rounded-[24px] border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute right-0 mt-2 w-80 bg-[#111113] rounded-[24px] border border-white/10 shadow-2xl shadow-black/60 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                                 <div className="p-4 border-b border-white/5 flex items-center justify-between">
                                     <h3 className="font-black text-xs uppercase tracking-widest">Notificações</h3>
                                     <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full">{notificationsCount}</span>
