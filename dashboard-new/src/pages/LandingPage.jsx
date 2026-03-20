@@ -56,24 +56,24 @@ export default function LandingPage() {
     return (
         <div className="bg-black min-h-screen text-white font-['Outfit'] overflow-x-hidden">
             {/* WhatsApp Announcement */}
-            <div className="bg-primary/10 border-b border-primary/20 py-3 px-6 text-center relative z-[60]">
-                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <div className="flex items-center gap-2 text-[11px] sm:text-xs font-black uppercase tracking-wider text-primary">
-                        <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#4ade80]" />
+            <div className="bg-primary/10 border-b border-primary/20 py-2 sm:py-3 px-4 sm:px-6 text-center relative z-[60]">
+                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-1.5 text-[9px] sm:text-xs font-black uppercase tracking-wider text-primary">
+                        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#4ade80]" />
                         Novidade: Canal Oficial
                     </div>
-                    <p className="text-xs sm:text-sm font-bold text-white/80">Entre no nosso canal oficial do WhatsApp para novidades e avisos!</p>
-                    <a href="https://whatsapp.com/channel/..." target="_blank" className="lp-btn-primary py-1.5 px-4 text-[10px] sm:text-xs">ENTRAR AGORA</a>
+                    <p className="text-[10px] sm:text-sm font-bold text-white/80 leading-tight">Entre no nosso canal do WhatsApp!</p>
+                    <a href="https://whatsapp.com/channel/..." target="_blank" className="lp-btn-primary py-1 px-3 text-[9px] sm:text-xs whitespace-nowrap">ENTRAR AGORA</a>
                 </div>
             </div>
 
             {/* Navbar Global */}
-            <nav className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-5xl h-16 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-full px-6 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
+            <nav className="fixed top-24 sm:top-14 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl h-14 sm:h-16 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-full px-4 sm:px-6 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                        <span className="text-white font-black text-sm">G</span>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+                        <span className="text-white font-black text-xs sm:text-sm">G</span>
                     </div>
-                    <span className="font-bold text-lg tracking-tight hidden sm:block text-white">GHOST<span className="text-primary italic">PIX</span></span>
+                    <span className="font-bold text-base sm:text-lg tracking-tight hidden xs:block text-white">GHOST<span className="text-primary italic">PIX</span></span>
                 </div>
 
                 <div className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-white/40">
@@ -82,9 +82,9 @@ export default function LandingPage() {
                     <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Link to="/login" className="text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors px-4">Entrar</Link>
-                    <Link to="/register" className="bg-white text-black text-[11px] font-black uppercase tracking-widest px-5 py-2 rounded-full hover:scale-105 transition-transform active:scale-95">Criar Conta</Link>
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <Link to="/login" className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors px-2 sm:px-4">Entrar</Link>
+                    <Link to="/register" className="bg-white text-black text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-3 sm:px-5 py-1.5 sm:py-2 rounded-full hover:scale-105 transition-transform active:scale-95 whitespace-nowrap">Criar Conta</Link>
                 </div>
             </nav>
 

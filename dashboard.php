@@ -18,7 +18,7 @@ $userId = $_SESSION['user_id'];
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="assets/dashboard-react/index-yucomkF6.js"></script>
+    <script type="module" crossorigin src="assets/dashboard-react/index-CDcTgjG3.js"></script>
     <link rel="stylesheet" crossorigin href="assets/dashboard-react/index-B4sSYqw2.css">
     
     <!-- Preload fonts to avoid layout shift -->
