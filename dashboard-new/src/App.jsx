@@ -157,10 +157,10 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                <StatCard title="Saldo Disponível" value={`R$ ${commonProps.balance}`} type="balance" icon={<Wallet size={24} />} />
-                <StatCard title="Vendas Hoje" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} type="today" />
-                <StatCard title="Volume Mensal" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} type="month" />
-                <StatCard title="Pendentes" value={dashboardData?.stats?.pending_count || '0'} type="pending" sub="Aguardando pag" />
+                <StatCard label="Saldo Disponível" value={`R$ ${commonProps.balance}`} icon={<Wallet size={24} />} />
+                <StatCard label="Vendas Hoje" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} icon={<History size={24} />} />
+                <StatCard label="Volume Mensal" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} icon={<LayoutDashboard size={24} />} />
+                <StatCard label="Pendentes" value={dashboardData?.stats?.pending_count || '0'} icon={<History size={24} />} trend="Aguardando" />
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

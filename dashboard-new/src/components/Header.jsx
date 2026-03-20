@@ -1,12 +1,13 @@
 import React from 'react';
 import { Menu, Bell, Search, User } from 'lucide-react';
 
-export default function Header({ onToggleSidebar, notificationsCount }) {
+export default function Header({ onMenuClick, notifications, userData }) {
+    const notificationsCount = notifications?.length || 0;
     return (
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-[#08080a]/50 backdrop-blur-md sticky top-0 z-30">
             <div className="flex items-center gap-4">
                 <button
-                    onClick={onToggleSidebar}
+                    onClick={onMenuClick}
                     className="p-2 hover:bg-white/5 rounded-lg transition-colors lg:hidden"
                 >
                     <Menu size={24} />
@@ -34,7 +35,7 @@ export default function Header({ onToggleSidebar, notificationsCount }) {
 
                 <div className="flex items-center gap-3 pl-2">
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-semibold leading-none">Administrador</p>
+                        <p className="text-sm font-semibold leading-none">{userData?.name || 'Vendedor'}</p>
                         <p className="text-[10px] text-white/40 uppercase tracking-tighter mt-1 font-bold">Plano Premium</p>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-green-400 p-[1.5px] cursor-pointer hover:rotate-12 transition-transform">
