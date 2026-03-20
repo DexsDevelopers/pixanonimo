@@ -28,6 +28,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AdminApisPage from './pages/AdminApisPage';
+import CheckoutsPage from './pages/CheckoutsPage';
+import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -231,6 +233,22 @@ export default function App() {
               <AdminApisPage />
             </DashboardLayout>
           </AdminRoute>
+        </PrivateRoute>
+      } />
+
+      <Route path="/checkouts" element={
+        <PrivateRoute>
+          <DashboardLayout {...commonProps} activeTab="checkouts">
+            <CheckoutsPage />
+          </DashboardLayout>
+        </PrivateRoute>
+      } />
+
+      <Route path="/checkout-builder" element={
+        <PrivateRoute>
+          <DashboardLayout {...commonProps} activeTab="checkout-builder">
+            <CheckoutBuilderPage />
+          </DashboardLayout>
         </PrivateRoute>
       } />
 

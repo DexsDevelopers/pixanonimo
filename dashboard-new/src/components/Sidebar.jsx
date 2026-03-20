@@ -20,6 +20,8 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
         { id: 'vendas', icon: <History size={20} />, label: 'Vendas', path: '/vendas' },
         { id: 'saques', icon: <Wallet size={20} />, label: 'Saques', path: '/saques' },
+        { id: 'checkouts', icon: <History size={20} />, label: 'Produtos / Links', path: '/checkouts' },
+        { id: 'checkout-builder', icon: <Settings size={20} />, label: 'Customizar Checkout', path: '/checkout-builder' },
         { id: 'settings', icon: <Settings size={20} />, label: 'Configurações', path: '/config' },
     ];
 
