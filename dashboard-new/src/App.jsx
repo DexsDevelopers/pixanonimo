@@ -30,6 +30,7 @@ import AdminPage from './pages/AdminPage';
 import AdminApisPage from './pages/AdminApisPage';
 import CheckoutsPage from './pages/CheckoutsPage';
 import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
+import ApiDocsPage from './pages/ApiDocsPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -154,7 +155,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/docs" element={<ApiDocsPage />} />
+      <Route path="/login" element={<LoginPage onLogin={fetchDashboard} />} />
       <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/dashboard" element={
