@@ -7,6 +7,7 @@ import { LayoutDashboard, History, Wallet, Settings, Menu, Loader2 } from 'lucid
 // Components
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import AnnouncementBar from './components/AnnouncementBar';
 import StatCard from './components/StatCard';
 import TransactionsTable from './components/TransactionsTable';
 import GeneratePixCard from './components/GeneratePixCard';
@@ -60,6 +61,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <AnnouncementBar text="Black Friday: 50% de desconto em todas as taxas até domingo!" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <Header
