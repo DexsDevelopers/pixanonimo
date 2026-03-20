@@ -581,6 +581,12 @@ function SecurityTab() {
                     <li className="flex items-start gap-2"><span className="text-primary font-black">3.</span> Clique no link e defina a nova senha</li>
                     <li className="flex items-start gap-2"><span className="text-primary font-black">4.</span> Faça login com a nova senha</li>
                 </ul>
+                <div className="flex items-start gap-2 mt-3 bg-amber-500/5 border border-amber-500/15 rounded-xl p-3">
+                    <AlertTriangle size={14} className="text-amber-400 shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-amber-300/70 leading-relaxed">
+                        <strong className="text-amber-300">Importante:</strong> O e-mail pode cair na <strong>caixa de spam/lixo eletrônico</strong>. Caso não encontre na caixa de entrada, verifique a pasta de spam.
+                    </p>
+                </div>
             </div>
         </div>
     );
