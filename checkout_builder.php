@@ -425,16 +425,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <!-- Scripts & HTML -->
                     <div class="form-section">
-                        <h2 class="form-section-title"><i class="fas fa-code"></i> Injeção de Scripts (Avançado)</h2>
-                        
-                        <div class="form-group">
-                            <label class="form-label">&lt;head&gt; Scripts (Pixel do Face, Google Analytics, CSS Custom)</label>
-                            <textarea name="custom_html_head" class="form-input" rows="4" style="font-family: monospace; font-size: 0.85rem;" placeholder="<!-- Seu script aqui -->"><?php echo htmlspecialchars($checkout['custom_html_head'] ?? ''); ?></textarea>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2 class="form-section-title" style="margin: 0; border: none;"><i class="fas fa-code"></i> Scripts Customizados (Opcional)</h2>
+                            <label class="toggle-wrap" style="background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);">
+                                <input type="checkbox" id="toggle-scripts" 
+                                    <?php echo (!empty($checkout['custom_html_head']) || !empty($checkout['custom_html_body'])) ? 'checked' : ''; ?>
+                                    style="width: 16px; height: 16px; accent-color: var(--accent);">
+                                <span style="font-size: 0.8rem; font-weight: 600;">Habilitar</span>
+                            </label>
                         </div>
+                        
+                        <div id="scripts-container" style="<?php echo (empty($checkout['custom_html_head']) && empty($checkout['custom_html_body'])) ? 'display: none;' : ''; ?>">
+                            <p style="color: var(--text-3); font-size: 0.8rem; margin-bottom: 1.25rem;">Use esta seção para injetar pixels de rastreamento ou CSS customizado. Deixe em branco se não for utilizar.</p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">&lt;head&gt; Scripts (Pixel do Face, Google Analytics, CSS Custom) <span style="opacity: 0.5;">- Opcional</span></label>
+                                <textarea name="custom_html_head" class="form-input" rows="4" style="font-family: monospace; font-size: 0.85rem;" placeholder="<!-- Seu script aqui -->"><?php echo htmlspecialchars($checkout['custom_html_head'] ?? ''); ?></textarea>
+                            </div>
 
-                        <div class="form-group">
-                            <label class="form-label">&lt;body&gt; Fim do documento (Scripts extras)</label>
-                            <textarea name="custom_html_body" class="form-input" rows="4" style="font-family: monospace; font-size: 0.85rem;" placeholder="<!-- Seu script aqui -->"><?php echo htmlspecialchars($checkout['custom_html_body'] ?? ''); ?></textarea>
+                            <div class="form-group">
+                                <label class="form-label">&lt;body&gt; Fim do documento (Scripts extras) <span style="opacity: 0.5;">- Opcional</span></label>
+                                <textarea name="custom_html_body" class="form-input" rows="4" style="font-family: monospace; font-size: 0.85rem;" placeholder="<!-- Seu script aqui -->"><?php echo htmlspecialchars($checkout['custom_html_body'] ?? ''); ?></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -516,6 +528,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 this.nextElementSibling.textContent = this.value;
             });
         });
+
+        // Toggle scripts container
+        const toggleScripts = document.getElementById('toggle-scripts');
+        const scriptsContainer = document.getElementById('scripts-container');
+        if (toggleScripts && scriptsContainer) {
+            toggleScripts.addEventListener('change', function() {
+                scriptsContainer.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) {
+                    // Limpar campos ao desativar? Talvez melhor não para não perder progresso acidental
+                    // mas o usuário pediu para não ser obrigatório.
+                }
+            });
+        }
     </script>
 </body>
 </html>
