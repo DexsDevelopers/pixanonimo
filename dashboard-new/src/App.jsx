@@ -82,13 +82,13 @@ function App() {
     <div className="flex h-screen bg-[#08080a] text-white font-['Outfit'] overflow-hidden">
       {/* Sidebar Mobile Overlay */}
       <AnimatePresence>
-        {(!isSidebarOpen && window.innerWidth < 1024) && (
+        {(isSidebarOpen && window.innerWidth < 1024) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setIsSidebarOpen(true)}
+            onClick={() => setIsSidebarOpen(false)}
           />
         )}
       </AnimatePresence>
@@ -97,7 +97,11 @@ function App() {
       <Sidebar
         isOpen={isSidebarOpen}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          if (window.innerWidth < 1024) setIsSidebarOpen(false);
+        }}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Main Content */}

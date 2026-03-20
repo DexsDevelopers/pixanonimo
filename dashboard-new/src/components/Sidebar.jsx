@@ -5,12 +5,13 @@ import {
     Wallet,
     Settings,
     LogOut,
-    ChevronRight
+    ChevronRight,
+    X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 
-export default function Sidebar({ isOpen, activeTab, onTabChange }) {
+export default function Sidebar({ isOpen, activeTab, onTabChange, onClose }) {
     const menuItems = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
         { id: 'vendas', icon: <History size={20} />, label: 'Vendas' },
@@ -24,11 +25,21 @@ export default function Sidebar({ isOpen, activeTab, onTabChange }) {
             animate={{ width: isOpen ? 280 : 0, opacity: isOpen ? 1 : 0 }}
             className="fixed lg:relative z-50 h-full bg-[#111111] border-r border-white/5 flex flex-col overflow-hidden"
         >
-            <div className="p-6 flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                    <span className="text-white font-bold text-xl">G</span>
+            <div className="p-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                        <span className="text-white font-bold text-xl">G</span>
+                    </div>
+                    <span className="font-bold text-xl tracking-tight">GHOST<span className="text-primary italic">PIX</span></span>
                 </div>
-                <span className="font-bold text-xl tracking-tight">GHOST<span className="text-primary italic">PIX</span></span>
+
+                {/* Botão Fechar - Mobile Only */}
+                <button
+                    onClick={onClose}
+                    className="lg:hidden p-2 text-white/40 hover:text-white transition-colors"
+                >
+                    <X size={24} />
+                </button>
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-2">
