@@ -10,6 +10,83 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 
+// Verificar se é conta demo
+$stmtUser = $pdo->prepare("SELECT is_demo, balance, commission_rate FROM users WHERE id = ?");
+$stmtUser->execute([$userId]);
+$currentUser = $stmtUser->fetch();
+
+if ($currentUser && $currentUser['is_demo'] == 1) {
+    // ---- DADOS FAKE PARA CONTA DEMO ----
+    $period = $_GET['p'] ?? '7d';
+    $daysBack = match($period) { '30d' => 30, '90d' => 90, 'anual' => 365, default => 7 };
+    
+    // Seed consistente por dia + user
+    srand($userId * 2000 + (int)date('Ymd') + crc32($period));
+    
+    $balance = (float)$currentUser['balance'];
+    $commRate = (float)($currentUser['commission_rate'] ?: 4);
+    
+    // Gerar métricas baseadas no saldo
+    $baseVolume = max($balance * 2.5, 500) * ($daysBack / 7);
+    $currentVolume = round($baseVolume + rand(0, (int)($baseVolume * 0.3)), 2);
+    $currentTaxes = round($currentVolume * ($commRate / 100), 2);
+    $salesCount = max(5, (int)($currentVolume / rand(30, 120)));
+    $totalOrders = (int)($salesCount * (100 / rand(55, 85)));
+    $conversion = $totalOrders > 0 ? round(($salesCount / $totalOrders) * 100, 1) : 0;
+    $avgTicket = $salesCount > 0 ? round($currentVolume / $salesCount, 2) : 0;
+    
+    // Variações fake
+    $volumeChange = round(rand(5, 35) + (rand(0, 100) / 100), 1);
+    $taxesChange = round(rand(2, 20) + (rand(0, 100) / 100), 1);
+    $salesChange = round(rand(3, 25) + (rand(0, 100) / 100), 1);
+    $convChange = round(rand(-5, 15) + (rand(0, 100) / 100), 1);
+    
+    // Gráfico diário de vendas
+    $dailySalesData = [];
+    $dailyConvData = [];
+    $dateFormat = $daysBack <= 30 ? 'd/m' : 'm/Y';
+    $pointCount = min($daysBack, $daysBack <= 30 ? $daysBack : 12);
+    
+    for ($i = $pointCount - 1; $i >= 0; $i--) {
+        $dayOffset = $daysBack <= 30 ? $i : ($i * 30);
+        $label = date($dateFormat, strtotime("-{$dayOffset} days"));
+        $daySales = round($currentVolume / $pointCount * (0.5 + (rand(0, 100) / 100)), 2);
+        $dayConv = round(rand(40, 85) + (rand(0, 100) / 100), 1);
+        
+        $dailySalesData[] = ['name' => $label, 'sales' => $daySales];
+        $dailyConvData[] = ['name' => $label, 'conv' => $dayConv];
+    }
+    
+    // Top checkouts fake
+    $fakeCheckouts = [
+        ['name' => 'Checkout Principal', 'value' => rand(15, 60), 'color' => '#a78bfa'],
+        ['name' => 'Produto Premium', 'value' => rand(8, 30), 'color' => '#818cf8'],
+        ['name' => 'Oferta Especial', 'value' => rand(3, 15), 'color' => '#c084fc'],
+    ];
+    
+    srand(); // Restaurar seed
+    
+    echo json_encode([
+        'success' => true,
+        'metrics' => [
+            'volume' => number_format($currentVolume, 2, ',', '.'),
+            'volume_change' => $volumeChange,
+            'taxes' => number_format($currentTaxes, 2, ',', '.'),
+            'taxes_change' => $taxesChange,
+            'conversion' => $conversion,
+            'conversion_change' => $convChange,
+            'sales_count' => $salesCount,
+            'sales_change' => $salesChange,
+            'total_orders' => $totalOrders,
+            'avg_ticket' => number_format($avgTicket, 2, ',', '.')
+        ],
+        'daily_sales' => $dailySalesData,
+        'daily_conv' => $dailyConvData,
+        'top_checkouts' => $fakeCheckouts
+    ]);
+    exit;
+}
+
 // Período selecionado
 $period = $_GET['p'] ?? '7d';
 if (!in_array($period, ['7d', '30d', '90d', 'anual'])) $period = '7d';
