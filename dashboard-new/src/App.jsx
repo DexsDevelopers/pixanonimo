@@ -111,24 +111,16 @@ export default function App() {
     }
   };
 
-  const handleManualPix = async (amount) => {
+  // GeneratePixCard já chama o `/api.php` e retorna { id, amount, code, image }.
+  // Aqui a gente só precisa abrir o modal e atualizar o dashboard.
+  const handleManualPix = async (pixData) => {
     try {
-      const formData = new FormData();
-      formData.append('action', 'generate_pix');
-      formData.append('amount', amount);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-      const res = await fetch('/api.php', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
-        body: formData
-      });
-      const data = await res.json();
-      if (data.success) {
-        setActivePix(data);
-        fetchDashboard();
-      }
-    } catch (err) { console.error(err); }
+      if (!pixData?.id) return;
+      setActivePix(pixData);
+      fetchDashboard();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDeleteTransaction = async (id) => {
@@ -256,18 +248,17 @@ export default function App() {
 
         <Route path="/p/:slug" element={<CheckoutPage />} />
         <Route path="*" element={<Navigate to="/" />} />
-
-        {activePix && (
-          <PixModal
-            pixData={activePix}
-            onClose={() => setActivePix(null)}
-            onPaymentSuccess={() => {
-              setActivePix(null);
-              fetchDashboard();
-            }}
-          />
-        )}
       </Routes>
+      {activePix && (
+        <PixModal
+          pixData={activePix}
+          onClose={() => setActivePix(null)}
+          onPaymentSuccess={() => {
+            setActivePix(null);
+            fetchDashboard();
+          }}
+        />
+      )}
     </>
   );
 }
