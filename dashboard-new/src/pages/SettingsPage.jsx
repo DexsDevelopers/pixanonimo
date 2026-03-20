@@ -12,6 +12,8 @@ export default function SettingsPage({ userData }) {
     const [regenerating, setRegenerating] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(userData?.avatar_url || null);
     const [uploading, setUploading] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [pixKey, setPixKey] = useState(userData?.pix_key || '');
     const fileInputRef = useRef(null);
 
     const handleCopyToken = () => {
@@ -91,6 +93,33 @@ export default function SettingsPage({ userData }) {
         }
     };
 
+    const handleSaveProfile = async () => {
+        setSaving(true);
+        try {
+            const res = await fetch('/update_profile.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    full_name: userData?.name || '',
+                    pix_key: pixKey
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Perfil salvo com sucesso!');
+            } else {
+                alert(data.error || 'Erro ao salvar perfil');
+            }
+        } catch {
+            alert('Erro de conexão');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const tabs = [
         { id: 'perfil', label: 'Meu Perfil', icon: <User size={16} /> },
         { id: 'seguranca', label: 'Segurança', icon: <Lock size={16} /> },
@@ -167,20 +196,55 @@ export default function SettingsPage({ userData }) {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Nome Completo</label>
-                                        <input type="text" defaultValue={userData?.name || "Ghost Pix Vendor"} className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Nome Completo</label>
+                                            <input type="text" defaultValue={userData?.name || "Ghost Pix Vendor"} className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">E-mail Principal</label>
+                                            <input type="email" defaultValue={userData?.email || "vendedor@ghostpix.site"} disabled className="w-full bg-white/[0.02] border border-white/5 rounded-full px-6 py-4 font-bold opacity-50 cursor-not-allowed" />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">E-mail Principal</label>
-                                        <input type="email" defaultValue={userData?.email || "vendedor@ghostpix.site"} disabled className="w-full bg-white/[0.02] border border-white/5 rounded-full px-6 py-4 font-bold opacity-50 cursor-not-allowed" />
+
+                                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <Zap size={18} className="text-primary" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-black text-white">Chave PIX de Recebimento</h4>
+                                                <p className="text-xs text-white/40">Configure a chave PIX para onde seus saques serão enviados.</p>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Sua Chave PIX</label>
+                                            <input
+                                                type="text"
+                                                value={pixKey}
+                                                onChange={(e) => setPixKey(e.target.value)}
+                                                placeholder="Ex: seuemail@pix.com.br"
+                                                className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-mono text-sm text-white/60 focus:outline-none focus:border-primary/50 transition-all"
+                                            />
+                                        </div>
+                                        <div className="flex items-start gap-2 text-[10px] text-white/30">
+                                            <span className="text-primary font-black">•</span>
+                                            <span>CPF, CNPJ, Email, Telefone ou Chave Aleatória</span>
+                                        </div>
+                                        <div className="flex items-start gap-2 text-[10px] text-white/30">
+                                            <span className="text-primary font-black">•</span>
+                                            <span>Esta chave será usada para saques de seu saldo disponível</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <button className="lp-btn-primary flex items-center gap-2">
-                                    <Save size={18} />
-                                    Salvar Alterações
+                                <button
+                                    onClick={handleSaveProfile}
+                                    disabled={saving}
+                                    className="lp-btn-primary flex items-center gap-2"
+                                >
+                                    {saving ? <><Loader2 size={18} className="animate-spin" /> Salvando...</> : <><Save size={18} /> Salvar Alterações</>}
                                 </button>
                             </div>
                         )}
