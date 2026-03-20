@@ -30,7 +30,7 @@ if (!$user) {
     exit;
 }
 
-echo json_encode([
+$result = [
     'user_id' => $user['id'],
     'email' => $user['email'],
     'column_type' => $colInfo['Type'],
@@ -38,4 +38,17 @@ echo json_encode([
     'hash_prefix' => substr($user['password'], 0, 10),
     'hash_looks_valid' => (substr($user['password'], 0, 4) === '$2y$' && strlen($user['password']) === 60),
     'full_hash_length_php' => strlen($user['password'])
-]);
+];
+
+// Testar senha se fornecida
+$testPassword = $_GET['test'] ?? '';
+if (!empty($testPassword)) {
+    $result['test_password'] = $testPassword;
+    $result['test_password_length'] = strlen($testPassword);
+    $result['password_verify_result'] = password_verify($testPassword, $user['password']);
+    // Testar com novo hash para comparar
+    $newHash = password_hash($testPassword, PASSWORD_DEFAULT);
+    $result['new_hash_verify'] = password_verify($testPassword, $newHash);
+}
+
+echo json_encode($result);
