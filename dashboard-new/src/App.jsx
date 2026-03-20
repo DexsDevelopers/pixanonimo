@@ -23,6 +23,8 @@ import SalesPage from './pages/SalesPage';
 import WithdrawalsPage from './pages/WithdrawalsPage';
 import SettingsPage from './pages/SettingsPage';
 import CheckoutPage from './pages/CheckoutPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Layout do Dashboard (Privado)
 function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
@@ -137,8 +139,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<div className="p-20 text-center"><h1>Página de Login em breve...</h1><Link to="/dashboard">Ir para Dashboard</Link></div>} />
-      <Route path="/register" element={<div className="p-20 text-center"><h1>Página de Registro em breve...</h1><Link to="/">Ir para Home</Link></div>} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/dashboard" element={
         <PrivateRoute>
