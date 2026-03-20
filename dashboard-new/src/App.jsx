@@ -1,5 +1,6 @@
 // Ghost Pix SPA v2.1 - Build for Auth & Checkout
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, History, Wallet, Settings, Menu, Loader2 } from 'lucide-react';
@@ -249,7 +250,7 @@ export default function App() {
         <Route path="/p/:slug" element={<CheckoutPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      {activePix && (
+      {activePix && createPortal(
         <PixModal
           pixData={activePix}
           onClose={() => setActivePix(null)}
@@ -257,7 +258,8 @@ export default function App() {
             setActivePix(null);
             fetchDashboard();
           }}
-        />
+        />,
+        document.body
       )}
     </>
   );
