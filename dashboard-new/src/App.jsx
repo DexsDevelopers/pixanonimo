@@ -19,12 +19,14 @@ import PixModal from './components/PixModal';
 
 // Pages
 import LandingPage from './pages/LandingPage';
+import SalesPage from './pages/SalesPage';
+import WithdrawalsPage from './pages/WithdrawalsPage';
+import SettingsPage from './pages/SettingsPage';
 
 // Layout do Dashboard (Privado)
 function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
   return (
     <div className="flex h-screen bg-black text-white font-['Outfit'] overflow-hidden">
-      {/* Sidebar Mobile Overlay */}
       <AnimatePresence>
         {(isSidebarOpen && window.innerWidth < 1024) && (
           <motion.div
@@ -48,7 +50,6 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Glow de Fundo */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <Header
@@ -65,9 +66,8 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
   );
 }
 
-// Private Route Wrapper (Simulado por enquanto)
 function PrivateRoute({ children }) {
-  const [isAuthenticated] = useState(true); // Temporário para desenvolvimento
+  const [isAuthenticated] = useState(true);
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
@@ -79,12 +79,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [activePix, setActivePix] = useState(null);
 
-  // Fetch Dashboard Data
   useEffect(() => {
-    if (location.pathname.includes('/dashboard') || location.pathname === '/') {
-      fetchDashboard();
-    }
-  }, [location]);
+    fetchDashboard();
+  }, []);
 
   const fetchDashboard = async () => {
     try {
@@ -114,12 +111,8 @@ export default function App() {
       if (data.success) {
         setActivePix(data);
         fetchDashboard();
-      } else {
-        alert(data.error || 'Erro ao gerar Pix');
       }
-    } catch (err) {
-      alert('Erro de conexão com o servidor');
-    }
+    } catch (err) { console.error(err); }
   };
 
   const handleDeleteTransaction = async (id) => {
@@ -128,29 +121,27 @@ export default function App() {
       const res = await fetch(`../delete_transaction.php?id=${id}`);
       const data = await res.json();
       if (data.success) fetchDashboard();
-    } catch (err) {
-      alert('Erro ao excluir');
-    }
+    } catch (err) { console.error(err); }
+  };
+
+  const commonProps = {
+    isSidebarOpen,
+    setIsSidebarOpen,
+    setActiveTab,
+    userData: { name: dashboardData?.stats?.user_name || 'Usuário', email: 'vendedor@ghostpix.com' },
+    balance: dashboardData?.balance || '0,00',
+    notifications: dashboardData?.notifications || []
   };
 
   return (
     <Routes>
-      {/* Públicas */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<div className="p-20 text-center"><h1>Página de Login em breve...</h1><Link to="/dashboard">Ir para Dashboard</Link></div>} />
+      <Route path="/register" element={<div className="p-20 text-center"><h1>Página de Registro em breve...</h1><Link to="/">Ir para Home</Link></div>} />
 
-      {/* Privadas (Dashboard) */}
       <Route path="/dashboard" element={
         <PrivateRoute>
-          <DashboardLayout
-            activeTab="dashboard"
-            setActiveTab={setActiveTab}
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-            userData={{ name: dashboardData?.stats?.user_name || 'Usuário', email: 'vendedor@ghostpix.com' }}
-            balance={dashboardData?.balance || '0,00'}
-            notifications={dashboardData?.notifications || []}
-          >
+          <DashboardLayout {...commonProps} activeTab="dashboard">
             <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -160,48 +151,20 @@ export default function App() {
                 <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR STATUS</button>
               </div>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                <StatCard
-                  title="Saldo Disponível"
-                  value={`R$ ${dashboardData?.balance || '0,00'}`}
-                  type="balance"
-                  icon={<Wallet size={24} />}
-                />
-                <StatCard
-                  title="Vendas Hoje"
-                  value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`}
-                  type="today"
-                />
-                <StatCard
-                  title="Volume Mensal"
-                  value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`}
-                  type="month"
-                />
-                <StatCard
-                  title="Pendentes"
-                  value={dashboardData?.stats?.pending_count || '0'}
-                  type="pending"
-                  sub="Aguardando pag"
-                />
+                <StatCard title="Saldo Disponível" value={`R$ ${commonProps.balance}`} type="balance" icon={<Wallet size={24} />} />
+                <StatCard title="Vendas Hoje" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} type="today" />
+                <StatCard title="Volume Mensal" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} type="month" />
+                <StatCard title="Pendentes" value={dashboardData?.stats?.pending_count || '0'} type="pending" sub="Aguardando pag" />
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-black flex items-center gap-2">
-                      <History className="text-primary" size={20} />
-                      Vendas Recentes
-                    </h2>
-                  </div>
-                  <TransactionsTable
-                    transactions={dashboardData?.transactions}
-                    loading={loading}
-                    onViewQr={setActivePix}
-                    onDelete={handleDeleteTransaction}
-                  />
+                  <h2 className="text-xl font-black flex items-center gap-2 border-b border-white/5 pb-4">
+                    <History className="text-primary" size={20} /> Vendas Recentes
+                  </h2>
+                  <TransactionsTable transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
                 </div>
-
                 <div className="space-y-8">
                   <GeneratePixCard onGenerate={handleManualPix} />
                 </div>
@@ -211,10 +174,32 @@ export default function App() {
         </PrivateRoute>
       } />
 
-      {/* Redirecionamento Padrão */}
+      <Route path="/vendas" element={
+        <PrivateRoute>
+          <DashboardLayout {...commonProps} activeTab="vendas">
+            <SalesPage transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
+          </DashboardLayout>
+        </PrivateRoute>
+      } />
+
+      <Route path="/saques" element={
+        <PrivateRoute>
+          <DashboardLayout {...commonProps} activeTab="saques">
+            <WithdrawalsPage balance={commonProps.balance} />
+          </DashboardLayout>
+        </PrivateRoute>
+      } />
+
+      <Route path="/config" element={
+        <PrivateRoute>
+          <DashboardLayout {...commonProps} activeTab="settings">
+            <SettingsPage />
+          </DashboardLayout>
+        </PrivateRoute>
+      } />
+
       <Route path="*" element={<Navigate to="/" />} />
 
-      {/* Pix Modal Portal */}
       {activePix && (
         <PixModal
           pixData={activePix}

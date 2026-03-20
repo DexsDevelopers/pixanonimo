@@ -9,14 +9,17 @@ import {
     X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 export default function Sidebar({ isOpen, activeTab, onTabChange, onClose }) {
+    const location = useLocation();
+
     const menuItems = [
-        { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-        { id: 'vendas', icon: <History size={20} />, label: 'Vendas' },
-        { id: 'saques', icon: <Wallet size={20} />, label: 'Saques' },
-        { id: 'config', icon: <Settings size={20} />, label: 'Configurações' },
+        { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
+        { id: 'vendas', icon: <History size={20} />, label: 'Vendas', path: '/vendas' },
+        { id: 'saques', icon: <Wallet size={20} />, label: 'Saques', path: '/saques' },
+        { id: 'settings', icon: <Settings size={20} />, label: 'Configurações', path: '/config' },
     ];
 
     return (
@@ -44,22 +47,26 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose }) {
 
             <nav className="flex-1 px-4 py-6 space-y-2">
                 {menuItems.map((item) => (
-                    <button
+                    <Link
                         key={item.id}
-                        onClick={() => onTabChange(item.id)}
+                        to={item.path}
+                        onClick={() => {
+                            onTabChange(item.id);
+                            if (window.innerWidth < 1024) onClose();
+                        }}
                         className={cn(
-                            "w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group",
-                            activeTab === item.id
+                            "w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group mb-1",
+                            location.pathname === item.path
                                 ? 'bg-white text-black font-bold shadow-[0_4px_20px_rgba(255,255,255,0.1)]'
                                 : 'text-white/60 hover:bg-white/5 hover:text-white'
                         )}
                     >
                         <div className="flex items-center gap-3">
                             {item.icon}
-                            {item.label}
+                            <span className="text-[13px] font-bold uppercase tracking-widest">{item.label}</span>
                         </div>
-                        {activeTab === item.id && <ChevronRight size={16} />}
-                    </button>
+                        {location.pathname === item.path && <ChevronRight size={14} className="opacity-50" />}
+                    </Link>
                 ))}
             </nav>
 
