@@ -8,10 +8,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Componentes
-import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
-import { StatCard } from './components/StatCard';
-import { TransactionsTable } from './components/TransactionsTable';
+import { Sidebar } from './components/Sidebar.jsx';
+import { Header } from './components/Header.jsx';
+import { StatCard } from './components/StatCard.jsx';
+import { TransactionsTable } from './components/TransactionsTable.jsx';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
