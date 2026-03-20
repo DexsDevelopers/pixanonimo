@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    ArrowRight,
-    CheckCircle,
-    Zap,
-    Shield,
-    Rocket,
-    MessageCircle,
-    Cpu,
-    Lock,
-    ChevronDown,
-    ExternalLink,
-    Users,
-    Code2,
-    Globe,
-    BarChart3,
-    Sparkles,
-    ShieldCheck,
-    CreditCard
-} from 'lucide-react';
+import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
+import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
+import Zap from 'lucide-react/dist/esm/icons/zap';
+import Shield from 'lucide-react/dist/esm/icons/shield';
+import Rocket from 'lucide-react/dist/esm/icons/rocket';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
+import Cpu from 'lucide-react/dist/esm/icons/cpu';
+import Lock from 'lucide-react/dist/esm/icons/lock';
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
+import ExternalLink from 'lucide-react/dist/esm/icons/external-link';
+import Users from 'lucide-react/dist/esm/icons/users';
+import Code2 from 'lucide-react/dist/esm/icons/code-2';
+import Globe from 'lucide-react/dist/esm/icons/globe';
+import BarChart3 from 'lucide-react/dist/esm/icons/bar-chart-3';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
+import ShieldCheck from 'lucide-react/dist/esm/icons/shield-check';
+import CreditCard from 'lucide-react/dist/esm/icons/credit-card';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 

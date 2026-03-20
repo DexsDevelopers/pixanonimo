@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <base href="/">
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/dashboard-react/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,7 +12,7 @@ require_once 'includes/db.php';
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="/assets/dashboard-react/index-V9GmoMkP.js"></script>
+    <script type="module" crossorigin src="/assets/dashboard-react/index-JeVvd5tM.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-DDsQfGUI.css">
     
     <!-- Preload fonts to avoid layout shift -->
