@@ -1,12 +1,5 @@
 <?php
 require_once 'includes/db.php';
-
-// Segurança: Mantém o login original do seu sistema PHP
-if (!isLoggedIn()) {
-    redirect('auth/login.php');
-}
-
-$userId = $_SESSION['user_id'];
 ?>
 <!doctype html>
 <html lang="pt-BR">
