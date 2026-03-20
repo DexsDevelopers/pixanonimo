@@ -1,3 +1,4 @@
+// Ghost Pix SPA v2.1 - Build for Auth & Checkout
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -87,6 +88,7 @@ export default function App() {
   }, []);
 
   const fetchDashboard = async () => {
+    console.log("Ghost Pix SPA v2.2 - Iniciando carga de dados...");
     try {
       const res = await fetch('get_dashboard_data.php');
       const data = await res.json();
