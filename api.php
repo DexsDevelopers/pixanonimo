@@ -100,7 +100,7 @@ try {
         ]);
     }
 
-    // Chamada Real ao Gateway PixGo
+    // Chamada Real ao Gateway PixGo (conforme docs: https://pixgo.org/api/v1/docs)
     $externalId = 'user_' . $userId . '_' . time();
     $data = [
         'amount' => $amount,
@@ -118,7 +118,7 @@ try {
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'x-api-key: ' . $currentPixGoKey,
+        'X-API-Key: ' . $currentPixGoKey,
         'Content-Type: application/json',
         'Accept: application/json'
     ]);
@@ -139,11 +139,13 @@ try {
 
     $res = json_decode($response, true);
 
-    if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['success']) {
+    // PixGo retorna HTTP 201 em sucesso (conforme docs)
+    if (($httpCode === 200 || $httpCode === 201) && isset($res['success']) && $res['success']) {
         $pixData = $res['data'] ?? [];
-        $pixId = $pixData['payment_id'] ?? ($pixData['id'] ?? '');
-        $qrImage = $pixData['qr_image_url'] ?? ($pixData['qr_image'] ?? ($pixData['qrcode_url'] ?? ''));
-        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? ($pixData['copy_paste'] ?? ''))));
+        // Campos conforme docs PixGo: payment_id, qr_code, qr_image_url
+        $pixId = $pixData['payment_id'] ?? '';
+        $qrImage = $pixData['qr_image_url'] ?? '';
+        $pixCode = $pixData['qr_code'] ?? '';
         
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', $externalId, 'pix');
