@@ -45,8 +45,7 @@ export default function LoginPage() {
                 setResetToken(data.reset_token);
                 setError('');
             } else {
-                const debugInfo = data._debug ? `\n[DEBUG: email=${data._debug.email_received}, pwd_len=${data._debug.password_length}, found=${data._debug.user_found}, hash_len=${data._debug.hash_length}, verify=${data._debug.verify}]` : '';
-                setError((data.error || 'Email ou senha inválidos.') + debugInfo);
+                setError(data.error || 'Email ou senha inválidos.');
             }
         } catch (err) {
             setError('Erro ao conectar com o servidor.');
