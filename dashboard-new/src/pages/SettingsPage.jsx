@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle } from 'lucide-react';
+import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle, Webhook, Plus, Trash2, Send, Power, CircleDot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -146,6 +146,7 @@ export default function SettingsPage({ userData }) {
         { id: 'perfil', label: 'Meu Perfil', icon: <User size={16} /> },
         { id: 'seguranca', label: 'Segurança', icon: <Lock size={16} /> },
         { id: 'api', label: 'Desenvolvedor / API', icon: <Code size={16} /> },
+        { id: 'webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
     ];
 
     return (
@@ -522,8 +523,273 @@ export default function SettingsPage({ userData }) {
                         {activeSubTab === 'seguranca' && (
                             <SecurityTab />
                         )}
+
+                        {activeSubTab === 'webhooks' && (
+                            <WebhooksTab />
+                        )}
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function WebhooksTab() {
+    const [webhooks, setWebhooks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [newUrl, setNewUrl] = useState('');
+    const [newLabel, setNewLabel] = useState('');
+    const [adding, setAdding] = useState(false);
+    const [testing, setTesting] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    const fetchWebhooks = async () => {
+        try {
+            const res = await fetch('/user_webhooks.php?action=list');
+            const data = await res.json();
+            if (data.success) setWebhooks(data.webhooks || []);
+        } catch {} finally { setLoading(false); }
+    };
+
+    useEffect(() => { fetchWebhooks(); }, []);
+
+    const handleAdd = async () => {
+        if (!newUrl.trim()) return;
+        setAdding(true);
+        try {
+            const res = await fetch('/user_webhooks.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'add', url: newUrl.trim(), label: newLabel.trim() })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setNewUrl(''); setNewLabel(''); setShowForm(false);
+                fetchWebhooks();
+            } else {
+                alert(data.error || 'Erro ao adicionar');
+            }
+        } catch { alert('Erro de conexão'); } finally { setAdding(false); }
+    };
+
+    const handleDelete = async (id) => {
+        if (!confirm('Remover este webhook?')) return;
+        try {
+            await fetch('/user_webhooks.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'delete', id })
+            });
+            fetchWebhooks();
+        } catch {}
+    };
+
+    const handleToggle = async (id) => {
+        try {
+            await fetch('/user_webhooks.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'toggle', id })
+            });
+            fetchWebhooks();
+        } catch {}
+    };
+
+    const handleTest = async (id) => {
+        setTesting(id);
+        try {
+            const res = await fetch('/user_webhooks.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'test', id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`Teste enviado! Resposta: HTTP ${data.http_code}`);
+            } else {
+                alert(data.error || `Falha no teste: HTTP ${data.http_code}`);
+            }
+            fetchWebhooks();
+        } catch { alert('Erro de conexão'); } finally { setTesting(null); }
+    };
+
+    return (
+        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+            {/* Header */}
+            <div className="bg-primary/10 border border-primary/20 p-6 rounded-3xl flex gap-4">
+                <Webhook className="text-primary shrink-0 mt-0.5" size={24} />
+                <div>
+                    <h4 className="font-bold text-primary italic text-lg">Webhooks</h4>
+                    <p className="text-xs text-primary/70 font-medium mt-1">
+                        Receba notificações automáticas em tempo real quando um pagamento for confirmado. Configure até 10 URLs.
+                    </p>
+                </div>
+            </div>
+
+            {/* Add Button / Form */}
+            {!showForm ? (
+                <button
+                    onClick={() => setShowForm(true)}
+                    className="w-full border-2 border-dashed border-white/10 rounded-2xl py-5 flex items-center justify-center gap-3 text-white/30 hover:border-primary/30 hover:text-primary transition-all group"
+                >
+                    <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+                    <span className="text-xs font-black uppercase tracking-widest">Adicionar Webhook</span>
+                </button>
+            ) : (
+                <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 space-y-4 animate-in fade-in duration-300">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Nome (opcional)</label>
+                        <input
+                            type="text"
+                            value={newLabel}
+                            onChange={(e) => setNewLabel(e.target.value)}
+                            placeholder="Ex: Meu Bot Telegram, N8N, Make..."
+                            className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 text-sm font-bold focus:outline-none focus:border-primary/50 transition-all"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">URL do Webhook</label>
+                        <input
+                            type="url"
+                            value={newUrl}
+                            onChange={(e) => setNewUrl(e.target.value)}
+                            placeholder="https://seu-servidor.com/webhook"
+                            className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 font-mono text-sm text-white/60 focus:outline-none focus:border-primary/50 transition-all"
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleAdd}
+                            disabled={adding || !newUrl.trim()}
+                            className="flex-1 flex items-center justify-center gap-2 bg-white text-black font-black text-xs uppercase tracking-widest py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                        >
+                            {adding ? <><Loader2 size={14} className="animate-spin" /> Salvando...</> : <><Plus size={14} /> Adicionar</>}
+                        </button>
+                        <button
+                            onClick={() => { setShowForm(false); setNewUrl(''); setNewLabel(''); }}
+                            className="px-6 py-3 bg-white/5 border border-white/10 rounded-full text-xs font-black text-white/40 hover:text-white/60 transition-all"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Webhooks List */}
+            {loading ? (
+                <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                </div>
+            ) : webhooks.length === 0 ? (
+                <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-white/10">
+                        <Webhook className="text-white/20" size={28} />
+                    </div>
+                    <p className="text-white/30 text-sm font-bold">Nenhum webhook configurado</p>
+                    <p className="text-white/15 text-xs mt-1">Adicione um webhook para receber notificações de pagamentos.</p>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {webhooks.map((wh) => (
+                        <div key={wh.id} className={cn(
+                            "bg-white/[0.02] border rounded-2xl p-5 transition-all",
+                            wh.active == 1 ? "border-white/10" : "border-white/5 opacity-50"
+                        )}>
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <CircleDot size={10} className={wh.active == 1 ? "text-emerald-400" : "text-white/20"} />
+                                        <span className="text-sm font-black text-white truncate">
+                                            {wh.label || 'Webhook'}
+                                        </span>
+                                        {wh.last_status && (
+                                            <span className={cn(
+                                                "text-[9px] font-black px-2 py-0.5 rounded-full",
+                                                wh.last_status >= 200 && wh.last_status < 300
+                                                    ? "bg-emerald-500/10 text-emerald-400"
+                                                    : "bg-red-500/10 text-red-400"
+                                            )}>
+                                                HTTP {wh.last_status}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs font-mono text-white/30 truncate">{wh.url}</p>
+                                    {wh.last_triggered_at && (
+                                        <p className="text-[10px] text-white/15 mt-1">Último disparo: {wh.last_triggered_at}</p>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    <button
+                                        onClick={() => handleTest(wh.id)}
+                                        disabled={testing === wh.id}
+                                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-primary hover:border-primary/30 transition-all"
+                                        title="Enviar teste"
+                                    >
+                                        {testing === wh.id ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                                    </button>
+                                    <button
+                                        onClick={() => handleToggle(wh.id)}
+                                        className={cn(
+                                            "w-9 h-9 rounded-xl border flex items-center justify-center transition-all",
+                                            wh.active == 1
+                                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+                                                : "bg-white/5 border-white/10 text-white/20 hover:text-white/40"
+                                        )}
+                                        title={wh.active == 1 ? "Desativar" : "Ativar"}
+                                    >
+                                        <Power size={14} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(wh.id)}
+                                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 hover:text-red-400 hover:border-red-500/30 transition-all"
+                                        title="Remover"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Payload Example */}
+            <div className="space-y-3">
+                <h4 className="text-sm font-black uppercase tracking-widest text-white/50 flex items-center gap-2 ml-1">
+                    <Code size={14} className="text-primary" /> Payload Enviado
+                </h4>
+                <div className="bg-[#0a0a0b] border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="px-5 py-3 border-b border-white/5 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">POST — JSON (payment.completed)</span>
+                    </div>
+                    <pre className="p-5 text-xs text-white/50 font-mono leading-relaxed overflow-x-auto">
+{`{
+  "event": "payment.completed",
+  "transaction_id": 123,
+  "pix_id": "abc123",
+  "amount": 25.00,
+  "amount_net": 24.00,
+  "customer_name": "João Silva",
+  "status": "paid",
+  "external_id": "",
+  "timestamp": "2025-03-20 19:00:00"
+}`}
+                    </pre>
+                </div>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-3">
+                <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Dicas</p>
+                <ul className="space-y-2 text-xs text-white/30">
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">•</span> Seu endpoint deve responder com HTTP 200 para confirmar recebimento.</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">•</span> O timeout é de 10 segundos. Processe a lógica de forma assíncrona se necessário.</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">•</span> Use o botão de teste para verificar se seu endpoint está funcionando.</li>
+                    <li className="flex items-start gap-2"><span className="text-primary font-black">•</span> Compatível com N8N, Make (Integromat), Zapier e qualquer serviço que aceite webhooks.</li>
+                </ul>
             </div>
         </div>
     );

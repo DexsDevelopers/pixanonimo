@@ -105,33 +105,69 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                 MailService::notifySale($userData['email'], $userData['full_name'], $transaction['amount_brl']);
             }
 
-            // 4. Disparar Webhook Externo para o Lojista (se houver)
-            if (!empty($transaction['callback_url'])) {
-                $externalPayload = [
-                    'event' => 'payment.completed',
-                    'transaction_id' => $transaction['id'],
-                    'pix_id' => $transaction['pix_id'],
-                    'amount' => $transaction['amount_brl'],
-                    'status' => 'paid',
-                    'timestamp' => date('Y-m-d H:i:s')
-                ];
+            // 4. Disparar Webhook Externo para o Lojista (callback_url da transação)
+            $webhookPayload = [
+                'event' => 'payment.completed',
+                'transaction_id' => $transaction['id'],
+                'pix_id' => $transaction['pix_id'],
+                'amount' => (float)$transaction['amount_brl'],
+                'amount_net' => (float)$transaction['amount_net_brl'],
+                'customer_name' => $realPayerName ?: ($transaction['customer_name'] ?? ''),
+                'status' => 'paid',
+                'external_id' => $transaction['external_id'] ?? '',
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
 
+            if (!empty($transaction['callback_url'])) {
                 $ch = curl_init($transaction['callback_url']);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($externalPayload));
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($webhookPayload));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'User-Agent: GhostPix-Webhook/1.0', 'X-GhostPix-Event: payment.completed']);
                 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                 
                 $out = curl_exec($ch);
                 $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
-                write_log('INFO', 'Webhook Externo Disparado', [
+                write_log('INFO', 'Webhook Externo Disparado (callback_url)', [
                     'url' => $transaction['callback_url'],
                     'http_code' => $code,
                     'response' => $out
                 ]);
+            }
+
+            // 5. Disparar TODOS os webhooks configurados pelo usuário
+            try {
+                $whStmt = $pdo->prepare("SELECT id, url FROM user_webhooks WHERE user_id = ? AND active = 1");
+                $whStmt->execute([$transaction['user_id']]);
+                $userWebhooks = $whStmt->fetchAll();
+
+                foreach ($userWebhooks as $wh) {
+                    $ch = curl_init($wh['url']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($webhookPayload));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'User-Agent: GhostPix-Webhook/1.0', 'X-GhostPix-Event: payment.completed']);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+
+                    $out = curl_exec($ch);
+                    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+
+                    // Atualizar status do webhook
+                    $pdo->prepare("UPDATE user_webhooks SET last_status = ?, last_triggered_at = NOW() WHERE id = ?")->execute([$code, $wh['id']]);
+
+                    write_log('INFO', 'User Webhook Disparado', [
+                        'webhook_id' => $wh['id'],
+                        'url' => $wh['url'],
+                        'http_code' => $code,
+                        'user_id' => $transaction['user_id']
+                    ]);
+                }
+            } catch (PDOException $e) {
+                write_log('ERROR', 'Erro ao disparar user webhooks', ['error' => $e->getMessage()]);
             }
         } catch (Exception $e) {
             $pdo->rollBack();
