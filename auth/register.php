@@ -1,11 +1,20 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-session_start();
 require_once '../includes/db.php';
 require_once '../includes/MailService.php';
 
+$isJsonRequest = strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
+
+if ($isJsonRequest) {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    header('Content-Type: application/json');
+}
+
 if (isLoggedIn()) {
+    if ($isJsonRequest) {
+        echo json_encode(['success' => false, 'error' => 'Você já está logado.']);
+        exit;
+    }
     header("Location: ../dashboard.php");
     exit;
 }

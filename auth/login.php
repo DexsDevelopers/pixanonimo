@@ -1,6 +1,12 @@
 <?php
-session_start();
 require_once '../includes/db.php';
+
+$isJsonRequest = strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
+if ($isJsonRequest) {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    header('Content-Type: application/json');
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Validação CSRF
