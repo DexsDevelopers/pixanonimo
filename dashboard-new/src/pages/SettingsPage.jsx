@@ -1,16 +1,60 @@
-import React, { useState } from 'react';
-import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function SettingsPage({ userData }) {
     const [activeSubTab, setActiveSubTab] = useState('perfil');
     const [copied, setCopied] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState(userData?.avatar_url || null);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const handleCopyToken = () => {
         if (!userData?.api_token) return;
         navigator.clipboard.writeText(userData.api_token);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleAvatarUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('Arquivo muito grande. Máximo 5MB.');
+            return;
+        }
+
+        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!allowed.includes(file.type)) {
+            alert('Tipo não permitido. Use JPG, PNG, WebP ou GIF.');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            const res = await fetch('/upload_avatar.php', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.success) {
+                setAvatarUrl(data.avatar_url);
+            } else {
+                alert(data.error || 'Erro ao fazer upload');
+            }
+        } catch {
+            alert('Erro de conexão ao fazer upload');
+        } finally {
+            setUploading(false);
+            e.target.value = '';
+        }
     };
 
     const tabs = [
@@ -57,11 +101,35 @@ export default function SettingsPage({ userData }) {
                         {activeSubTab === 'perfil' && (
                             <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex items-center gap-6">
-                                    <div className="w-24 h-24 bg-white/10 rounded-[32px] border border-white/20 flex items-center justify-center text-3xl font-black shadow-2xl">G</div>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp,image/gif"
+                                        className="hidden"
+                                        onChange={handleAvatarUpload}
+                                    />
+                                    <button
+                                        onClick={handleAvatarClick}
+                                        disabled={uploading}
+                                        className="relative w-24 h-24 rounded-[32px] border border-white/20 flex items-center justify-center text-3xl font-black shadow-2xl overflow-hidden group cursor-pointer shrink-0"
+                                    >
+                                        {avatarUrl ? (
+                                            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="bg-white/10 w-full h-full flex items-center justify-center">
+                                                {userData?.name?.charAt(0).toUpperCase() || 'G'}
+                                            </span>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {uploading ? <Loader2 size={22} className="text-white animate-spin" /> : <Camera size={22} className="text-white" />}
+                                        </div>
+                                    </button>
                                     <div>
                                         <h3 className="text-2xl font-black">Identidade Visual</h3>
                                         <p className="text-white/40 text-sm">Atualize sua foto e dados públicos.</p>
-                                        <button className="mt-4 text-xs font-black uppercase text-primary tracking-widest">Alterar Avatar</button>
+                                        <button onClick={handleAvatarClick} disabled={uploading} className="mt-4 text-xs font-black uppercase text-primary tracking-widest hover:text-primary/80 transition-colors">
+                                            {uploading ? 'Enviando...' : 'Alterar Avatar'}
+                                        </button>
                                     </div>
                                 </div>
 

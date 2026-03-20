@@ -143,7 +143,16 @@ echo json_encode([
         'name' => $user['full_name'] ?? 'Usuário',
         'email' => $user['email'] ?? '',
         'api_token' => $user['api_key'] ?? '',
-        'is_admin' => (bool)$user['is_admin']
+        'is_admin' => (bool)$user['is_admin'],
+        'avatar_url' => (function() use ($userId) {
+            $dir = __DIR__ . '/uploads/avatars/';
+            foreach (['jpg','png','webp','gif'] as $ext) {
+                if (file_exists($dir . $userId . '.' . $ext)) {
+                    return '/uploads/avatars/' . $userId . '.' . $ext . '?v=' . filemtime($dir . $userId . '.' . $ext);
+                }
+            }
+            return null;
+        })()
     ],
     'transactions' => $formattedRows,
     'notifications' => $formattedNotifs
