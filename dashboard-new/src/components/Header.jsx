@@ -80,8 +80,8 @@ export default function Header({ onMenuClick, notifications = [], userData }) {
                         <p className="text-[10px] text-white/40 uppercase tracking-tighter mt-1 font-bold">Plano Premium</p>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-green-400 p-[1.5px] cursor-pointer hover:rotate-12 transition-transform">
-                        <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center">
-                            <User size={18} className="text-primary" />
+                        <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center font-black text-sm italic text-primary">
+                            {userData?.name ? userData.name.charAt(0).toUpperCase() : <User size={18} className="text-primary" />}
                         </div>
                     </div>
                 </div>

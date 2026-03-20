@@ -12,8 +12,9 @@ import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
-export default function Sidebar({ isOpen, activeTab, onTabChange, onClose }) {
+export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userData }) {
     const location = useLocation();
+    const userInitial = userData?.name?.charAt(0).toUpperCase() || 'G';
 
     const menuItems = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
@@ -31,7 +32,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose }) {
             <div className="p-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                        <span className="text-white font-bold text-xl">G</span>
+                        <span className="text-white font-bold text-xl">{userInitial}</span>
                     </div>
                     <span className="font-bold text-xl tracking-tight">GHOST<span className="text-primary italic">PIX</span></span>
                 </div>

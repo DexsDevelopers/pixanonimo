@@ -46,6 +46,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
       <Sidebar
         isOpen={isSidebarOpen}
         activeTab={activeTab}
+        userData={userData}
         onTabChange={(tab) => {
           setActiveTab(tab);
           if (window.innerWidth < 1024) setIsSidebarOpen(false);
@@ -133,7 +134,7 @@ export default function App() {
     isSidebarOpen,
     setIsSidebarOpen,
     setActiveTab,
-    userData: { name: dashboardData?.stats?.user_name || 'Usuário', email: 'vendedor@ghostpix.com' },
+    userData: dashboardData?.user || { name: 'Usuário', email: '' },
     balance: dashboardData?.balance || '0,00',
     notifications: dashboardData?.notifications || []
   };
@@ -150,7 +151,7 @@ export default function App() {
             <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">Ghost</span> 👋</h1>
+                  <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">{userData?.name?.split(' ')[0] || 'Ghost'}</span> 👋</h1>
                   <p className="text-white/40 font-medium">Aqui está o resumo do seu império hoje.</p>
                 </div>
                 <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR STATUS</button>
