@@ -152,120 +152,123 @@ export default function App() {
   const { userData, balance, notifications } = commonProps;
 
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/docs" element={<ApiDocsPage />} />
-      <Route path="/login" element={<LoginPage onLogin={fetchDashboard} />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <>
+      <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999, background: 'red', padding: '10px' }}>REACT LOADED</div>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/docs" element={<ApiDocsPage />} />
+        <Route path="/login" element={<LoginPage onLogin={fetchDashboard} />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      <Route path="/dashboard" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="dashboard">
-            <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">{userData?.name?.split(' ')[0] || 'Ghost'}</span> 👋</h1>
-                  <p className="text-white/40 font-medium">Aqui está o resumo do seu império hoje.</p>
+        <Route path="/dashboard" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="dashboard">
+              <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">{userData?.name?.split(' ')[0] || 'Ghost'}</span> 👋</h1>
+                    <p className="text-white/40 font-medium">Aqui está o resumo do seu império hoje.</p>
+                  </div>
+                  <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR STATUS</button>
                 </div>
-                <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR STATUS</button>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                <StatCard label="Saldo Disponível" value={`R$ ${commonProps.balance}`} icon={<Wallet size={24} />} />
-                <StatCard label="Vendas Hoje" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} icon={<History size={24} />} />
-                <StatCard label="Volume Mensal" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} icon={<LayoutDashboard size={24} />} />
-                <StatCard label="Pendentes" value={dashboardData?.stats?.pending_count || '0'} icon={<History size={24} />} trend="Aguardando" />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                  <h2 className="text-xl font-black flex items-center gap-2 border-b border-white/5 pb-4">
-                    <History className="text-primary" size={20} /> Vendas Recentes
-                  </h2>
-                  <TransactionsTable transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                  <StatCard label="Saldo Disponível" value={`R$ ${commonProps.balance}`} icon={<Wallet size={24} />} />
+                  <StatCard label="Vendas Hoje" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} icon={<History size={24} />} />
+                  <StatCard label="Volume Mensal" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} icon={<LayoutDashboard size={24} />} />
+                  <StatCard label="Pendentes" value={dashboardData?.stats?.pending_count || '0'} icon={<History size={24} />} trend="Aguardando" />
                 </div>
-                <div className="space-y-8">
-                  <GeneratePixCard onGenerate={handleManualPix} />
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2 space-y-6">
+                    <h2 className="text-xl font-black flex items-center gap-2 border-b border-white/5 pb-4">
+                      <History className="text-primary" size={20} /> Vendas Recentes
+                    </h2>
+                    <TransactionsTable transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
+                  </div>
+                  <div className="space-y-8">
+                    <GeneratePixCard onGenerate={handleManualPix} />
+                  </div>
                 </div>
               </div>
-            </div>
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
-
-      <Route path="/vendas" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="vendas">
-            <SalesPage transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
-
-      <Route path="/saques" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="saques">
-            <WithdrawalsPage balance={commonProps.balance} transactions={dashboardData?.transactions} />
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
-
-      <Route path="/config" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="settings">
-            <SettingsPage userData={commonProps.userData} />
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
-
-      <Route path="/admin" element={
-        <PrivateRoute>
-          <AdminRoute userData={userData}>
-            <DashboardLayout {...commonProps} activeTab="admin">
-              <AdminPage />
             </DashboardLayout>
-          </AdminRoute>
-        </PrivateRoute>
-      } />
+          </PrivateRoute>
+        } />
 
-      <Route path="/admin/apis" element={
-        <PrivateRoute>
-          <AdminRoute userData={userData}>
-            <DashboardLayout {...commonProps} activeTab="apis">
-              <AdminApisPage />
+        <Route path="/vendas" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="vendas">
+              <SalesPage transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} />
             </DashboardLayout>
-          </AdminRoute>
-        </PrivateRoute>
-      } />
+          </PrivateRoute>
+        } />
 
-      <Route path="/checkouts" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="checkouts">
-            <CheckoutsPage />
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
+        <Route path="/saques" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="saques">
+              <WithdrawalsPage balance={commonProps.balance} transactions={dashboardData?.transactions} />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
 
-      <Route path="/checkout-builder" element={
-        <PrivateRoute>
-          <DashboardLayout {...commonProps} activeTab="checkout-builder">
-            <CheckoutBuilderPage />
-          </DashboardLayout>
-        </PrivateRoute>
-      } />
+        <Route path="/config" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="settings">
+              <SettingsPage userData={commonProps.userData} />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
 
-      <Route path="/p/:slug" element={<CheckoutPage />} />
-      <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/admin" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin">
+                <AdminPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
 
-      {activePix && (
-        <PixModal
-          pixData={activePix}
-          onClose={() => setActivePix(null)}
-          onPaymentSuccess={() => {
-            setActivePix(null);
-            fetchDashboard();
-          }}
-        />
-      )}
-    </Routes>
+        <Route path="/admin/apis" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="apis">
+                <AdminApisPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
+
+        <Route path="/checkouts" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="checkouts">
+              <CheckoutsPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/checkout-builder" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="checkout-builder">
+              <CheckoutBuilderPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/p/:slug" element={<CheckoutPage />} />
+        <Route path="*" element={<Navigate to="/" />} />
+
+        {activePix && (
+          <PixModal
+            pixData={activePix}
+            onClose={() => setActivePix(null)}
+            onPaymentSuccess={() => {
+              setActivePix(null);
+              fetchDashboard();
+            }}
+          />
+        )}
+      </Routes>
+    </>
   );
 }
