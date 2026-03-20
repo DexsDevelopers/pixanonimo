@@ -16,7 +16,8 @@ import {
     ShieldCheck,
     Zap,
     Trash2,
-    RefreshCw
+    RefreshCw,
+    KeyRound
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -285,6 +286,14 @@ export default function AdminPage() {
                                     </td>
                                     <td className="p-6 pr-10">
                                         <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => { if (confirm(`Resetar senha de ${user.full_name}?`)) handleAction('reset_user_password', { user_id: user.id }); }}
+                                                className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500 hover:bg-amber-500 hover:text-white transition-all border border-amber-500/20"
+                                                title="Resetar Senha"
+                                            >
+                                                <KeyRound size={16} />
+                                            </button>
+
                                             <button
                                                 onClick={() => setShowFakeWithdrawModal({ userId: user.id, name: user.full_name, pix: user.pix_key })}
                                                 className="p-2.5 bg-white/5 rounded-xl text-white/40 hover:bg-primary/10 hover:text-primary transition-all border border-white/5"

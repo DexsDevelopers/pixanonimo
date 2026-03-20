@@ -114,6 +114,18 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'reset_user_password':
+            $userId = (int)$data['user_id'];
+            // Auto-criar coluna se não existir
+            try { $pdo->exec("ALTER TABLE users ADD COLUMN must_reset_password TINYINT(1) DEFAULT 0"); } catch (PDOException $e) {}
+            // Setar flag de reset (não muda a senha - o user vai definir uma nova ao fazer login)
+            $pdo->prepare("UPDATE users SET must_reset_password = 1 WHERE id = ? AND is_admin = 0")->execute([$userId]);
+            // Notificar usuário
+            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Senha Resetada 🔑', 'Sua senha foi resetada pelo administrador. Ao fazer login, você precisará criar uma nova senha.', 'warning')")->execute([$userId]);
+            write_log('INFO', 'Admin resetou senha do usuário', ['user_id' => $userId]);
+            echo json_encode(['success' => true, 'message' => 'Senha resetada. O usuário precisará definir uma nova senha no próximo login.']);
+            break;
+
         case 'add_api':
             $name = strip_tags(trim($data['name'] ?? 'Nova API'));
             $key = strip_tags(trim($data['api_key'] ?? ''));

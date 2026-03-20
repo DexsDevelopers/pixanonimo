@@ -30,9 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'verify_result' => $user ? password_verify($password, $user['password']) : false
     ]);
 
+    // Verificar se precisa resetar a senha (antes de verificar senha)
+    if ($user && ($user['must_reset_password'] ?? 0)) {
+        if ($isJsonRequest) {
+            // Gerar token temporário para o reset
+            $resetToken = bin2hex(random_bytes(16));
+            $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?")->execute([$resetToken, $user['id']]);
+            echo json_encode(['success' => false, 'must_reset_password' => true, 'reset_token' => $resetToken, 'error' => 'Sua senha foi resetada. Crie uma nova senha.']);
+            exit;
+        }
+    }
+
     if ($user && password_verify($password, $user['password'])) {
         if ($user['status'] == 'blocked') {
-            if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+            if ($isJsonRequest) {
                 echo json_encode(['success' => false, 'error' => 'Sua conta está bloqueada.']);
                 exit;
             }
@@ -50,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $updateToken->execute([$token, $user['id']]);
         setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
         
-        if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
+        if ($isJsonRequest) {
             echo json_encode(['success' => true]);
             exit;
         }
