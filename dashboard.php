@@ -14,6 +14,7 @@ $userId = $_SESSION['user_id'];
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="assets/dashboard-react/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->

@@ -38,6 +38,39 @@ function App() {
     }
   };
 
+  const handleDeleteTransaction = async (id) => {
+    if (!confirm('Deseja realmente excluir esta transação?')) return;
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const response = await fetch('../delete_transaction.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || ''
+        },
+        body: JSON.stringify({ id })
+      });
+      const res = await response.json();
+      if (res.success) {
+        fetchData(); // Atualiza a lista após excluir
+      } else {
+        alert('Erro ao excluir: ' + (res.error || 'Erro desconhecido'));
+      }
+    } catch (e) {
+      alert('Falha na conexão ao excluir transação.');
+    }
+  };
+
+  const handleViewQr = (tx) => {
+    setActivePix({
+      id: tx.id,
+      amount: tx.amount_brl.replace('.', '').replace(',', '.'),
+      code: tx.pix_code,
+      image: tx.qr_image
+    });
+  };
+
   useEffect(() => {
     fetchData();
     // Auto-refresh a cada 30 segundos para manter o dashboard "vivo"
@@ -145,7 +178,12 @@ function App() {
                       ATUALIZAR STATUS
                     </button>
                   </div>
-                  <TransactionsTable transactions={data?.transactions || []} loading={loading} />
+                  <TransactionsTable
+                    transactions={data?.transactions || []}
+                    loading={loading}
+                    onDelete={handleDeleteTransaction}
+                    onViewQr={handleViewQr}
+                  />
                 </div>
               </div>
             </div>
