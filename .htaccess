@@ -1,17 +1,15 @@
+Options -MultiViews
 RewriteEngine On
 
 # Checkouts customizados (Legado)
 RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ pay.php?c=$1 [L,QSA]
 
-# Rotas SPA que conflitam com diretórios físicos (admin/, auth/)
-RewriteRule ^admin/?$ index.php [L,QSA]
-RewriteRule ^admin/apis/?$ index.php [L,QSA]
-RewriteRule ^login/?$ index.php [L,QSA]
-RewriteRule ^register/?$ index.php [L,QSA]
-RewriteRule ^forgot-password/?$ index.php [L,QSA]
+# Todas as rotas SPA → index.php (antes do fallback de arquivos)
+RewriteRule ^(dashboard|vendas|relatorios|saques|config|admin|admin/apis|checkouts|checkout-builder|afiliado|login|register|forgot-password|demo|docs)/?$ index.php [L,QSA]
 RewriteRule ^reset-password/(.+)$ index.php [L,QSA]
+RewriteRule ^p/(.+)$ index.php [L,QSA]
 
-# Suporte a SPA: Redireciona todas as rotas não-arquivos para o index.php
+# Fallback SPA: rotas que não são arquivos nem diretórios
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [L,QSA]
