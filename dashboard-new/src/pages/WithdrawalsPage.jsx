@@ -10,8 +10,8 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
 
     const handleWithdraw = async () => {
         const val = parseFloat(amount);
-        if (!val || val < 50) {
-            setResult({ success: false, error: 'O valor mínimo para saque é R$ 50,00.' });
+        if (!val || val < 1) {
+            setResult({ success: false, error: 'O valor mínimo para saque é R$ 1,00.' });
             return;
         }
 
@@ -92,12 +92,12 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
                                         placeholder="0,00"
-                                        min="50"
+                                        min="1"
                                         step="0.01"
                                         className="w-full bg-white/5 border border-white/10 rounded-[24px] py-6 pl-16 pr-8 text-2xl font-black focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all"
                                     />
                                 </div>
-                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: R$ 0,00 (Grátis para seu plano) • Mínimo: R$ 50,00</p>
+                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: R$ 0,00 (Grátis para seu plano) • Mínimo: R$ 1,00</p>
                             </div>
 
                             <button

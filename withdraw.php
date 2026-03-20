@@ -30,8 +30,8 @@ try {
     exit;
 }
 
-if ($amount < 50) {
-    echo json_encode(['error' => 'O valor mínimo para saque é R$ 50,00.']);
+if ($amount < 1) {
+    echo json_encode(['error' => 'O valor mínimo para saque é R$ 1,00.']);
     exit;
 }
 
