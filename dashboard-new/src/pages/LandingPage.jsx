@@ -107,32 +107,32 @@ export default function LandingPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl sm:text-6xl md:text-[110px] font-black mb-8 md:mb-10 leading-[1.1] md:leading-[0.85] tracking-tighter"
+                        className="text-4xl xs:text-5xl sm:text-7xl md:text-[110px] font-black mb-6 md:mb-10 leading-[1.2] md:leading-[0.85] tracking-tighter text-center"
                     >
-                        PRIVACIDADE <br className="hidden md:block" /> <span className="md:hidden">É PODER</span> <span className="hidden md:inline italic text-primary">É PODER.</span>
+                        PRIVACIDADE <br className="hidden sm:block" /> <span className="text-primary italic">É PODER.</span>
                     </motion.h1>
 
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-white/40 text-base md:text-xl max-w-2xl mx-auto mb-12 md:mb-16 font-medium leading-relaxed px-4"
+                        className="text-white/40 text-sm xs:text-base md:text-xl max-w-2xl mx-auto mb-10 md:mb-16 font-medium leading-relaxed px-6 text-center"
                     >
                         Crie links de pagamento, gerencie suas vendas e receba via Pix com blindagem total.
-                        <span className="hidden sm:inline"> A primeira infraestrutura do Brasil focada em anonimato e alta conversão.</span>
+                        <span className="hidden xs:inline"> A infraestrutura focada em anonimato e alta conversão.</span>
                     </motion.p>
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 px-6"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 px-8"
                     >
-                        <Link to="/register" className="w-full sm:w-auto bg-white text-black h-14 md:h-16 px-8 md:px-10 rounded-full flex items-center justify-center text-base md:text-lg font-black hover:scale-105 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95 group whitespace-nowrap">
+                        <Link to="/register" className="w-full sm:w-auto bg-white text-black h-14 md:h-16 px-10 rounded-full flex items-center justify-center text-base md:text-lg font-black hover:scale-105 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95 group">
                             Começar Agora
                             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
                         </Link>
-                        <button className="w-full sm:w-auto bg-white/5 border border-white/10 h-14 md:h-16 px-8 md:px-10 rounded-full text-white font-bold hover:bg-white/10 transition-all active:scale-95 text-sm md:text-base">
+                        <button className="w-full sm:w-auto bg-white/5 border border-white/10 h-14 md:h-16 px-10 rounded-full text-white font-bold hover:bg-white/10 transition-all active:scale-95 text-sm md:text-base">
                             Falar com Consultor
                         </button>
                     </motion.div>
@@ -140,21 +140,21 @@ export default function LandingPage() {
             </section>
 
             {/* Trust Bar */}
-            <section className="py-12 md:py-20 border-y border-white/5 bg-white/[0.01]">
-                <div className="max-w-7xl mx-auto px-6 overflow-hidden text-center">
+            <section className="py-10 md:py-20 border-y border-white/5 bg-white/[0.01]">
+                <div className="max-w-7xl mx-auto px-8 overflow-hidden text-center">
                     <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8 md:mb-12">Integração Nativa</p>
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-20 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-6 md:gap-20 opacity-30 grayscale hover:grayscale-0 transition-all duration-700 text-center">
                         {['Mercado Pago', 'Asaas', 'Stripe', 'OpenPix', 'PagBank'].map(p => (
-                            <span key={p} className="text-sm md:text-xl font-black italic tracking-tighter text-white whitespace-nowrap">{p}</span>
+                            <span key={p} className="text-sm xs:text-base md:text-xl font-black italic tracking-tighter text-white">{p}</span>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Features Grid */}
-            <section id="sistema" className="py-20 md:py-32 px-6">
+            <section id="sistema" className="py-20 md:py-32 px-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             { title: 'Blindagem Total', desc: 'Sua chave Pix nunca é exposta. Receba através do nosso gateway de anonimato.', icon: <Shield className="text-primary" /> },
                             { title: 'Checkout Fluido', desc: 'Páginas otimizadas para carregar em 0.1s. Menos desistência, mais lucro.', icon: <Zap className="text-primary" /> },
@@ -180,9 +180,9 @@ export default function LandingPage() {
             </section>
 
             {/* FAQ Section */}
-            <section id="faq" className="py-20 md:py-32 px-6 bg-white/[0.01]">
+            <section id="faq" className="py-20 md:py-32 px-8 bg-white/[0.01]">
                 <div className="max-w-3xl mx-auto">
-                    <h2 className="text-3xl md:text-6xl font-black mb-12 md:mb-16 text-center leading-tight tracking-tighter">PERGUNTAS <br /><span className="text-primary italic">FREQUENTES</span></h2>
+                    <h2 className="text-2xl xs:text-3xl md:text-6xl font-black mb-12 md:mb-16 text-center leading-tight tracking-tighter uppercase">Perguntas <span className="text-primary italic">Frequentes</span></h2>
                     <div className="space-y-2 md:space-y-4">
                         <AccordionItem
                             title="O Ghost Pix é realmente anônimo?"
@@ -201,23 +201,23 @@ export default function LandingPage() {
             </section>
 
             {/* CTA Final */}
-            <section className="py-20 md:py-32 px-6 text-center">
-                <div className="max-w-5xl mx-auto glass p-10 md:p-16 rounded-[40px] md:rounded-[60px] relative overflow-hidden">
+            <section className="py-20 md:py-32 px-8">
+                <div className="max-w-5xl mx-auto glass p-10 md:p-16 rounded-[40px] md:rounded-[60px] relative overflow-hidden text-center">
                     <div className="absolute inset-0 bg-primary/5 -z-10" />
-                    <h2 className="text-3xl md:text-7xl font-black mb-8 leading-tight tracking-tight px-4">O SEU PRÓXIMO <br className="hidden sm:block" /> <span className="text-primary">NÍVEL</span> COMEÇA AQUI.</h2>
-                    <Link to="/register" className="lp-btn-primary h-14 md:h-18 px-8 md:px-12 rounded-full text-base md:text-xl inline-flex shadow-[0_20px_50px_rgba(74,222,128,0.3)]">CRIAR CONTA AGORA</Link>
+                    <h2 className="text-2xl xs:text-3xl md:text-7xl font-black mb-10 leading-tight tracking-tight uppercase">O seu próximo <br className="hidden xs:block" /> <span className="text-primary">NÍVEL</span> começa aqui.</h2>
+                    <Link to="/register" className="lp-btn-primary h-14 md:h-18 px-10 md:px-12 rounded-full text-sm xs:text-base md:text-xl inline-flex shadow-[0_20px_50px_rgba(74,222,128,0.3)]">CRIAR CONTA AGORA</Link>
                 </div>
             </section>
 
             {/* Footer */}
             <footer className="py-12 md:py-20 border-t border-white/5 bg-black">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
+                <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
                     <div className="flex items-center gap-2 opacity-50">
                         <div className="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center">G</div>
                         <span className="font-bold tracking-tighter">GHOST PIX</span>
                     </div>
-                    <p className="text-white/20 text-[10px] font-black uppercase tracking-widest text-center md:text-left">© 2026 Tecnologia Blindada de Pagamentos.</p>
-                    <div className="flex gap-6 md:gap-8 text-white/40 text-[10px] font-bold uppercase">
+                    <p className="text-white/20 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-center md:text-left">© 2026 Tecnologia Blindada de Pagamentos.</p>
+                    <div className="flex gap-6 md:gap-8 text-white/40 text-[9px] md:text-[10px] font-bold uppercase">
                         <a href="#" className="hover:text-white transition-colors">Políticas</a>
                         <a href="#" className="hover:text-white transition-colors">Termos</a>
                         <a href="suporte.php" className="hover:text-white transition-colors">Suporte</a>
