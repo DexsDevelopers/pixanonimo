@@ -9,6 +9,11 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 // --- 1. DADOS DO USUÁRIO (SALDO) ---
+// Auto-criar colunas de crypto se não existirem
+try { $pdo->exec("ALTER TABLE users ADD COLUMN withdraw_method VARCHAR(10) DEFAULT 'pix'"); } catch (PDOException $e) {}
+try { $pdo->exec("ALTER TABLE users ADD COLUMN crypto_address VARCHAR(255) DEFAULT ''"); } catch (PDOException $e) {}
+try { $pdo->exec("ALTER TABLE users ADD COLUMN crypto_network VARCHAR(20) DEFAULT ''"); } catch (PDOException $e) {}
+
 $stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token, withdraw_method, crypto_address, crypto_network FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
