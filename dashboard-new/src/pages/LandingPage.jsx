@@ -168,9 +168,9 @@ export default function LandingPage() {
                             COMEÇAR AGORA
                             <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={20} />
                         </Link>
-                        <a href="#sistema" className="w-full sm:w-auto bg-white/5 border border-white/10 h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] text-white font-black hover:bg-white/10 transition-all active:scale-95 text-sm sm:text-lg flex items-center justify-center whitespace-nowrap">
+                        <Link to="/demo" className="w-full sm:w-auto bg-white/5 border border-white/10 h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] text-white font-black hover:bg-white/10 transition-all active:scale-95 text-sm sm:text-lg flex items-center justify-center whitespace-nowrap">
                             VER DEMO
-                        </a>
+                        </Link>
                     </motion.div>
 
                     {/* Quick Stats */}

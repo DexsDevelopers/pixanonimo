@@ -29,6 +29,7 @@ import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
 import ApiDocsPage from './pages/ApiDocsPage';
 import ReportsPage from './pages/ReportsPage';
 import AffiliatePage from './pages/AffiliatePage';
+import DemoPage from './pages/DemoPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -150,6 +151,7 @@ export default function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/demo" element={<DemoPage />} />
         <Route path="/docs" element={<ApiDocsPage />} />
         <Route path="/login" element={<LoginPage onLogin={fetchDashboard} />} />
         <Route path="/register" element={<RegisterPage />} />
