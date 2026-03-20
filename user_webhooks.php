@@ -50,6 +50,9 @@ switch ($action) {
         $label = trim($input['label'] ?? '');
         $events = trim($input['events'] ?? 'payment.completed');
 
+        // Normalizar URL: remover protocolos duplicados
+        $url = preg_replace('#^(https?://)+(https?://)#i', '$2', $url);
+
         if (empty($url)) {
             echo json_encode(['error' => 'URL é obrigatória']);
             exit;
@@ -116,6 +119,12 @@ switch ($action) {
             exit;
         }
 
+        // Normalizar URL antes de enviar (corrige protocolos duplicados salvos anteriormente)
+        $whUrl = preg_replace('#^(https?://)+(https?://)#i', '$2', $wh['url']);
+        if ($whUrl !== $wh['url']) {
+            $pdo->prepare("UPDATE user_webhooks SET url = ? WHERE id = ?")->execute([$whUrl, $id]);
+        }
+
         $testPayload = [
             'event' => 'test',
             'transaction_id' => 0,
@@ -127,7 +136,7 @@ switch ($action) {
             'timestamp' => date('Y-m-d H:i:s')
         ];
 
-        $ch = curl_init($wh['url']);
+        $ch = curl_init($whUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($testPayload));
