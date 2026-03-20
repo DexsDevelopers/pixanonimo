@@ -79,17 +79,33 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
                     <div className="pt-6 animate-in slide-in-from-left duration-500">
                         <p className="px-6 pb-2 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Administração</p>
                         {adminItems.map((item) => (
-                            <a
+                            <Link
                                 key={item.id}
-                                href={`../${item.path}`}
-                                className="w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group mb-1 text-white/60 hover:bg-white/5 hover:text-white"
+                                to={item.path}
+                                onClick={() => {
+                                    onTabChange(item.id);
+                                    if (window.innerWidth < 1024) onClose();
+                                }}
+                                className={cn(
+                                    "w-full flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 group mb-1",
+                                    location.pathname === item.path
+                                        ? 'bg-primary text-black font-bold shadow-[0_4px_20px_rgba(74,222,128,0.2)]'
+                                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                                )}
                             >
                                 <div className="flex items-center gap-3">
-                                    {item.icon}
+                                    <span className={cn(
+                                        "transition-colors",
+                                        location.pathname === item.path ? 'text-black' : 'text-primary'
+                                    )}>{item.icon}</span>
                                     <span className="text-[13px] font-bold uppercase tracking-widest">{item.label}</span>
                                 </div>
-                                <ChevronRight size={14} className="opacity-20 group-hover:opacity-50 transition-opacity" />
-                            </a>
+                                {location.pathname === item.path ? (
+                                    <ChevronRight size={14} className="opacity-50" />
+                                ) : (
+                                    <ChevronRight size={14} className="opacity-0 group-hover:opacity-20 transition-opacity" />
+                                )}
+                            </Link>
                         ))}
                     </div>
                 )}

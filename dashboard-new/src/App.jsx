@@ -26,6 +26,14 @@ import SettingsPage from './pages/SettingsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminPage from './pages/AdminPage';
+import AdminApisPage from './pages/AdminApisPage';
+
+// Proteção de Rota Admin
+function AdminRoute({ children, userData }) {
+  if (!userData?.is_admin) return <Navigate to="/dashboard" />;
+  return children;
+}
 
 // Layout do Dashboard (Privado)
 function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
@@ -203,6 +211,26 @@ export default function App() {
           <DashboardLayout {...commonProps} activeTab="settings">
             <SettingsPage userData={commonProps.userData} />
           </DashboardLayout>
+        </PrivateRoute>
+      } />
+
+      <Route path="/admin" element={
+        <PrivateRoute>
+          <AdminRoute userData={userData}>
+            <DashboardLayout {...commonProps} activeTab="admin">
+              <AdminPage />
+            </DashboardLayout>
+          </AdminRoute>
+        </PrivateRoute>
+      } />
+
+      <Route path="/admin/apis" element={
+        <PrivateRoute>
+          <AdminRoute userData={userData}>
+            <DashboardLayout {...commonProps} activeTab="apis">
+              <AdminApisPage />
+            </DashboardLayout>
+          </AdminRoute>
         </PrivateRoute>
       } />
 
