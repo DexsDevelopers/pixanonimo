@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -18,6 +18,15 @@ export default function SettingsPage({ userData }) {
     const [cryptoAddress, setCryptoAddress] = useState(userData?.crypto_address || '');
     const [cryptoNetwork, setCryptoNetwork] = useState(userData?.crypto_network || '');
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (userData?.api_token) setApiToken(userData.api_token);
+        if (userData?.pix_key) setPixKey(userData.pix_key);
+        if (userData?.avatar_url) setAvatarUrl(userData.avatar_url);
+        if (userData?.withdraw_method) setWithdrawMethod(userData.withdraw_method);
+        if (userData?.crypto_address) setCryptoAddress(userData.crypto_address);
+        if (userData?.crypto_network) setCryptoNetwork(userData.crypto_network);
+    }, [userData]);
 
     const handleCopyToken = () => {
         if (!apiToken) return;
