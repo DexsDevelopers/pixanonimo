@@ -7,7 +7,8 @@ import {
     Settings,
     LogOut,
     ChevronRight,
-    X
+    X,
+    Gift
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -24,6 +25,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'saques', icon: <Wallet size={20} />, label: 'Saques', path: '/saques' },
         { id: 'checkouts', icon: <History size={20} />, label: 'Produtos / Links', path: '/checkouts' },
         { id: 'checkout-builder', icon: <Settings size={20} />, label: 'Customizar Checkout', path: '/checkout-builder' },
+        { id: 'afiliado', icon: <Gift size={20} />, label: 'Afiliado', path: '/afiliado' },
         { id: 'settings', icon: <Settings size={20} />, label: 'Configurações', path: '/config' },
     ];
 

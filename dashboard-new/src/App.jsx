@@ -28,6 +28,7 @@ import CheckoutsPage from './pages/CheckoutsPage';
 import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
 import ApiDocsPage from './pages/ApiDocsPage';
 import ReportsPage from './pages/ReportsPage';
+import AffiliatePage from './pages/AffiliatePage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -208,6 +209,14 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="saques">
               <WithdrawalsPage balance={commonProps.balance} transactions={dashboardData?.transactions} />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/afiliado" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="afiliado">
+              <AffiliatePage />
             </DashboardLayout>
           </PrivateRoute>
         } />
