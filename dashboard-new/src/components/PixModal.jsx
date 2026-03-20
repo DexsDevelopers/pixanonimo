@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, Clock, ShieldCheck, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function PixModal({ pixData, onClose }) {
+export default function PixModal({ pixData, onClose, statusEndpoint }) {
     const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutos
     const [copied, setCopied] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('pending'); // 'pending', 'paid', 'expired'
@@ -31,7 +31,8 @@ export default function PixModal({ pixData, onClose }) {
 
         const poll = async () => {
             try {
-                const res = await fetch(`../check_status.php?pix_id=${pixData.id}`);
+                const endpoint = statusEndpoint || '../check_status.php';
+                const res = await fetch(`${endpoint}?pix_id=${pixData.id}`);
                 const data = await res.json();
                 if (data.status === 'paid') {
                     setPaymentStatus('paid');

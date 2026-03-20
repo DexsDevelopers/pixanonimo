@@ -70,6 +70,23 @@ try {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
 
+    if (!$user || $user['status'] != 'approved') {
+        throw new Exception('Usuário não está habilitado para receber pagamentos.');
+    }
+
+    $currentPixGoKey = getActivePixGoKey();
+
+    // Ambiente de Simulação / Teste
+    if ($currentPixGoKey === 'SUA_API_KEY_AQUI' || empty($currentPixGoKey)) {
+        $pixId = 'sim_' . time();
+        $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=TESTE';
+        $pixCode = '00020126360014br.gov.bcb.pix0114000000000000005204000053039865802BR5913GHOSTPIX6009SAOPAULO62070503***6304ABCD';
+        $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
+
+        $externalId = 'user_' . $userId . '_' . time();
+        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', $externalId, 'pix');
+
+        if (class_exists('PushService')) {
             try {
                 PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
             } catch (Throwable $e) {}

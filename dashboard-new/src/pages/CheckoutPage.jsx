@@ -47,7 +47,12 @@ export default function CheckoutPage() {
             });
             const resData = await res.json();
             if (resData.success) {
-                setActivePix(resData);
+                setActivePix({
+                    id: resData.pix_id,
+                    amount: resData.amount,
+                    code: resData.pix_code || '',
+                    image: resData.qr_image || ''
+                });
             } else {
                 alert(resData.message || 'Erro ao gerar Pix');
             }
@@ -180,6 +185,7 @@ export default function CheckoutPage() {
                 <PixModal
                     pixData={activePix}
                     onClose={() => setActivePix(null)}
+                    statusEndpoint="/check_checkout_status.php"
                     onPaymentSuccess={() => {
                         // Can redirect to a Success page later
                     }}

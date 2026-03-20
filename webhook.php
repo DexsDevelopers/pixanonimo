@@ -1,3 +1,4 @@
+<?php
 require_once 'includes/db.php';
 try {
     require_once 'includes/PushService.php';
