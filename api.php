@@ -100,38 +100,51 @@ try {
         ]);
     }
 
-    // Chamada Real
+    // Chamada Real ao Gateway PixGo
+    $externalId = 'user_' . $userId . '_' . time();
     $data = [
         'amount' => $amount,
         'description' => 'Recarga Ghost Pix',
         'webhook_url' => getFullUrl('webhook.php'),
-        'external_id' => 'user_' . $userId . '_' . time()
+        'external_id' => $externalId
     ];
 
-    $ch = curl_init('https://pixgo.org/api/v1/payment/create');
+    $pixGoUrl = 'https://pixgo.org/api/v1/payment/create';
+    $maskedKey = substr($currentPixGoKey, 0, 8) . '...' . substr($currentPixGoKey, -6);
+    write_log('info', "PixGo Request: URL=$pixGoUrl | Key=$maskedKey | Body=" . json_encode($data));
+
+    $ch = curl_init($pixGoUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $currentPixGoKey, 'Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'x-api-key: ' . $currentPixGoKey,
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curlError = curl_error($ch);
+    $curlErrno = curl_errno($ch);
     curl_close($ch);
 
+    write_log('info', "PixGo Response: HTTP=$httpCode | curlErrno=$curlErrno | curlError=$curlError | Body=" . substr($response ?: '(empty)', 0, 500));
+
     if ($response === false) {
-        throw new Exception("Falha na conexão com PixGo: " . $curlError);
+        throw new Exception("Falha na conexão com PixGo: [$curlErrno] $curlError");
     }
 
     $res = json_decode($response, true);
+
     if ($httpCode >= 200 && $httpCode < 300 && isset($res['success']) && $res['success']) {
         $pixData = $res['data'] ?? [];
-        $pixId = $pixData['payment_id'] ?? '';
-        $qrImage = $pixData['qr_image_url'] ?? '';
-        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
+        $pixId = $pixData['payment_id'] ?? ($pixData['id'] ?? '');
+        $qrImage = $pixData['qr_image_url'] ?? ($pixData['qr_image'] ?? ($pixData['qrcode_url'] ?? ''));
+        $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? ($pixData['copy_paste'] ?? ''))));
         
-        $externalId = 'user_' . $userId . '_' . time();
         $netAmount = $amount * (1 - ($user['commission_rate'] / 100));
         saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, $callbackUrl, 'Recarga Ghost Pix', $externalId, 'pix');
 
@@ -148,8 +161,9 @@ try {
             'amount' => $amount
         ]);
     } else {
-        write_log('error', 'Resposta Inválida PixGo: ' . $response);
-        throw new Exception('Erro PixGo: ' . ($res['message'] ?? 'Resposta inesperada') . ' (CS: ' . $httpCode . ')');
+        $errorMsg = $res['message'] ?? ($res['error'] ?? 'Erro de comunicação com o serviço de pagamento');
+        write_log('error', "PixGo FALHA: HTTP=$httpCode | Msg=$errorMsg | FullResponse=$response");
+        throw new Exception("Erro PixGo: $errorMsg (CS: $httpCode)");
     }
 
 } catch (Throwable $e) {
