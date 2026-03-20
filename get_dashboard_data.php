@@ -74,8 +74,8 @@ if ($user['is_demo'] == 1) {
     $stmtTotal->execute([$userId]);
     $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Cobranças Pendentes no Período
-    $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending'" . $periodSQL);
+    // Cobranças Pendentes no Período (Apenas as que não expiraram: < 20 min)
+    $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)" . $periodSQL);
     $stmtPending->execute([$userId]);
     $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
 }
