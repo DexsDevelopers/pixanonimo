@@ -17,7 +17,9 @@ import {
     Zap,
     Trash2,
     RefreshCw,
-    KeyRound
+    KeyRound,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -300,6 +302,19 @@ export default function AdminPage() {
                                                 title="Saque Fake"
                                             >
                                                 <Zap size={16} />
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleAction('update_user_field', { user_id: user.id, field: 'is_demo', value: user.is_demo ? 0 : 1 })}
+                                                className={cn(
+                                                    'p-2.5 rounded-xl transition-all border',
+                                                    user.is_demo
+                                                        ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-black'
+                                                        : 'bg-white/5 text-white/40 border-white/5 hover:bg-white/10 hover:text-white'
+                                                )}
+                                                title={user.is_demo ? 'Desativar Demo' : 'Ativar Demo'}
+                                            >
+                                                {user.is_demo ? <Eye size={16} /> : <EyeOff size={16} />}
                                             </button>
 
                                             {user.status !== 'approved' && (
