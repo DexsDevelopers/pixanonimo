@@ -3,9 +3,10 @@ import { X, Copy, Check, Clock, ShieldCheck, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function PixModal({ pixData, onClose, statusEndpoint }) {
-    const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutos
+    const initialTime = Math.max(0, 20 * 60 - (pixData?.secondsOld || 0));
+    const [timeLeft, setTimeLeft] = useState(initialTime);
     const [copied, setCopied] = useState(false);
-    const [paymentStatus, setPaymentStatus] = useState('pending'); // 'pending', 'paid', 'expired'
+    const [paymentStatus, setPaymentStatus] = useState(initialTime <= 0 ? 'expired' : 'pending');
 
     // Timer logic
     useEffect(() => {
