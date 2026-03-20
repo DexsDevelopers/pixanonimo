@@ -93,7 +93,7 @@ export default function LandingPage() {
                     </div>
                     <div className="h-4 w-px bg-white/10 hidden sm:block" />
                     <p className="text-[11px] font-bold text-white/60">Novidade: Nosso Canal Oficial no WhatsApp já está ativo!</p>
-                    <a href="https://whatsapp.com/channel/..." target="_blank" className="text-[11px] font-black uppercase tracking-widest text-white hover:text-primary transition-colors flex items-center gap-2">Explorar <ArrowRight size={12} /></a>
+                    <a href="https://whatsapp.com/channel/0029Vb5mKOp9Whjulkx8sP0D" rel="noopener noreferrer" target="_blank" className="text-[11px] font-black uppercase tracking-widest text-white hover:text-primary transition-colors flex items-center gap-2">Explorar <ArrowRight size={12} /></a>
                 </div>
             </div>
 

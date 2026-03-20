@@ -63,7 +63,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <AnnouncementBar text="Black Friday: 50% de desconto em todas as taxas até domingo!" />
+        <AnnouncementBar />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <Header
