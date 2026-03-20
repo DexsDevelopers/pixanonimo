@@ -502,10 +502,10 @@ export default function SettingsPage({ userData }) {
                                         <ExternalLink size={14} />
                                         Documentação Completa
                                     </Link>
-                                    <a href="https://pixghost.site/check_status.php" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/60 font-black text-xs uppercase tracking-widest py-4 rounded-2xl hover:bg-white/10 transition-all">
+                                    <Link to="/docs" className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white/60 font-black text-xs uppercase tracking-widest py-4 rounded-2xl hover:bg-white/10 transition-all">
                                         <Globe size={14} />
                                         Testar Status Endpoint
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         )}
