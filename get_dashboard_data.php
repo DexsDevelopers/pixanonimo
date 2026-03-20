@@ -9,7 +9,7 @@ if (!isLoggedIn()) {
 $userId = $_SESSION['user_id'];
 
 // --- 1. DADOS DO USUÁRIO (SALDO) ---
-$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token, withdraw_method, crypto_address, crypto_network FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -143,6 +143,9 @@ echo json_encode([
         'name' => $user['full_name'] ?? 'Usuário',
         'email' => $user['email'] ?? '',
         'pix_key' => $user['pix_key'] ?? '',
+        'withdraw_method' => $user['withdraw_method'] ?? 'pix',
+        'crypto_address' => $user['crypto_address'] ?? '',
+        'crypto_network' => $user['crypto_network'] ?? '',
         'api_token' => $user['api_key'] ?? '',
         'is_admin' => (bool)$user['is_admin'],
         'avatar_url' => (function() use ($userId) {

@@ -19,13 +19,46 @@ check_csrf($csrfToken);
 // Sanitização de Entradas
 $fullName = strip_tags(trim($input['full_name'] ?? ''));
 $pixKey = strip_tags(trim($input['pix_key'] ?? ''));
+$withdrawMethod = strip_tags(trim($input['withdraw_method'] ?? 'pix'));
+$cryptoAddress = strip_tags(trim($input['crypto_address'] ?? ''));
+$cryptoNetwork = strip_tags(trim($input['crypto_network'] ?? ''));
 $currentPassword = $input['current_password'] ?? '';
 $newPassword = $input['new_password'] ?? '';
 
-if (empty($fullName) || empty($pixKey)) {
-    echo json_encode(['error' => 'Nome e Chave PIX são obrigatórios.']);
+// Validar método
+if (!in_array($withdrawMethod, ['pix', 'btc', 'usdt'])) {
+    $withdrawMethod = 'pix';
+}
+
+if (empty($fullName)) {
+    echo json_encode(['error' => 'Nome é obrigatório.']);
     exit;
 }
+
+// Validar campos conforme método
+if ($withdrawMethod === 'pix' && empty($pixKey)) {
+    echo json_encode(['error' => 'Chave PIX é obrigatória para recebimento via PIX.']);
+    exit;
+}
+if (($withdrawMethod === 'btc' || $withdrawMethod === 'usdt') && empty($cryptoAddress)) {
+    echo json_encode(['error' => 'Endereço de criptomoeda é obrigatório.']);
+    exit;
+}
+if (($withdrawMethod === 'btc' || $withdrawMethod === 'usdt') && empty($cryptoNetwork)) {
+    echo json_encode(['error' => 'Selecione a rede (network) da criptomoeda.']);
+    exit;
+}
+
+// Auto-criar colunas de crypto se não existirem
+try {
+    $pdo->exec("ALTER TABLE users ADD COLUMN withdraw_method VARCHAR(10) DEFAULT 'pix'");
+} catch (PDOException $e) {}
+try {
+    $pdo->exec("ALTER TABLE users ADD COLUMN crypto_address VARCHAR(255) DEFAULT ''");
+} catch (PDOException $e) {}
+try {
+    $pdo->exec("ALTER TABLE users ADD COLUMN crypto_network VARCHAR(20) DEFAULT ''");
+} catch (PDOException $e) {}
 
 // Buscar dados atuais do usuário
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
@@ -50,9 +83,9 @@ if (!empty($newPassword)) {
 }
 
 try {
-    // Atualizar dados básicos
-    $updateStmt = $pdo->prepare("UPDATE users SET full_name = ?, pix_key = ? WHERE id = ?");
-    $updateStmt->execute([$fullName, $pixKey, $userId]);
+    // Atualizar dados básicos + método de saque
+    $updateStmt = $pdo->prepare("UPDATE users SET full_name = ?, pix_key = ?, withdraw_method = ?, crypto_address = ?, crypto_network = ? WHERE id = ?");
+    $updateStmt->execute([$fullName, $pixKey, $withdrawMethod, $cryptoAddress, $cryptoNetwork, $userId]);
 
     // Atualizar senha se fornecida
     if (!empty($newPassword)) {
