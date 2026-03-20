@@ -43,7 +43,7 @@ export default function CheckoutBuilderPage() {
     const fetchCheckoutData = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`../get_checkouts.php`);
+            const res = await fetch(`/get_checkouts.php`);
             const data = await res.json();
             if (data.success) {
                 const found = data.checkouts.find(c => c.id == checkoutId);
@@ -96,7 +96,7 @@ export default function CheckoutBuilderPage() {
             formData.append('checkout_banner_url', form.checkout_banner_url);
             formData.append('items', JSON.stringify(form.items));
 
-            const res = await fetch('../checkout_actions.php', {
+            const res = await fetch('/checkout_actions.php', {
                 method: 'POST',
                 body: formData
             });

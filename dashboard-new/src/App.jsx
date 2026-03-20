@@ -101,7 +101,7 @@ export default function App() {
   const fetchDashboard = async () => {
     console.log("Ghost Pix SPA v2.2 - Iniciando carga de dados...");
     try {
-      const res = await fetch('get_dashboard_data.php');
+      const res = await fetch('/get_dashboard_data.php');
       const data = await res.json();
       if (data.success) setDashboardData(data);
     } catch (err) {
@@ -118,7 +118,7 @@ export default function App() {
       formData.append('amount', amount);
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-      const res = await fetch('../api.php', {
+      const res = await fetch('/api.php', {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrfToken },
         body: formData
@@ -134,7 +134,7 @@ export default function App() {
   const handleDeleteTransaction = async (id) => {
     if (!confirm('Deseja excluir esta transação?')) return;
     try {
-      const res = await fetch(`../delete_transaction.php?id=${id}`);
+      const res = await fetch(`/delete_transaction.php?id=${id}`);
       const data = await res.json();
       if (data.success) fetchDashboard();
     } catch (err) { console.error(err); }

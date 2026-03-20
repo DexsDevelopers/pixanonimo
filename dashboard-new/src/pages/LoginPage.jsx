@@ -22,7 +22,7 @@ export default function LoginPage() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             formData.append('csrf_token', csrfToken);
 
-            const res = await fetch('auth/login.php', {
+            const res = await fetch('/auth/login.php', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json'

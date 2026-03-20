@@ -21,7 +21,7 @@ export default function CheckoutPage() {
 
     const fetchCheckout = async () => {
         try {
-            const res = await fetch(`get_checkout_data.php?slug=${slug}`);
+            const res = await fetch(`/get_checkout_data.php?slug=${slug}`);
             const json = await res.json();
             if (json.success) setData(json);
             else setError(json.error);
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
         e.preventDefault();
         setIsProcessing(true);
         try {
-            const res = await fetch('process_checkout.php', {
+            const res = await fetch('/process_checkout.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

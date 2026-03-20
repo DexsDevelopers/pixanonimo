@@ -25,7 +25,7 @@ export default function CheckoutsPage() {
 
     const fetchCheckouts = async () => {
         try {
-            const res = await fetch('../get_checkouts.php');
+            const res = await fetch('/get_checkouts.php');
             const data = await res.json();
             if (data.success) {
                 setCheckouts(data.checkouts);
@@ -53,7 +53,7 @@ export default function CheckoutsPage() {
             const formData = new FormData();
             formData.append('action', 'delete_checkout');
             formData.append('id', id);
-            const res = await fetch('../checkout_actions.php', {
+            const res = await fetch('/checkout_actions.php', {
                 method: 'POST',
                 body: formData
             });

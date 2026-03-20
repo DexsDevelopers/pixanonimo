@@ -19,7 +19,7 @@ export default function GeneratePixCard({ onGenerate, disabled = false }) {
             // ou apenas o fetch normal se o site não estiver usando validação rígida de origem no api.php
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            const response = await fetch('../api.php', {
+            const response = await fetch('/api.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
