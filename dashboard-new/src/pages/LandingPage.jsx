@@ -84,6 +84,7 @@ export default function LandingPage() {
     const [onlineUsers, setOnlineUsers] = useState(2348);
 
     useEffect(() => {
+        console.log("LANDING PAGE COMPONENT MOUNTED");
         const interval = setInterval(() => {
             setOnlineUsers(prev => prev + (Math.random() > 0.4 ? Math.floor(Math.random() * 5) : -Math.floor(Math.random() * 3)));
         }, 3000);

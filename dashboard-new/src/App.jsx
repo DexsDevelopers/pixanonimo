@@ -95,8 +95,11 @@ export default function App() {
   const [activePix, setActivePix] = useState(null);
 
   useEffect(() => {
+    console.log("APP MOUNTED. Current path:", location.pathname);
     fetchDashboard();
   }, []);
+
+  console.log("RENDERING APP. Path:", location.pathname, "dashboardData:", !!dashboardData);
 
   const fetchDashboard = async () => {
     console.log("Ghost Pix SPA v2.2 - Iniciando carga de dados...");
@@ -153,7 +156,6 @@ export default function App() {
 
   return (
     <>
-      <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999, background: 'red', padding: '10px' }}>REACT LOADED</div>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/docs" element={<ApiDocsPage />} />

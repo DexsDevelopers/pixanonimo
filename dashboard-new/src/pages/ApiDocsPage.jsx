@@ -38,6 +38,9 @@ const CodeBlock = ({ code, language = 'bash' }) => {
 };
 
 export default function ApiDocsPage() {
+    React.useEffect(() => {
+        console.log("API DOCS PAGE COMPONENT MOUNTED");
+    }, []);
     return (
         <div className="bg-[#08080a] min-h-screen text-white font-['Outfit'] selection:bg-primary selection:text-black">
             {/* Header Mini */}
