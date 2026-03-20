@@ -57,6 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
+    // Garantir que coluna password tem tamanho suficiente para bcrypt hash (60 chars)
+    try { $pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NOT NULL"); } catch (PDOException $e) {}
+
+    // Log para diagnóstico
+    write_log('DEBUG', 'Registro - hash gerado', [
+        'email' => $email,
+        'password_length' => strlen($password),
+        'hash_length' => strlen($hash),
+        'hash_prefix' => substr($hash, 0, 7)
+    ]);
+
     // Check for affiliate cookie
     $affiliateId = null;
     if (isset($_COOKIE['ghost_pix_ref'])) {

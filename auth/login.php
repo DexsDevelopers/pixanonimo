@@ -20,6 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
+    // Debug log para diagnóstico de login
+    write_log('DEBUG', 'Tentativa de login', [
+        'email' => $email,
+        'user_found' => $user ? true : false,
+        'password_length' => strlen($password),
+        'hash_exists' => $user ? (!empty($user['password'])) : false,
+        'hash_prefix' => $user ? substr($user['password'], 0, 7) : 'N/A',
+        'verify_result' => $user ? password_verify($password, $user['password']) : false
+    ]);
+
     if ($user && password_verify($password, $user['password'])) {
         if ($user['status'] == 'blocked') {
             if (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false) {
