@@ -2,12 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import LayoutDashboard from 'lucide-react/dist/esm/icons/layout-dashboard';
-import History from 'lucide-react/dist/esm/icons/history';
-import Wallet from 'lucide-react/dist/esm/icons/wallet';
-import Settings from 'lucide-react/dist/esm/icons/settings';
-import Menu from 'lucide-react/dist/esm/icons/menu';
-import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import { LayoutDashboard, History, Wallet, Settings, Menu, Loader2 } from 'lucide-react';
 
 // Components
 import Sidebar from './components/Sidebar';

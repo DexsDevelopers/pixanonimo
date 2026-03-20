@@ -1,15 +1,8 @@
 import React from 'react';
-import Code2 from 'lucide-react/dist/esm/icons/code-2';
-import Copy from 'lucide-react/dist/esm/icons/copy';
-import Check from 'lucide-react/dist/esm/icons/check';
-import Terminal from 'lucide-react/dist/esm/icons/terminal';
-import Zap from 'lucide-react/dist/esm/icons/zap';
-import ShieldCheck from 'lucide-react/dist/esm/icons/shield-check';
-import Layers from 'lucide-react/dist/esm/icons/layers';
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
-import ExternalLink from 'lucide-react/dist/esm/icons/external-link';
-import Github from 'lucide-react/dist/esm/icons/github';
+import {
+    Code2, Copy, Check, Terminal, Zap, ShieldCheck,
+    Layers, ChevronRight, ArrowLeft, ExternalLink, Github
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
