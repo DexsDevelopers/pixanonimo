@@ -1,85 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
+  LayoutDashboard,
   History,
   Wallet,
-  TrendingUp,
-  DollarSign
+  Settings,
+  Menu,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
-// Componentes
-import Sidebar from './components/Sidebar.jsx';
-import Header from './components/Header.jsx';
-import StatCard from './components/StatCard.jsx';
-import TransactionsTable from './components/TransactionsTable.jsx';
-import GeneratePixCard from './components/GeneratePixCard.jsx';
-import PixModal from './components/PixModal.jsx';
+// Components
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import StatCard from './components/StatCard';
+import TransactionsTable from './components/TransactionsTable';
+import GeneratePixCard from './components/GeneratePixCard';
+import PixModal from './components/PixModal';
 
-function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activePix, setActivePix] = useState(null); // Estado para o Pix gerado
+// Pages
+import LandingPage from './pages/LandingPage';
 
-  const fetchData = async () => {
-    try {
-      // Usamos caminho relativo pois o build ficará em subpasta ou o proxy do Vite cuidará disso no dev
-      const response = await fetch('../get_dashboard_data.php');
-      const json = await response.json();
-
-      if (json.success) {
-        setData(json);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar dados:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteTransaction = async (id) => {
-    if (!confirm('Deseja realmente excluir esta transação?')) return;
-
-    try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const response = await fetch('../delete_transaction.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken || ''
-        },
-        body: JSON.stringify({ id })
-      });
-      const res = await response.json();
-      if (res.success) {
-        fetchData(); // Atualiza a lista após excluir
-      } else {
-        alert('Erro ao excluir: ' + (res.error || 'Erro desconhecido'));
-      }
-    } catch (e) {
-      alert('Falha na conexão ao excluir transação.');
-    }
-  };
-
-  const handleViewQr = (tx) => {
-    setActivePix({
-      id: tx.id,
-      amount: tx.amount_brl.replace('.', '').replace(',', '.'),
-      code: tx.pix_code,
-      image: tx.qr_image
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-    // Auto-refresh a cada 30 segundos para manter o dashboard "vivo"
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
+// Layout do Dashboard (Privado)
+function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
   return (
-    <div className="flex h-screen bg-[#08080a] text-white font-['Outfit'] overflow-hidden">
+    <div className="flex h-screen bg-black text-white font-['Outfit'] overflow-hidden">
       {/* Sidebar Mobile Overlay */}
       <AnimatePresence>
         {(isSidebarOpen && window.innerWidth < 1024) && (
@@ -93,7 +37,6 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         activeTab={activeTab}
@@ -104,107 +47,184 @@ function App() {
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Abstract background glow */}
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Glow de Fundo */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <Header
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          notificationsCount={data?.notifications?.length || 0}
+          userData={userData}
+          notifications={notifications}
+          onMenuClick={() => setIsSidebarOpen(true)}
         />
 
-        {/* Dashboard Content */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar relative z-10">
-          <motion.header
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-10"
-          >
-            <h1 className="text-3xl lg:text-4xl font-bold mb-2 tracking-tight">
-              Painel de <span className="text-primary">Controle</span>
-            </h1>
-            <p className="text-white/40 text-lg">Gerencie suas vendas e acompanhe o crescimento em tempo real.</p>
-          </motion.header>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <StatCard
-              label="Saldo Disponível"
-              value={`R$ ${data?.balance || '0,00'}`}
-              icon={<Wallet className="text-primary" />}
-              trend="+12%"
-              loading={loading}
-              className="border-primary/10 bg-primary/[0.02]"
-            />
-            <StatCard
-              label="Volume Hoje"
-              value={`R$ ${data?.stats?.today_volume || '0,00'}`}
-              icon={<TrendingUp className="text-blue-400" />}
-              trend="+5.4%"
-              loading={loading}
-            />
-            <StatCard
-              label="Volume Mensal"
-              value={`R$ ${data?.stats?.month_volume || '0,00'}`}
-              icon={<DollarSign className="text-purple-400" />}
-              loading={loading}
-            />
-            <StatCard
-              label="Aguardando"
-              value={data?.stats?.pending_count || '0'}
-              icon={<History className="text-orange-400" />}
-              loading={loading}
-            />
-          </div>
-
-          {/* Activity Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {/* GRID PRINCIPAL */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {/* Card de Geração de Pix - Ocupa 1 coluna */}
-              <GeneratePixCard onGenerate={(pix) => setActivePix(pix)} />
-
-              {/* Tabela de Transações - Ocupa 2 colunas no desktop */}
-              <div className="lg:col-span-2">
-                <div className="glass p-6 rounded-2xl border border-white/5 h-full">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-bold text-white text-lg">Histórico Recente</h3>
-                    <button
-                      onClick={fetchData}
-                      className="text-primary text-sm font-medium hover:underline"
-                    >
-                      ATUALIZAR STATUS
-                    </button>
-                  </div>
-                  <TransactionsTable
-                    transactions={data?.transactions || []}
-                    loading={loading}
-                    onDelete={handleDeleteTransaction}
-                    onViewQr={handleViewQr}
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </main>
-
-      <AnimatePresence>
-        {activePix && (
-          <PixModal
-            pixData={activePix}
-            onClose={() => setActivePix(null)}
-          />
-        )}
-      </AnimatePresence>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar relative">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
 
-export default App;
+// Private Route Wrapper (Simulado por enquanto)
+function PrivateRoute({ children }) {
+  const [isAuthenticated] = useState(true); // Temporário para desenvolvimento
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
+
+export default function App() {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activePix, setActivePix] = useState(null);
+
+  // Fetch Dashboard Data
+  useEffect(() => {
+    if (location.pathname.includes('/dashboard') || location.pathname === '/') {
+      fetchDashboard();
+    }
+  }, [location]);
+
+  const fetchDashboard = async () => {
+    try {
+      const res = await fetch('get_dashboard_data.php');
+      const data = await res.json();
+      if (data.success) setDashboardData(data);
+    } catch (err) {
+      console.error("Erro ao carregar dashboard:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManualPix = async (amount) => {
+    try {
+      const formData = new FormData();
+      formData.append('action', 'generate_pix');
+      formData.append('amount', amount);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      const res = await fetch('../api.php', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActivePix(data);
+        fetchDashboard();
+      } else {
+        alert(data.error || 'Erro ao gerar Pix');
+      }
+    } catch (err) {
+      alert('Erro de conexão com o servidor');
+    }
+  };
+
+  const handleDeleteTransaction = async (id) => {
+    if (!confirm('Deseja excluir esta transação?')) return;
+    try {
+      const res = await fetch(`../delete_transaction.php?id=${id}`);
+      const data = await res.json();
+      if (data.success) fetchDashboard();
+    } catch (err) {
+      alert('Erro ao excluir');
+    }
+  };
+
+  return (
+    <Routes>
+      {/* Públicas */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<div className="p-20 text-center"><h1>Página de Login em breve...</h1><Link to="/dashboard">Ir para Dashboard</Link></div>} />
+
+      {/* Privadas (Dashboard) */}
+      <Route path="/dashboard" element={
+        <PrivateRoute>
+          <DashboardLayout
+            activeTab="dashboard"
+            setActiveTab={setActiveTab}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+            userData={{ name: dashboardData?.stats?.user_name || 'Usuário', email: 'vendedor@ghostpix.com' }}
+            balance={dashboardData?.balance || '0,00'}
+            notifications={dashboardData?.notifications || []}
+          >
+            <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">Ghost</span> 👋</h1>
+                  <p className="text-white/40 font-medium">Aqui está o resumo do seu império hoje.</p>
+                </div>
+                <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR STATUS</button>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <StatCard
+                  title="Saldo Disponível"
+                  value={`R$ ${dashboardData?.balance || '0,00'}`}
+                  type="balance"
+                  icon={<Wallet size={24} />}
+                />
+                <StatCard
+                  title="Vendas Hoje"
+                  value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`}
+                  type="today"
+                />
+                <StatCard
+                  title="Volume Mensal"
+                  value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`}
+                  type="month"
+                />
+                <StatCard
+                  title="Pendentes"
+                  value={dashboardData?.stats?.pending_count || '0'}
+                  type="pending"
+                  sub="Aguardando pag"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-black flex items-center gap-2">
+                      <History className="text-primary" size={20} />
+                      Vendas Recentes
+                    </h2>
+                  </div>
+                  <TransactionsTable
+                    transactions={dashboardData?.transactions}
+                    loading={loading}
+                    onViewQr={setActivePix}
+                    onDelete={handleDeleteTransaction}
+                  />
+                </div>
+
+                <div className="space-y-8">
+                  <GeneratePixCard onGenerate={handleManualPix} />
+                </div>
+              </div>
+            </div>
+          </DashboardLayout>
+        </PrivateRoute>
+      } />
+
+      {/* Redirecionamento Padrão */}
+      <Route path="*" element={<Navigate to="/" />} />
+
+      {/* Pix Modal Portal */}
+      {activePix && (
+        <PixModal
+          pixData={activePix}
+          onClose={() => setActivePix(null)}
+          onPaymentSuccess={() => {
+            setActivePix(null);
+            fetchDashboard();
+          }}
+        />
+      )}
+    </Routes>
+  );
+}
