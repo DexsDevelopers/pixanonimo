@@ -22,6 +22,7 @@ import LandingPage from './pages/LandingPage';
 import SalesPage from './pages/SalesPage';
 import WithdrawalsPage from './pages/WithdrawalsPage';
 import SettingsPage from './pages/SettingsPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 // Layout do Dashboard (Privado)
 function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
@@ -198,6 +199,7 @@ export default function App() {
         </PrivateRoute>
       } />
 
+      <Route path="/p/:slug" element={<CheckoutPage />} />
       <Route path="*" element={<Navigate to="/" />} />
 
       {activePix && (
