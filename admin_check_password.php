@@ -10,7 +10,10 @@ if (!isAdmin()) {
 
 $email = $_GET['email'] ?? '';
 if (empty($email)) {
-    echo json_encode(['error' => 'Informe ?email=xxx']);
+    // Listar últimos 10 usuários cadastrados
+    $stmt = $pdo->query("SELECT id, email, full_name, LENGTH(password) as pwd_len, status, created_at FROM users ORDER BY id DESC LIMIT 10");
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode(['recent_users' => $users, 'column_type' => $pdo->query("SHOW COLUMNS FROM users WHERE Field = 'password'")->fetch()['Type']]);
     exit;
 }
 
