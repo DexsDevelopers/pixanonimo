@@ -20,6 +20,7 @@ $csrfToken = $headers['X-CSRF-Token'] ?? ($headers['x-csrf-token'] ?? '');
 check_csrf($csrfToken);
 
 $amount = (float)($input['amount'] ?? 0);
+$withdrawFee = 3.50;
 
 try {
     $stmt = $pdo->prepare("SELECT balance, pix_key FROM users WHERE id = ?");
@@ -35,8 +36,10 @@ if ($amount < 1) {
     exit;
 }
 
-if ($amount > $user['balance']) {
-    echo json_encode(['error' => 'Saldo insuficiente.']);
+$totalDebit = $amount + $withdrawFee;
+
+if ($totalDebit > $user['balance']) {
+    echo json_encode(['error' => 'Saldo insuficiente. Você precisa de R$ ' . number_format($totalDebit, 2, ',', '.') . ' (valor + taxa de R$ 3,50).']);
     exit;
 }
 
@@ -48,16 +51,16 @@ if (!$user['pix_key']) {
 try {
     $pdo->beginTransaction();
 
-    // 1. Debitar do saldo virtual
+    // 1. Debitar do saldo virtual (valor + taxa)
     $stmt = $pdo->prepare("UPDATE users SET balance = balance - ? WHERE id = ?");
-    $stmt->execute([$amount, $userId]);
+    $stmt->execute([$totalDebit, $userId]);
 
-    // 2. Registrar pedido de saque
+    // 2. Registrar pedido de saque (valor que o usuário vai receber)
     $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, status) VALUES (?, ?, ?, 'pending')");
     $stmt->execute([$userId, $amount, $user['pix_key']]);
 
     $pdo->commit();
-    write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount]);
+    write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount, 'fee' => $withdrawFee, 'total_debit' => $totalDebit]);
     // Notificar admins sobre o novo pedido de saque
     if (class_exists('PushService')) {
         try {
