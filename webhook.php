@@ -53,8 +53,9 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
             $balanceUpd->execute([$transaction['amount_net_brl'], $transaction['user_id']]);
 
             // 3. Calcular e Credit lucro do Admin e Afiliado
-            // Lucro plataforma = Valor Bruto - Valor Líquido - Taxa PixGo (2%)
+            // Lucro plataforma = Valor Bruto - Valor Líquido - Taxa PixGo (2% + R$1 se < R$50)
             $pixgoFee = $transaction['amount_brl'] * 0.02;
+            if ($transaction['amount_brl'] < 50) $pixgoFee += 1.00;
             $platformGrossProfit = $transaction['amount_brl'] - $transaction['amount_net_brl'] - $pixgoFee;
             
             if ($platformGrossProfit > 0) {
