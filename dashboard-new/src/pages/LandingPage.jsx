@@ -132,8 +132,25 @@ export default function LandingPage() {
 
                 <div className="max-w-6xl mx-auto text-center space-y-12">
                     <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 rounded-[20px] bg-primary/[0.06] border border-primary/20 backdrop-blur-md shadow-[0_0_40px_rgba(74,222,128,0.08)]"
+                    >
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 bg-primary/15 rounded-full flex items-center justify-center border border-primary/30">
+                                <ShieldCheck size={16} className="text-primary" />
+                            </div>
+                            <span className="text-sm sm:text-base font-black text-primary tracking-tight">Sem documentos. Sem dados pessoais.</span>
+                        </div>
+                        <div className="h-4 w-px bg-primary/20 hidden sm:block" />
+                        <span className="text-xs sm:text-sm font-bold text-primary/60">Crie sua conta em segundos e comece a operar.</span>
+                    </motion.div>
+
+                    <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
                         className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/[0.03] border border-white/5 text-white/60 text-[11px] font-black uppercase tracking-[0.3em] backdrop-blur-md"
                     >
                         <Sparkles size={14} className="text-primary" />
