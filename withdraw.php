@@ -36,12 +36,12 @@ if ($amount < 10) {
     exit;
 }
 
-$totalDebit = $amount + $withdrawFee;
-
-if ($totalDebit > $user['balance']) {
-    echo json_encode(['error' => 'Saldo insuficiente. Você precisa de R$ ' . number_format($totalDebit, 2, ',', '.') . ' (valor + taxa de R$ 3,50).']);
+if ($amount > $user['balance']) {
+    echo json_encode(['error' => 'Saldo insuficiente.']);
     exit;
 }
+
+$netAmount = $amount - $withdrawFee;
 
 if (!$user['pix_key']) {
     echo json_encode(['error' => 'Configure sua chave PIX antes de sacar.']);
@@ -51,16 +51,16 @@ if (!$user['pix_key']) {
 try {
     $pdo->beginTransaction();
 
-    // 1. Debitar do saldo virtual (valor + taxa)
+    // 1. Debitar valor total do saldo virtual
     $stmt = $pdo->prepare("UPDATE users SET balance = balance - ? WHERE id = ?");
-    $stmt->execute([$totalDebit, $userId]);
+    $stmt->execute([$amount, $userId]);
 
-    // 2. Registrar pedido de saque (valor que o usuário vai receber)
+    // 2. Registrar pedido de saque (valor líquido que o usuário recebe)
     $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, status) VALUES (?, ?, ?, 'pending')");
-    $stmt->execute([$userId, $amount, $user['pix_key']]);
+    $stmt->execute([$userId, $netAmount, $user['pix_key']]);
 
     $pdo->commit();
-    write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount, 'fee' => $withdrawFee, 'total_debit' => $totalDebit]);
+    write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount, 'fee' => $withdrawFee, 'net' => $netAmount]);
     // Notificar admins sobre o novo pedido de saque
     if (class_exists('PushService')) {
         try {

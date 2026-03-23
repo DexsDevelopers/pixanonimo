@@ -17,9 +17,8 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
         }
 
         const balanceNum = parseFloat(String(balance).replace(/\./g, '').replace(',', '.'));
-        const totalNeeded = val + withdrawFee;
-        if (totalNeeded > balanceNum) {
-            setResult({ success: false, error: `Saldo insuficiente. Você precisa de R$ ${totalNeeded.toFixed(2).replace('.', ',')} (valor + taxa de R$ 3,50).` });
+        if (val > balanceNum) {
+            setResult({ success: false, error: `Saldo insuficiente. Seu saldo é R$ ${balance}.` });
             return;
         }
 
@@ -102,8 +101,8 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
                                 <p className="text-[10px] text-white/20 ml-2">Taxa de saque: <span className="text-amber-400/70">R$ 3,50</span> • Mínimo: R$ 10,00</p>
                                 {amount && parseFloat(amount) >= 10 && (
                                     <p className="text-xs text-white/40 ml-2 mt-1 font-bold">
-                                        Você receberá: <span className="text-primary">R$ {parseFloat(amount).toFixed(2).replace('.', ',')}</span>
-                                        <span className="text-white/20"> • Débito total: R$ {(parseFloat(amount) + withdrawFee).toFixed(2).replace('.', ',')}</span>
+                                        Você receberá: <span className="text-primary">R$ {(parseFloat(amount) - withdrawFee).toFixed(2).replace('.', ',')}</span>
+                                        <span className="text-white/20"> • Taxa: -R$ 3,50</span>
                                     </p>
                                 )}
                             </div>

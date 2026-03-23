@@ -127,10 +127,8 @@ try {
             return;
         }
 
-        const withdrawFee = 3.50;
-        const totalNeeded = parseFloat(amount) + withdrawFee;
-        if (totalNeeded > balance) {
-            showError('Saldo Insuficiente! Você precisa de R$ ' + totalNeeded.toLocaleString('pt-BR', {minimumFractionDigits: 2}) + ' (valor + taxa de R$ 3,50).');
+        if (parseFloat(amount) > balance) {
+            showError('Saldo Insuficiente! Seu saldo atual é R$ ' + balance.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
             return;
         }
 
