@@ -122,8 +122,8 @@ try {
         const amount = amountInput.value;
         const balance = <?php echo (float)$user['balance']; ?>;
         
-        if (!amount || parseFloat(amount) < 1) {
-            showError('O valor mínimo para saque é R$ 1,00.');
+        if (!amount || parseFloat(amount) < 10) {
+            showError('O valor mínimo para saque é R$ 10,00.');
             return;
         }
 

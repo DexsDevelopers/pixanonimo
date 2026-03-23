@@ -11,8 +11,8 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
 
     const handleWithdraw = async () => {
         const val = parseFloat(amount);
-        if (!val || val < 1) {
-            setResult({ success: false, error: 'O valor mínimo para saque é R$ 1,00.' });
+        if (!val || val < 10) {
+            setResult({ success: false, error: 'O valor mínimo para saque é R$ 10,00.' });
             return;
         }
 
@@ -94,13 +94,13 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
                                         placeholder="0,00"
-                                        min="1"
+                                        min="10"
                                         step="0.01"
                                         className="w-full bg-white/5 border border-white/10 rounded-[24px] py-6 pl-16 pr-8 text-2xl font-black focus:outline-none focus:border-primary/50 focus:bg-white/[0.08] transition-all"
                                     />
                                 </div>
-                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: <span className="text-amber-400/70">R$ 3,50</span> • Mínimo: R$ 1,00</p>
-                                {amount && parseFloat(amount) >= 1 && (
+                                <p className="text-[10px] text-white/20 ml-2">Taxa de saque: <span className="text-amber-400/70">R$ 3,50</span> • Mínimo: R$ 10,00</p>
+                                {amount && parseFloat(amount) >= 10 && (
                                     <p className="text-xs text-white/40 ml-2 mt-1 font-bold">
                                         Você receberá: <span className="text-primary">R$ {parseFloat(amount).toFixed(2).replace('.', ',')}</span>
                                         <span className="text-white/20"> • Débito total: R$ {(parseFloat(amount) + withdrawFee).toFixed(2).replace('.', ',')}</span>
