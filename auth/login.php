@@ -59,7 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $token = bin2hex(random_bytes(32));
         $updateToken = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
         $updateToken->execute([$token, $user['id']]);
-        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        setcookie('remember_token', $token, [
+            'expires' => time() + (30 * 24 * 60 * 60),
+            'path' => '/',
+            'secure' => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
         
         if ($isJsonRequest) {
             echo json_encode(['success' => true]);

@@ -171,17 +171,19 @@ if ($user['is_demo'] == 1) {
 }
 
 // --- 4. NOTIFICAÇÕES TIPO DASHBOARD ---
-$stmtNotif = $pdo->prepare("SELECT title, message, type, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+$stmtNotif = $pdo->prepare("SELECT id, title, message, type, is_read, created_at FROM notifications WHERE (user_id = ? OR user_id IS NULL) ORDER BY created_at DESC LIMIT 20");
 $stmtNotif->execute([$userId]);
 $notifs = $stmtNotif->fetchAll();
 
 $formattedNotifs = [];
 foreach ($notifs as $n) {
     $formattedNotifs[] = [
+        'id' => (int)$n['id'],
         'title' => $n['title'],
         'message' => $n['message'],
         'type' => $n['type'],
-        'time' => date('H:i', strtotime($n['created_at']))
+        'is_read' => (bool)$n['is_read'],
+        'time' => date('d/m H:i', strtotime($n['created_at']))
     ];
 }
 

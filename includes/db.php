@@ -3,7 +3,14 @@ if (session_status() === PHP_SESSION_NONE) {
     // Configuração de Sessão Persistente (30 dias)
     $sessionLifetime = 30 * 24 * 60 * 60;
     ini_set('session.gc_maxlifetime', $sessionLifetime);
-    ini_set('session.cookie_lifetime', $sessionLifetime);
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    session_set_cookie_params([
+        'lifetime' => $sessionLifetime,
+        'path' => '/',
+        'secure' => $isSecure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
 

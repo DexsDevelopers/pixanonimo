@@ -40,7 +40,7 @@ function AdminRoute({ children, userData }) {
 }
 
 // Layout do Dashboard (Privado)
-function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications }) {
+function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, setIsSidebarOpen, userData, balance, notifications, onMarkRead, onMarkAllRead }) {
   return (
     <div className="flex h-screen bg-black text-white font-['Outfit'] overflow-hidden">
       <AnimatePresence>
@@ -74,6 +74,8 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
           userData={userData}
           notifications={notifications}
           onMenuClick={() => setIsSidebarOpen(true)}
+          onMarkRead={onMarkRead}
+          onMarkAllRead={onMarkAllRead}
         />
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar relative">
@@ -100,7 +102,52 @@ export default function App() {
   useEffect(() => {
     console.log("APP MOUNTED. Current path:", location.pathname);
     fetchDashboard();
+
+    // Polling de notificações a cada 30s
+    const notifInterval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(notifInterval);
   }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch('/get_dashboard_data.php');
+      const data = await res.json();
+      if (data.success) {
+        setDashboardData(prev => prev ? { ...prev, notifications: data.notifications } : data);
+      }
+    } catch (err) {}
+  };
+
+  const handleMarkRead = async (id) => {
+    try {
+      await fetch('/mark_read.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      setDashboardData(prev => ({
+        ...prev,
+        notifications: prev.notifications.map(n => n.id === id ? { ...n, is_read: true } : n)
+      }));
+    } catch (err) {}
+  };
+
+  const handleMarkAllRead = async () => {
+    const unread = notifications.filter(n => !n.is_read);
+    try {
+      await Promise.all(unread.map(n =>
+        fetch('/mark_read.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: n.id })
+        })
+      ));
+      setDashboardData(prev => ({
+        ...prev,
+        notifications: prev.notifications.map(n => ({ ...n, is_read: true }))
+      }));
+    } catch (err) {}
+  };
 
   console.log("RENDERING APP. Path:", location.pathname, "dashboardData:", !!dashboardData);
 
@@ -144,7 +191,9 @@ export default function App() {
     setActiveTab,
     userData: dashboardData?.user || { name: 'Usuário', email: '' },
     balance: dashboardData?.balance || '0,00',
-    notifications: dashboardData?.notifications || []
+    notifications: dashboardData?.notifications || [],
+    onMarkRead: handleMarkRead,
+    onMarkAllRead: handleMarkAllRead
   };
 
   const { userData, balance, notifications } = commonProps;
