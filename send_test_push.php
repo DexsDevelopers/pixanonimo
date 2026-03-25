@@ -68,9 +68,11 @@ try {
 
     $sent = 0;
     $errors = [];
+    $skipped = 0;
 
     foreach ($subs as $sub) {
         if (empty($sub['p256dh']) || empty($sub['auth']) || $sub['endpoint'] === 'browser_native') {
+            $skipped++;
             continue;
         }
 
@@ -102,8 +104,16 @@ try {
     if ($sent > 0) {
         echo json_encode(['success' => true, 'sent' => $sent]);
     } else {
-        $errorMsg = !empty($errors) ? implode('; ', array_slice($errors, 0, 2)) : 'Nenhum push enviado';
-        echo json_encode(['success' => false, 'error' => $errorMsg, 'subscriptions' => count($subs)]);
+        $detail = count($subs) . ' subscription(s), ' . $skipped . ' com chaves vazias';
+        if ($skipped === count($subs)) {
+            // Limpar subscriptions inválidas
+            $del = $pdo->prepare("DELETE FROM push_subscriptions WHERE user_id = ? AND (p256dh = '' OR p256dh IS NULL OR auth = '' OR auth IS NULL)");
+            $del->execute([$userId]);
+            $errorMsg = 'Suas subscriptions estão com chaves vazias (problema antigo). Foram limpas. Clique em "Reativar" para se inscrever novamente.';
+        } else {
+            $errorMsg = !empty($errors) ? implode('; ', array_slice($errors, 0, 2)) : 'Nenhum push enviado';
+        }
+        echo json_encode(['success' => false, 'error' => $errorMsg, 'detail' => $detail, 'needsResubscribe' => ($skipped === count($subs))]);
     }
 
 } catch (Throwable $e) {

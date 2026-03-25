@@ -145,6 +145,82 @@ export default function SettingsPage({ userData }) {
     };
 
     const [pushError, setPushError] = useState('');
+    const [resubscribing, setResubscribing] = useState(false);
+    const [needsResubscribe, setNeedsResubscribe] = useState(false);
+
+    const handleResubscribe = async () => {
+        setResubscribing(true);
+        setPushResult(null);
+        setPushError('');
+        try {
+            // Limpar estado antigo
+            localStorage.removeItem('push_subscribed');
+            localStorage.removeItem('push_prompt_dismissed');
+
+            // Registrar SW
+            const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            await navigator.serviceWorker.ready;
+
+            // Permissão
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                setPushResult('error');
+                setPushError('Permissao negada. Ative nas configuracoes do navegador.');
+                return;
+            }
+
+            // Remover subscription antiga
+            const oldSub = await reg.pushManager.getSubscription();
+            if (oldSub) await oldSub.unsubscribe();
+
+            // Buscar VAPID key
+            const vapidRes = await fetch('/get_vapid_key.php');
+            const vapidData = await vapidRes.json();
+            if (!vapidData.success || !vapidData.publicKey) {
+                setPushResult('error');
+                setPushError('Chave VAPID nao disponivel no servidor');
+                return;
+            }
+
+            // Nova subscription
+            const padding = '='.repeat((4 - (vapidData.publicKey.length % 4)) % 4);
+            const base64 = (vapidData.publicKey + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const appServerKey = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) appServerKey[i] = rawData.charCodeAt(i);
+
+            const subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: appServerKey
+            });
+
+            // Salvar no backend
+            const subJson = subscription.toJSON();
+            await fetch('/save_subscription.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    endpoint: subJson.endpoint,
+                    keys: { p256dh: subJson.keys.p256dh, auth: subJson.keys.auth }
+                })
+            });
+
+            localStorage.setItem('push_subscribed', '1');
+            localStorage.setItem('push_prompt_dismissed', '1');
+            setNeedsResubscribe(false);
+
+            // Enviar teste imediato
+            const testRes = await fetch('/send_test_push.php', { method: 'POST' });
+            const testData = await testRes.json();
+            setPushResult(testData.success ? 'success' : 'error');
+            if (!testData.success) setPushError(testData.error || 'Erro ao enviar teste');
+        } catch (e) {
+            setPushResult('error');
+            setPushError(e.message || 'Erro ao reativar');
+        } finally {
+            setResubscribing(false);
+        }
+    };
 
     const handleTestPush = async () => {
         setTestingPush(true);
@@ -160,6 +236,7 @@ export default function SettingsPage({ userData }) {
             } else {
                 setPushResult('error');
                 setPushError(data.error || 'Erro desconhecido');
+                if (data.needsResubscribe) setNeedsResubscribe(true);
             }
         } catch (e) {
             setPushResult('error');
@@ -463,9 +540,22 @@ export default function SettingsPage({ userData }) {
                                         <p className="text-xs text-primary font-bold flex items-center gap-2"><Check size={14} /> Notificação enviada! Verifique seu dispositivo.</p>
                                     )}
                                     {pushResult === 'error' && (
-                                        <div className="space-y-1">
+                                        <div className="space-y-2">
                                             <p className="text-xs text-red-400 font-bold flex items-center gap-2"><AlertTriangle size={14} /> Erro ao enviar notificação</p>
                                             {pushError && <p className="text-[10px] text-red-400/60 ml-5 font-mono">{pushError}</p>}
+                                            {needsResubscribe && (
+                                                <button
+                                                    onClick={handleResubscribe}
+                                                    disabled={resubscribing}
+                                                    className="flex items-center gap-2 bg-white text-black font-black text-xs uppercase tracking-widest py-3 px-6 rounded-2xl hover:brightness-90 transition-all disabled:opacity-50 mt-2"
+                                                >
+                                                    {resubscribing ? (
+                                                        <><Loader2 size={14} className="animate-spin" /> Reativando...</>
+                                                    ) : (
+                                                        <><Bell size={14} /> Reativar Notificações</>
+                                                    )}
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </div>
