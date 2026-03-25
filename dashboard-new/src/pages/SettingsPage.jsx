@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle, Webhook, Plus, Trash2, Send, Power, CircleDot } from 'lucide-react';
+import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle, Webhook, Plus, Trash2, Send, Power, CircleDot, Bell, BellRing } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -18,6 +18,8 @@ export default function SettingsPage({ userData }) {
     const [cryptoAddress, setCryptoAddress] = useState(userData?.crypto_address || '');
     const [cryptoNetwork, setCryptoNetwork] = useState(userData?.crypto_network || '');
     const fileInputRef = useRef(null);
+    const [testingPush, setTestingPush] = useState(false);
+    const [pushResult, setPushResult] = useState(null);
 
     useEffect(() => {
         if (userData?.api_token) setApiToken(userData.api_token);
@@ -142,8 +144,24 @@ export default function SettingsPage({ userData }) {
         }
     };
 
+    const handleTestPush = async () => {
+        setTestingPush(true);
+        setPushResult(null);
+        try {
+            const res = await fetch('/send_test_push.php', { method: 'POST' });
+            const data = await res.json();
+            setPushResult(data.success ? 'success' : 'error');
+        } catch {
+            setPushResult('error');
+        } finally {
+            setTestingPush(false);
+            setTimeout(() => setPushResult(null), 4000);
+        }
+    };
+
     const tabs = [
         { id: 'perfil', label: 'Meu Perfil', icon: <User size={16} /> },
+        { id: 'notificacoes', label: 'Notificações', icon: <Bell size={16} /> },
         { id: 'seguranca', label: 'Segurança', icon: <Lock size={16} /> },
         { id: 'api', label: 'Desenvolvedor / API', icon: <Code size={16} /> },
         { id: 'webhooks', label: 'Webhooks', icon: <Webhook size={16} /> },
@@ -371,6 +389,92 @@ export default function SettingsPage({ userData }) {
                                 >
                                     {saving ? <><Loader2 size={18} className="animate-spin" /> Salvando...</> : <><Save size={18} /> Salvar Alterações</>}
                                 </button>
+                            </div>
+                        )}
+
+                        {activeSubTab === 'notificacoes' && (
+                            <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-16 h-16 bg-primary/10 rounded-[24px] flex items-center justify-center border border-primary/20">
+                                        <BellRing size={28} className="text-primary" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl font-black">Push Notifications</h3>
+                                        <p className="text-white/40 text-sm">Receba alertas em tempo real no seu dispositivo.</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-5">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center">
+                                                <Bell size={18} className="text-white/40" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-black text-white text-sm">Status das Notificações</h4>
+                                                <p className="text-[11px] text-white/40">
+                                                    {typeof Notification !== 'undefined' && Notification.permission === 'granted'
+                                                        ? 'Ativadas — você receberá alertas push'
+                                                        : Notification.permission === 'denied'
+                                                            ? 'Bloqueadas — ative nas configurações do navegador'
+                                                            : 'Não ativadas — clique em testar para ativar'
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className={`w-3 h-3 rounded-full ${
+                                            typeof Notification !== 'undefined' && Notification.permission === 'granted'
+                                                ? 'bg-primary shadow-[0_0_10px_#00ff88]'
+                                                : Notification.permission === 'denied'
+                                                    ? 'bg-red-500'
+                                                    : 'bg-amber-400'
+                                        }`} />
+                                    </div>
+                                </div>
+
+                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+                                    <h4 className="font-black text-sm text-white">Testar Notificação Push</h4>
+                                    <p className="text-[11px] text-white/40 leading-relaxed">
+                                        Envie uma notificação de teste para este dispositivo. Se tudo estiver configurado corretamente, você receberá um alerta push em alguns segundos.
+                                    </p>
+                                    <button
+                                        onClick={handleTestPush}
+                                        disabled={testingPush}
+                                        className="flex items-center gap-2 bg-primary text-black font-black text-xs uppercase tracking-widest py-3.5 px-8 rounded-2xl hover:brightness-110 transition-all disabled:opacity-50"
+                                    >
+                                        {testingPush ? (
+                                            <><Loader2 size={16} className="animate-spin" /> Enviando...</>
+                                        ) : (
+                                            <><Send size={16} /> Enviar Notificação de Teste</>
+                                        )}
+                                    </button>
+                                    {pushResult === 'success' && (
+                                        <p className="text-xs text-primary font-bold flex items-center gap-2"><Check size={14} /> Notificação enviada! Verifique seu dispositivo.</p>
+                                    )}
+                                    {pushResult === 'error' && (
+                                        <p className="text-xs text-red-400 font-bold flex items-center gap-2"><AlertTriangle size={14} /> Erro ao enviar. Verifique se as notificações estão ativadas.</p>
+                                    )}
+                                </div>
+
+                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-3">
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Tipos de alerta que você recebe</span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {[
+                                            { label: 'Pagamento Confirmado', desc: 'Quando um PIX é pago', icon: '💰' },
+                                            { label: 'Saque Processado', desc: 'Quando seu saque é aprovado', icon: '🏦' },
+                                            { label: 'Avisos do Sistema', desc: 'Atualizações e manutenções', icon: '⚙️' },
+                                            { label: 'Alertas de Segurança', desc: 'Atividades suspeitas', icon: '🔒' },
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02]">
+                                                <span className="text-lg">{item.icon}</span>
+                                                <div>
+                                                    <p className="text-xs font-bold text-white">{item.label}</p>
+                                                    <p className="text-[10px] text-white/30">{item.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
