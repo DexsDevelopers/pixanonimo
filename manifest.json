@@ -3,6 +3,7 @@
   "short_name": "Ghost Pix",
   "description": "Ghost Pix - Pagamentos Anônimos e Seguros",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

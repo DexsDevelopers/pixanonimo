@@ -89,7 +89,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
 }
 
 function PrivateRoute({ children }) {
-  const [isAuthenticated] = useState(true);
+  const isAuthenticated = window.__AUTH__ === true;
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 

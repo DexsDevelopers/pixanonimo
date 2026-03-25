@@ -1,5 +1,13 @@
 <?php
 require_once 'includes/db.php';
+
+$isAuth = isLoggedIn();
+
+// Se não logado, redireciona pro login
+if (!$isAuth) {
+    header('Location: /login');
+    exit;
+}
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -8,12 +16,17 @@ require_once 'includes/db.php';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/dashboard-react/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Ghost Pix" />
+    <link rel="apple-touch-icon" href="/logo_premium.png" />
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+    <script>window.__AUTH__ = true;</script>
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="/assets/dashboard-react/index-zUgKaenj.js"></script>
+    <script type="module" crossorigin src="/assets/dashboard-react/index-PYFynul7.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-DQWeUQRk.css">
     
     <!-- Preload fonts to avoid layout shift -->
