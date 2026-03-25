@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ghost-pix-v9.4';
+const CACHE_NAME = 'ghost-pix-v10.0';
 const ASSETS = [
     'style.css?v=125.3',
     'script.js?v=125.3',

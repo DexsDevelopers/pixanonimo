@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bell, BellOff, X } from 'lucide-react';
+import { Bell, BellOff, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function urlBase64ToUint8Array(base64String) {
@@ -15,53 +15,45 @@ function urlBase64ToUint8Array(base64String) {
 
 export default function PushManager() {
     const [showPrompt, setShowPrompt] = useState(false);
-    const [subscribed, setSubscribed] = useState(() => localStorage.getItem('push_subscribed') === '1');
-    const [denied, setDenied] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [hidden, setHidden] = useState(() => {
+        return localStorage.getItem('push_subscribed') === '1' || localStorage.getItem('push_prompt_dismissed') === '1';
+    });
 
     useEffect(() => {
+        if (hidden) return;
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+        if (typeof Notification !== 'undefined' && Notification.permission === 'denied') return;
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            localStorage.setItem('push_prompt_dismissed', '1');
+            return;
+        }
 
-        const init = async () => {
-            try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
-                const existing = await registration.pushManager.getSubscription();
-
-                if (existing) {
-                    setSubscribed(true);
-                    return;
-                }
-
-                if (Notification.permission === 'denied') {
-                    setDenied(true);
-                    return;
-                }
-
-                if (Notification.permission === 'default') {
-                    const dismissed = localStorage.getItem('push_prompt_dismissed');
-                    if (!dismissed) {
-                        setTimeout(() => setShowPrompt(true), 3000);
-                    }
-                }
-            } catch (err) {
-                console.warn('Push init error:', err);
-            }
-        };
-
-        init();
-    }, []);
+        const timer = setTimeout(() => setShowPrompt(true), 3000);
+        return () => clearTimeout(timer);
+    }, [hidden]);
 
     const subscribeToPush = async () => {
+        setLoading(true);
         try {
+            // 1. Registrar SW
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            await navigator.serviceWorker.ready;
+
+            // 2. Buscar chave VAPID
             const res = await fetch('/get_vapid_key.php');
             const data = await res.json();
-            if (!data.success) return;
+            if (!data.success || !data.publicKey) {
+                throw new Error('VAPID key not available');
+            }
 
-            const registration = await navigator.serviceWorker.ready;
+            // 3. Subscrever push
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(data.publicKey)
             });
 
+            // 4. Salvar no backend
             const sub = subscription.toJSON();
             await fetch('/save_subscription.php', {
                 method: 'POST',
@@ -75,32 +67,33 @@ export default function PushManager() {
                 })
             });
 
-            setSubscribed(true);
-            localStorage.setItem('push_subscribed', '1');
-            setShowPrompt(false);
-
-            // Enviar notificação de teste confirmando ativação
+            // 5. Notificação de confirmação
             registration.showNotification('Ghost Pix', {
-                body: 'Notificações ativadas com sucesso! Você receberá alertas de pagamentos e avisos importantes.',
+                body: 'Notificações ativadas! Você receberá alertas de pagamentos e avisos importantes.',
                 icon: '/logo_premium.png',
                 badge: '/logo_premium.png',
                 vibrate: [100, 50, 100]
             });
+
+            localStorage.setItem('push_subscribed', '1');
         } catch (err) {
             console.error('Push subscribe error:', err);
-            if (Notification.permission === 'denied') {
-                setDenied(true);
-            }
+        } finally {
+            // Sempre esconde o prompt, independente de sucesso ou erro
+            localStorage.setItem('push_prompt_dismissed', '1');
             setShowPrompt(false);
+            setHidden(true);
+            setLoading(false);
         }
     };
 
     const dismissPrompt = () => {
-        setShowPrompt(false);
         localStorage.setItem('push_prompt_dismissed', '1');
+        setShowPrompt(false);
+        setHidden(true);
     };
 
-    if (subscribed || denied || !showPrompt) return null;
+    if (hidden || !showPrompt) return null;
 
     return (
         <AnimatePresence>
@@ -130,9 +123,11 @@ export default function PushManager() {
                     <div className="flex gap-2">
                         <button
                             onClick={subscribeToPush}
-                            className="flex-1 h-10 bg-primary text-black rounded-xl font-black text-xs flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_30px_rgba(74,222,128,0.2)]"
+                            disabled={loading}
+                            className="flex-1 h-10 bg-primary text-black rounded-xl font-black text-xs flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_30px_rgba(74,222,128,0.2)] disabled:opacity-50"
                         >
-                            <Bell size={14} /> Ativar
+                            {loading ? <Loader2 size={14} className="animate-spin" /> : <Bell size={14} />}
+                            {loading ? 'Ativando...' : 'Ativar'}
                         </button>
                         <button
                             onClick={dismissPrompt}
