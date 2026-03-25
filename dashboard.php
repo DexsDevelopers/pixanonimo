@@ -7,13 +7,14 @@ require_once 'includes/db.php';
     <base href="/">
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/dashboard-react/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="/assets/dashboard-react/index-S-t6thPQ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-BvAm7Aw1.css">
+    <script type="module" crossorigin src="/assets/dashboard-react/index-fzz12XAk.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-DQWeUQRk.css">
     
     <!-- Preload fonts to avoid layout shift -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">

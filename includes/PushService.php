@@ -67,7 +67,7 @@ class PushService {
                 'icon' => 'assets/' . $icon,
                 'badge' => 'assets/logo_premium.png',
                 'data' => [
-                    'url' => 'dashboard.php'
+                    'url' => '/dashboard'
                 ]
             ]);
 

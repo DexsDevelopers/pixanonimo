@@ -13,6 +13,7 @@ import StatCard from './components/StatCard';
 import TransactionsTable from './components/TransactionsTable';
 import GeneratePixCard from './components/GeneratePixCard';
 import PixModal from './components/PixModal';
+import PushManager from './components/PushManager';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -82,6 +83,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
           {children}
         </main>
       </div>
+      <PushManager />
     </div>
   );
 }

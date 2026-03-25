@@ -61,11 +61,11 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: data.icon || 'logo_premium.png',
-        badge: 'logo_premium.png',
+        icon: data.icon || '/logo_premium.png',
+        badge: '/logo_premium.png',
         vibrate: [100, 50, 100],
         data: {
-            url: data.data ? data.data.url : 'dashboard.php'
+            url: data.data ? data.data.url : '/dashboard'
         },
         actions: [
             { action: 'open', title: 'Ver Agora' }

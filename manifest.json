@@ -2,7 +2,7 @@
   "name": "Ghost Pix",
   "short_name": "Ghost Pix",
   "description": "Ghost Pix - Pagamentos Anônimos e Seguros",
-  "start_url": "index.php?utm_source=pwa",
+  "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
