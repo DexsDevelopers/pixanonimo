@@ -141,10 +141,10 @@ export default function LandingPage() {
                             <div className="w-8 h-8 bg-primary/15 rounded-full flex items-center justify-center border border-primary/30">
                                 <ShieldCheck size={16} className="text-primary" />
                             </div>
-                            <span className="text-sm sm:text-base font-black text-primary tracking-tight">Sem documentos. Sem dados pessoais.</span>
+                            <span className="text-sm sm:text-base font-black text-primary tracking-tight">Sem documentos. Sem taxas. Sem burocracia.</span>
                         </div>
                         <div className="h-4 w-px bg-primary/20 hidden sm:block" />
-                        <span className="text-xs sm:text-sm font-bold text-primary/60">Crie sua conta em segundos e comece a operar.</span>
+                        <span className="text-xs sm:text-sm font-bold text-primary/60">Crie sua conta em segundos e receba 100% das suas vendas.</span>
                     </motion.div>
 
                     <motion.div
@@ -195,7 +195,7 @@ export default function LandingPage() {
                         <StatItem label="Volume Transacionado" value="+R$ 15M" />
                         <StatItem label="Tempo de Setup" value="2 MIN" />
                         <StatItem label="Uptime da Rede" value="99.9%" />
-                        <StatItem label="Taxa Fixa" value="2.5%" />
+                        <StatItem label="Taxa sobre vendas" value="0%" />
                     </div>
                 </div>
             </section>
@@ -238,8 +238,8 @@ export default function LandingPage() {
                         />
                         <FeatureCard
                             icon={Rocket}
-                            title="Saques Sem Limites"
-                            desc="Transferências ultra-rápidas para sua conta bancária de preferência logo após o processamento."
+                            title="Saques Sem Taxas"
+                            desc="Transferências ultra-rápidas e gratuitas para sua conta bancária de preferência logo após o processamento."
                             delay={0.5}
                         />
                         <FeatureCard
@@ -328,12 +328,12 @@ export default function LandingPage() {
                             content="Sim. Utilizamos uma camada de abstração bancária onde seus dados pessoais ou da sua empresa nunca aparecem para o pagador final. O dinheiro cai na nossa conta de liquidação e é repassado instantaneamente para você."
                         />
                         <AccordionItem
-                            title="Qual a taxa real por transação?"
-                            content="Nossas taxas são as mais competitivas do mercado de anonimato. Começamos com uma taxa fixa de 2.5% por transação Pix processada, sem custos de setup ou mensalidade oculta."
+                            title="Tem alguma taxa por transação?"
+                            content="Não! A Ghost Pix não cobra taxa por transação. Você recebe o valor integral das suas vendas diretamente no seu saldo, sem surpresas e sem taxas escondidas."
                         />
                         <AccordionItem
                             title="Como funciona o sistema de saques?"
-                            content="Após a confirmação do pagamento pelo nosso sistema (que ocorre em milissegundos), o saldo fica disponível em sua conta Ghost Pix. Você pode solicitar o saque via Pix para sua chave cadastrada a qualquer momento."
+                            content="Após a confirmação do pagamento pelo nosso sistema (que ocorre em milissegundos), o saldo fica disponível em sua conta Ghost Pix. Você pode solicitar o saque via Pix para sua chave cadastrada a qualquer momento, sem taxas."
                         />
                         <AccordionItem
                             title="Posso integrar com qualquer site ou bot?"

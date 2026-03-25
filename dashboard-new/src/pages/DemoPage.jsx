@@ -213,7 +213,7 @@ const STEPS = [
     {
         icon: <Wallet size={24} />,
         title: 'Saque quando quiser',
-        desc: 'Transfira seus lucros via PIX. Sem taxa para planos Classic. Até 2 dias úteis.',
+        desc: 'Transfira seus lucros via PIX sem taxas. Rápido e direto na sua conta.',
         color: 'from-purple-500/20 to-pink-500/20'
     }
 ];
