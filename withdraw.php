@@ -37,7 +37,7 @@ if ($amount < 10) {
 }
 
 if ($amount > $user['balance']) {
-    echo json_encode(['error' => 'Saldo insuficiente.']);
+    echo json_encode(['error' => 'Saldo insuficiente. Seu saldo é R$ ' . number_format($user['balance'], 2, ',', '.') . '.']);
     exit;
 }
 
