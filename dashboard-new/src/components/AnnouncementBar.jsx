@@ -63,7 +63,7 @@ const AnnouncementBar = ({ onClose }) => {
 
             {/* CTA Button */}
             <a
-              href="https://whatsapp.com/channel/0029Vb5mKOp9Whjulkx8sP0D"
+              href="https://whatsapp.com/channel/0029VbC56v0GZNComh5KQ73J"
               target="_blank"
               rel="noopener noreferrer"
               onMouseEnter={() => setIsHovered(true)}
