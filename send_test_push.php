@@ -10,6 +10,15 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 
+// Verificar constantes VAPID
+if (!defined('VAPID_PUBLIC_KEY') || !defined('VAPID_PRIVATE_KEY') || !defined('VAPID_SUBJECT')) {
+    echo json_encode([
+        'success' => false, 
+        'error' => 'Constantes VAPID não definidas no config.php do servidor. Adicione: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT'
+    ]);
+    exit;
+}
+
 try {
     // 1. Verificar se existem subscriptions
     try {
