@@ -56,10 +56,15 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
 
                     {showNotifications && (
                         <>
-                            <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                            <div className="absolute right-0 mt-2 w-80 bg-[#111113] rounded-[24px] border border-white/10 shadow-2xl shadow-black/60 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                                <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                                    <h3 className="font-black text-xs uppercase tracking-widest">Notificações</h3>
+                            <div className="fixed inset-0 z-40 bg-black/40 md:bg-transparent" onClick={() => setShowNotifications(false)} />
+                            <div className="fixed inset-x-0 top-0 bottom-0 md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 md:w-80 bg-[#111113] md:rounded-[24px] border-0 md:border border-white/10 shadow-2xl shadow-black/60 z-50 overflow-hidden flex flex-col">
+                                <div className="p-4 border-b border-white/5 flex items-center justify-between shrink-0">
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => setShowNotifications(false)} className="p-1 hover:bg-white/5 rounded-lg transition-colors md:hidden">
+                                            <X size={18} className="text-white/60" />
+                                        </button>
+                                        <h3 className="font-black text-xs uppercase tracking-widest">Notificações</h3>
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         {unreadCount > 0 && (
                                             <button onClick={handleMarkAllRead} className="text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-wider transition-colors">
@@ -69,7 +74,7 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
                                         <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full">{unreadCount}</span>
                                     </div>
                                 </div>
-                                <div className="max-h-[380px] overflow-y-auto custom-scrollbar">
+                                <div className="flex-1 overflow-y-auto custom-scrollbar md:max-h-[380px]">
                                     {notifications.length > 0 ? (
                                         notifications.map((n) => {
                                             const cfg = typeConfig[n.type] || typeConfig.info;
@@ -86,7 +91,7 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center gap-2">
-                                                                <p className="text-xs font-bold text-white mb-1 truncate">{n.title}</p>
+                                                                <p className="text-xs font-bold text-white mb-1">{n.title}</p>
                                                                 {!n.is_read && <span className="w-1.5 h-1.5 bg-primary rounded-full shrink-0" />}
                                                             </div>
                                                             <p className="text-[10px] text-white/40 leading-relaxed">{n.message}</p>
