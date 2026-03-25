@@ -144,18 +144,29 @@ export default function SettingsPage({ userData }) {
         }
     };
 
+    const [pushError, setPushError] = useState('');
+
     const handleTestPush = async () => {
         setTestingPush(true);
         setPushResult(null);
+        setPushError('');
         try {
             const res = await fetch('/send_test_push.php', { method: 'POST' });
-            const data = await res.json();
-            setPushResult(data.success ? 'success' : 'error');
-        } catch {
+            const text = await res.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = { success: false, error: text.substring(0, 200) }; }
+            if (data.success) {
+                setPushResult('success');
+            } else {
+                setPushResult('error');
+                setPushError(data.error || 'Erro desconhecido');
+            }
+        } catch (e) {
             setPushResult('error');
+            setPushError(e.message || 'Erro de conexão');
         } finally {
             setTestingPush(false);
-            setTimeout(() => setPushResult(null), 4000);
+            setTimeout(() => setPushResult(null), 8000);
         }
     };
 
@@ -452,7 +463,10 @@ export default function SettingsPage({ userData }) {
                                         <p className="text-xs text-primary font-bold flex items-center gap-2"><Check size={14} /> Notificação enviada! Verifique seu dispositivo.</p>
                                     )}
                                     {pushResult === 'error' && (
-                                        <p className="text-xs text-red-400 font-bold flex items-center gap-2"><AlertTriangle size={14} /> Erro ao enviar. Verifique se as notificações estão ativadas.</p>
+                                        <div className="space-y-1">
+                                            <p className="text-xs text-red-400 font-bold flex items-center gap-2"><AlertTriangle size={14} /> Erro ao enviar notificação</p>
+                                            {pushError && <p className="text-[10px] text-red-400/60 ml-5 font-mono">{pushError}</p>}
+                                        </div>
                                     )}
                                 </div>
 
