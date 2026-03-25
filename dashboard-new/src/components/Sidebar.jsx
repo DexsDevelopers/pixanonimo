@@ -10,7 +10,6 @@ import {
     X,
     Gift
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -35,10 +34,12 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
     ];
 
     return (
-        <motion.aside
-            initial={false}
-            animate={{ width: isOpen ? 280 : 0, opacity: isOpen ? 1 : 0 }}
-            className="fixed z-50 h-full bg-[#111111] border-r border-white/5 flex flex-col overflow-hidden"
+        <>
+        {isOpen && (
+            <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={onClose} />
+        )}
+        <aside
+            className={`fixed z-50 top-0 left-0 h-full w-[280px] bg-[#111111] border-r border-white/5 flex flex-col transform transition-transform duration-300 ease-out will-change-transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
             <div className="p-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -126,6 +127,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
                     Sair da Conta
                 </button>
             </div>
-        </motion.aside>
+        </aside>
+        </>
     );
 }
