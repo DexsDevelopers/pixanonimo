@@ -15,7 +15,7 @@ function urlBase64ToUint8Array(base64String) {
 
 export default function PushManager() {
     const [showPrompt, setShowPrompt] = useState(false);
-    const [subscribed, setSubscribed] = useState(false);
+    const [subscribed, setSubscribed] = useState(() => localStorage.getItem('push_subscribed') === '1');
     const [denied, setDenied] = useState(false);
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function PushManager() {
                 }
 
                 if (Notification.permission === 'default') {
-                    const dismissed = sessionStorage.getItem('push_prompt_dismissed');
+                    const dismissed = localStorage.getItem('push_prompt_dismissed');
                     if (!dismissed) {
                         setTimeout(() => setShowPrompt(true), 3000);
                     }
@@ -76,7 +76,16 @@ export default function PushManager() {
             });
 
             setSubscribed(true);
+            localStorage.setItem('push_subscribed', '1');
             setShowPrompt(false);
+
+            // Enviar notificação de teste confirmando ativação
+            registration.showNotification('Ghost Pix', {
+                body: 'Notificações ativadas com sucesso! Você receberá alertas de pagamentos e avisos importantes.',
+                icon: '/logo_premium.png',
+                badge: '/logo_premium.png',
+                vibrate: [100, 50, 100]
+            });
         } catch (err) {
             console.error('Push subscribe error:', err);
             if (Notification.permission === 'denied') {
@@ -88,7 +97,7 @@ export default function PushManager() {
 
     const dismissPrompt = () => {
         setShowPrompt(false);
-        sessionStorage.setItem('push_prompt_dismissed', '1');
+        localStorage.setItem('push_prompt_dismissed', '1');
     };
 
     if (subscribed || denied || !showPrompt) return null;
