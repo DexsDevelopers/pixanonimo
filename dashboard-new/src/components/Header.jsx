@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, Bell, Search, User, X, Info, CheckCircle, AlertTriangle, AlertCircle, Check } from 'lucide-react';
 
 const typeConfig = {
@@ -54,10 +55,10 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
                         )}
                     </button>
 
-                    {showNotifications && (
-                        <>
-                            <div className="fixed inset-0 z-40 bg-black/40 md:bg-transparent" onClick={() => setShowNotifications(false)} />
-                            <div className="fixed inset-x-0 top-0 bottom-0 md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 md:w-80 bg-[#111113] md:rounded-[24px] border-0 md:border border-white/10 shadow-2xl shadow-black/60 z-50 overflow-hidden flex flex-col">
+                    {showNotifications && createPortal(
+                        <div className="fixed inset-0 z-[9999]">
+                            <div className="absolute inset-0 bg-black/60" onClick={() => setShowNotifications(false)} />
+                            <div className="absolute inset-0 bg-[#0a0a0c] flex flex-col md:inset-auto md:top-[80px] md:right-4 md:bottom-auto md:left-auto md:w-80 md:max-h-[460px] md:rounded-[24px] md:border md:border-white/10 md:shadow-2xl md:shadow-black/60 md:bg-[#111113]">
                                 <div className="p-4 border-b border-white/5 flex items-center justify-between shrink-0">
                                     <div className="flex items-center gap-3">
                                         <button onClick={() => setShowNotifications(false)} className="p-1 hover:bg-white/5 rounded-lg transition-colors md:hidden">
@@ -74,7 +75,7 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
                                         <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full">{unreadCount}</span>
                                     </div>
                                 </div>
-                                <div className="flex-1 overflow-y-auto custom-scrollbar md:max-h-[380px]">
+                                <div className="flex-1 overflow-y-auto custom-scrollbar">
                                     {notifications.length > 0 ? (
                                         notifications.map((n) => {
                                             const cfg = typeConfig[n.type] || typeConfig.info;
@@ -109,7 +110,8 @@ export default function Header({ onMenuClick, notifications = [], userData, onMa
                                     )}
                                 </div>
                             </div>
-                        </>
+                        </div>,
+                        document.body
                     )}
                 </div>
 
