@@ -4,6 +4,7 @@ try {
     require_once 'includes/PushService.php';
 } catch (Throwable $e) {}
 require_once 'includes/MailService.php';
+require_once 'includes/TelegramService.php';
 
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
@@ -116,6 +117,16 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
             if ($userData && !empty($userData['email'])) {
                 MailService::notifySale($userData['email'], $userData['full_name'], $transaction['amount_brl']);
             }
+
+            // Notificar Admin via Telegram
+            try {
+                TelegramService::notifySale(
+                    (float)$transaction['amount_brl'],
+                    $realPayerName ?: ($transaction['customer_name'] ?? 'Sem nome'),
+                    $userData['full_name'] ?? 'N/A',
+                    (int)$transaction['id']
+                );
+            } catch (Throwable $e) {}
 
             // 4. Disparar Webhook Externo para o Lojista (callback_url da transação)
             $webhookPayload = [

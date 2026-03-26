@@ -3,6 +3,7 @@ require_once 'includes/db.php';
 try {
     require_once 'includes/PushService.php';
 } catch (Throwable $e) {}
+require_once 'includes/TelegramService.php';
 
 header('Content-Type: application/json');
 
@@ -67,6 +68,14 @@ try {
             PushService::notifyAdmins("Novo Saque Solicitado", "Usuário #$userId solicitou R$ " . number_format($amount, 2, ',', '.'));
         } catch (Throwable $e) {}
     }
+    
+    // Notificar Admin via Telegram
+    try {
+        $userInfo = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+        $userInfo->execute([$userId]);
+        $userName = $userInfo->fetchColumn() ?: "Usuário #$userId";
+        TelegramService::notifyWithdrawal($userName, $amount, $user['pix_key']);
+    } catch (Throwable $e) {}
     
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {

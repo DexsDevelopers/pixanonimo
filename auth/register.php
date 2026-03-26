@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/db.php';
 require_once '../includes/MailService.php';
+require_once '../includes/TelegramService.php';
 
 $isJsonRequest = strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
 
@@ -123,6 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } catch (Exception $e) {
             write_log('error', 'Falha ao enviar email de aprovação: ' . $e->getMessage());
         }
+
+        // Notificar Admin via Telegram
+        try {
+            TelegramService::notifyNewUser($full_name, $email);
+        } catch (Throwable $e) {}
 
         write_log('INFO', 'Novo usuário registrado', ['user_id' => $newUserId, 'email' => $email]);
 
