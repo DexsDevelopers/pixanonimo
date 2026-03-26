@@ -25,6 +25,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AdminApisPage from './pages/AdminApisPage';
+import AdminTransactionsPage from './pages/AdminTransactionsPage';
 import CheckoutsPage from './pages/CheckoutsPage';
 import CheckoutBuilderPage from './pages/CheckoutBuilderPage';
 import ApiDocsPage from './pages/ApiDocsPage';
@@ -292,6 +293,16 @@ export default function App() {
             <AdminRoute userData={userData}>
               <DashboardLayout {...commonProps} activeTab="admin">
                 <AdminPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/vendas" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-vendas">
+                <AdminTransactionsPage />
               </DashboardLayout>
             </AdminRoute>
           </PrivateRoute>

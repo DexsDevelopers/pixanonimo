@@ -92,16 +92,27 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
 
             $pdo->commit();
             write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
+            
             // 3.5 Enviar Notificações
+            $userData = getUser($transaction['user_id']);
             $notifMsg = 'Você recebeu R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' via Pix.';
             if (class_exists('PushService')) {
                 try {
                     PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg, 'success');
                 } catch (Throwable $e) {}
+                
+                // Notificar Admin também
+                try {
+                    $adminStmtNotif = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+                    $adminNotif = $adminStmtNotif->fetch();
+                    if ($adminNotif && $adminNotif['id'] != $transaction['user_id']) {
+                        $adminMsg = 'Venda de R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' confirmada (Lojista: ' . ($userData['full_name'] ?? 'N/A') . ')';
+                        PushService::notifyUser($adminNotif['id'], '🔔 Nova Venda na Plataforma!', $adminMsg, 'info');
+                    }
+                } catch (Throwable $e) {}
             }
             
             // Enviar e-mail para o usuário
-            $userData = getUser($transaction['user_id']);
             if ($userData && !empty($userData['email'])) {
                 MailService::notifySale($userData['email'], $userData['full_name'], $transaction['amount_brl']);
             }

@@ -32,6 +32,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
 
     const adminItems = [
         { id: 'admin', icon: <LayoutDashboard size={20} className="text-primary" />, label: 'Admin Geral', path: '/admin' },
+        { id: 'admin-vendas', icon: <History size={20} className="text-primary" />, label: 'Todas as Vendas', path: '/admin/vendas' },
         { id: 'apis', icon: <Settings size={20} className="text-primary" />, label: 'Gestão de APIs', path: '/admin/apis' },
     ];
 
