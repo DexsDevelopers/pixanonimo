@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/TelegramService.php';
 
 header('Content-Type: application/json');
 
@@ -64,6 +65,8 @@ try {
         
         saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, $externalId, 'pix');
 
+        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId()); } catch (Throwable $e) {}
+
         echo json_encode([
             'success' => true,
             'qr_image' => $qrImage, 
@@ -118,6 +121,8 @@ try {
         $platformFee = $totalAmount * ($user['commission_rate'] / 100);
         $netAmount = $totalAmount - $pixgoFee - $platformFee;
         saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, $externalId, 'pix');
+
+        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId()); } catch (Throwable $e) {}
 
         echo json_encode([
             'success' => true,

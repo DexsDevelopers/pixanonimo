@@ -24,6 +24,7 @@ try {
     } catch (Throwable $e) {
         write_log('WARNING', 'PushService desativado devido a erro no vendor: ' . $e->getMessage());
     }
+    require_once 'includes/TelegramService.php';
 
     // Autenticação Híbrida 
     $userId = null;
@@ -95,6 +96,11 @@ try {
             } catch (Throwable $e) {}
         }
 
+        // Telegram admin
+        try {
+            TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId());
+        } catch (Throwable $e) {}
+
         Response::success([
             'qr_image' => $qrImage, 
             'pix_code' => $pixCode, 
@@ -161,6 +167,11 @@ try {
                 PushService::notifyUser($userId, '⚡ PIX Gerado!', 'Uma nova cobrança de R$ ' . number_format($amount, 2, ',', '.') . ' foi gerada.');
             } catch (Throwable $e) {}
         }
+
+        // Telegram admin
+        try {
+            TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId());
+        } catch (Throwable $e) {}
 
         Response::success([
             'pix_id' => $pixId, 
