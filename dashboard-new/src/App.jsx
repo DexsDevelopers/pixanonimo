@@ -158,6 +158,7 @@ export default function App() {
     try {
       const res = await fetch('/get_dashboard_data.php');
       const data = await res.json();
+      console.log("Dashboard data user:", JSON.stringify(data?.user));
       if (data.success) setDashboardData(data);
     } catch (err) {
       console.error("Erro ao carregar dashboard:", err);
