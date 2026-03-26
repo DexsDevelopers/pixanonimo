@@ -8,7 +8,9 @@ import {
     LogOut,
     ChevronRight,
     X,
-    Gift
+    Gift,
+    GraduationCap,
+    ExternalLink
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -117,6 +119,20 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
                     </div>
                 )}
             </nav>
+
+            <div className="px-4 pt-4 border-t border-white/5">
+                <p className="px-6 pb-2 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Ecossistema</p>
+                <a
+                    href="/sso_redirect.php"
+                    className="w-full flex items-center justify-between px-6 py-3 rounded-full text-white/60 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 group mb-1"
+                >
+                    <div className="flex items-center gap-3">
+                        <GraduationCap size={20} className="text-red-400" />
+                        <span className="text-[13px] font-bold uppercase tracking-widest">Academy</span>
+                    </div>
+                    <ExternalLink size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
+                </a>
+            </div>
 
             <div className="p-4 mt-auto border-t border-white/5 bg-white/[0.01]">
                 <button
