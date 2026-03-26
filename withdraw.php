@@ -76,6 +76,15 @@ try {
         $userName = $userInfo->fetchColumn() ?: "Usuário #$userId";
         TelegramService::notifyWithdrawal($userName, $amount, $user['pix_key']);
     } catch (Throwable $e) {}
+
+    // Notificação in-app admin (saque solicitado)
+    try {
+        $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
+        if ($adm) {
+            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
+                ->execute([$adm['id'], '🏦 Saque Solicitado', ($userName ?? "Usuário #$userId") . ' — R$ ' . number_format($amount, 2, ',', '.')]);
+        }
+    } catch (Throwable $e) {}
     
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {

@@ -65,7 +65,12 @@ try {
         
         saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, $externalId, 'pix');
 
-        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId()); } catch (Throwable $e) {}
+        $txId = (int)$pdo->lastInsertId();
+        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
+        try {
+            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
+            if ($adm) $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")->execute([$adm['id'], '⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A')]);
+        } catch (Throwable $e) {}
 
         echo json_encode([
             'success' => true,
@@ -122,7 +127,12 @@ try {
         $netAmount = $totalAmount - $pixgoFee - $platformFee;
         saveTransaction($userId, $totalAmount, $netAmount, $pixId, $pixCode, $qrImage, null, $customerName, $externalId, 'pix');
 
-        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId()); } catch (Throwable $e) {}
+        $txId = (int)$pdo->lastInsertId();
+        try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
+        try {
+            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
+            if ($adm) $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")->execute([$adm['id'], '⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A')]);
+        } catch (Throwable $e) {}
 
         echo json_encode([
             'success' => true,

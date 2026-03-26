@@ -97,8 +97,17 @@ try {
         }
 
         // Telegram admin
+        $txId = (int)$pdo->lastInsertId();
+        try { TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
+
+        // Notificação in-app admin
         try {
-            TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId());
+            $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+            $adm = $adminStmt->fetch();
+            if ($adm) {
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
+                    ->execute([$adm['id'], '⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A')]);
+            }
         } catch (Throwable $e) {}
 
         Response::success([
@@ -169,8 +178,17 @@ try {
         }
 
         // Telegram admin
+        $txId = (int)$pdo->lastInsertId();
+        try { TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
+
+        // Notificação in-app admin
         try {
-            TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', (int)$pdo->lastInsertId());
+            $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+            $adm = $adminStmt->fetch();
+            if ($adm) {
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
+                    ->execute([$adm['id'], '⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A')]);
+            }
         } catch (Throwable $e) {}
 
         Response::success([

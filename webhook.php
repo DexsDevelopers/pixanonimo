@@ -128,6 +128,16 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                 );
             } catch (Throwable $e) {}
 
+            // Notificação in-app admin (venda confirmada)
+            try {
+                $adminNotifStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
+                $admNotif = $adminNotifStmt->fetch();
+                if ($admNotif && $admNotif['id'] != $transaction['user_id']) {
+                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'success')")
+                        ->execute([$admNotif['id'], '💰 Venda Confirmada #' . $transaction['id'], 'R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' — Lojista: ' . ($userData['full_name'] ?? 'N/A')]);
+                }
+            } catch (Throwable $e) {}
+
             // 4. Disparar Webhook Externo para o Lojista (callback_url da transação)
             $webhookPayload = [
                 'event' => 'payment.completed',

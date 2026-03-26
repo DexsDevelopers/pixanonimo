@@ -126,8 +126,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Notificar Admin via Telegram
+        try { TelegramService::notifyNewUser($full_name, $email); } catch (Throwable $e) {}
+
+        // Notificação in-app admin (novo cadastro)
         try {
-            TelegramService::notifyNewUser($full_name, $email);
+            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
+            if ($adm) {
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
+                    ->execute([$adm['id'], '👤 Novo Cadastro', $full_name . ' — ' . $email]);
+            }
         } catch (Throwable $e) {}
 
         write_log('INFO', 'Novo usuário registrado', ['user_id' => $newUserId, 'email' => $email]);
