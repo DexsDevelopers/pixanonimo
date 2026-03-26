@@ -62,29 +62,18 @@ try {
 
     $pdo->commit();
     write_log('INFO', 'Pedido de Saque Realizado', ['user_id' => $userId, 'amount' => $amount, 'fee' => $withdrawFee, 'net' => $netAmount]);
-    // Notificar admins sobre o novo pedido de saque
+    // Buscar nome do usuário
+    $userInfo = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+    $userInfo->execute([$userId]);
+    $userName = $userInfo->fetchColumn() ?: "Usuário #$userId";
+
+    // Notificar Admin (Push + In-App)
     if (class_exists('PushService')) {
-        try {
-            PushService::notifyAdmins("Novo Saque Solicitado", "Usuário #$userId solicitou R$ " . number_format($amount, 2, ',', '.'));
-        } catch (Throwable $e) {}
+        try { PushService::notifyAdmins('🏦 Saque Solicitado', $userName . ' — R$ ' . number_format($amount, 2, ',', '.') . ' — Pix: ' . $user['pix_key'], 'warning'); } catch (Throwable $e) {}
     }
     
     // Notificar Admin via Telegram
-    try {
-        $userInfo = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
-        $userInfo->execute([$userId]);
-        $userName = $userInfo->fetchColumn() ?: "Usuário #$userId";
-        TelegramService::notifyWithdrawal($userName, $amount, $user['pix_key']);
-    } catch (Throwable $e) {}
-
-    // Notificação in-app admin (saque solicitado)
-    try {
-        $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
-        if ($adm) {
-            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
-                ->execute([$adm['id'], '🏦 Saque Solicitado', ($userName ?? "Usuário #$userId") . ' — R$ ' . number_format($amount, 2, ',', '.')]);
-        }
-    } catch (Throwable $e) {}
+    try { TelegramService::notifyWithdrawal($userName, $amount, $user['pix_key']); } catch (Throwable $e) {}
     
     echo json_encode(['status' => 'success', 'message' => 'Solicitação de saque enviada ao administrador!']);
 } catch (Exception $e) {

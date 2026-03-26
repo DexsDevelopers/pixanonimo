@@ -96,19 +96,12 @@ try {
             } catch (Throwable $e) {}
         }
 
-        // Telegram admin
+        // Notificar Admin (Push + In-App + Telegram)
         $txId = (int)$pdo->lastInsertId();
         try { TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
-
-        // Notificação in-app admin
-        try {
-            $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
-            $adm = $adminStmt->fetch();
-            if ($adm) {
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
-                    ->execute([$adm['id'], '⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A')]);
-            }
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) {
+            try { PushService::notifyAdmins('⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A'), 'info'); } catch (Throwable $e) {}
+        }
 
         Response::success([
             'qr_image' => $qrImage, 
@@ -177,19 +170,12 @@ try {
             } catch (Throwable $e) {}
         }
 
-        // Telegram admin
+        // Notificar Admin (Push + In-App + Telegram)
         $txId = (int)$pdo->lastInsertId();
         try { TelegramService::notifyNewCharge($amount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
-
-        // Notificação in-app admin
-        try {
-            $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
-            $adm = $adminStmt->fetch();
-            if ($adm) {
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
-                    ->execute([$adm['id'], '⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A')]);
-            }
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) {
+            try { PushService::notifyAdmins('⚡ Nova Cobrança #' . $txId, 'R$ ' . number_format($amount, 2, ',', '.') . ' — Lojista: ' . ($user['full_name'] ?? 'N/A'), 'info'); } catch (Throwable $e) {}
+        }
 
         Response::success([
             'pix_id' => $pixId, 

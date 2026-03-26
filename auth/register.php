@@ -2,6 +2,7 @@
 require_once '../includes/db.php';
 require_once '../includes/MailService.php';
 require_once '../includes/TelegramService.php';
+try { require_once '../includes/PushService.php'; } catch (Throwable $e) {}
 
 $isJsonRequest = strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
 
@@ -128,14 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Notificar Admin via Telegram
         try { TelegramService::notifyNewUser($full_name, $email); } catch (Throwable $e) {}
 
-        // Notificação in-app admin (novo cadastro)
-        try {
-            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
-            if ($adm) {
-                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")
-                    ->execute([$adm['id'], '👤 Novo Cadastro', $full_name . ' — ' . $email]);
-            }
-        } catch (Throwable $e) {}
+        // Notificar Admin (Push + In-App)
+        if (class_exists('PushService')) {
+            try { PushService::notifyAdmins('👤 Novo Cadastro', $full_name . ' — ' . $email, 'info'); } catch (Throwable $e) {}
+        }
 
         write_log('INFO', 'Novo usuário registrado', ['user_id' => $newUserId, 'email' => $email]);
 

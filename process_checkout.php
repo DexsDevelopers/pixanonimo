@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/db.php';
 require_once 'includes/TelegramService.php';
+try { require_once 'includes/PushService.php'; } catch (Throwable $e) {}
 
 header('Content-Type: application/json');
 
@@ -67,10 +68,7 @@ try {
 
         $txId = (int)$pdo->lastInsertId();
         try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
-        try {
-            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
-            if ($adm) $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")->execute([$adm['id'], '⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A')]);
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) { try { PushService::notifyAdmins('⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A'), 'info'); } catch (Throwable $e) {} }
 
         echo json_encode([
             'success' => true,
@@ -129,10 +127,7 @@ try {
 
         $txId = (int)$pdo->lastInsertId();
         try { TelegramService::notifyNewCharge($totalAmount, $user['full_name'] ?? 'N/A', $txId); } catch (Throwable $e) {}
-        try {
-            $adm = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1")->fetch();
-            if ($adm) $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'info')")->execute([$adm['id'], '⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A')]);
-        } catch (Throwable $e) {}
+        if (class_exists('PushService')) { try { PushService::notifyAdmins('⚡ Checkout #' . $txId, 'R$ ' . number_format($totalAmount, 2, ',', '.') . ' — ' . ($user['full_name'] ?? 'N/A'), 'info'); } catch (Throwable $e) {} }
 
         echo json_encode([
             'success' => true,

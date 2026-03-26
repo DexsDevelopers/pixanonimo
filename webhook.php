@@ -102,14 +102,9 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                     PushService::notifyUser($transaction['user_id'], '💰 Venda Confirmada!', $notifMsg, 'success');
                 } catch (Throwable $e) {}
                 
-                // Notificar Admin também
+                // Notificar Admin (Push + In-App)
                 try {
-                    $adminStmtNotif = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
-                    $adminNotif = $adminStmtNotif->fetch();
-                    if ($adminNotif && $adminNotif['id'] != $transaction['user_id']) {
-                        $adminMsg = 'Venda de R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' confirmada (Lojista: ' . ($userData['full_name'] ?? 'N/A') . ')';
-                        PushService::notifyUser($adminNotif['id'], '🔔 Nova Venda na Plataforma!', $adminMsg, 'info');
-                    }
+                    PushService::notifyAdmins('💰 Venda Confirmada #' . $transaction['id'], 'R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' — Lojista: ' . ($userData['full_name'] ?? 'N/A'), 'success');
                 } catch (Throwable $e) {}
             }
             
@@ -126,16 +121,6 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                     $userData['full_name'] ?? 'N/A',
                     (int)$transaction['id']
                 );
-            } catch (Throwable $e) {}
-
-            // Notificação in-app admin (venda confirmada)
-            try {
-                $adminNotifStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
-                $admNotif = $adminNotifStmt->fetch();
-                if ($admNotif && $admNotif['id'] != $transaction['user_id']) {
-                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'success')")
-                        ->execute([$admNotif['id'], '💰 Venda Confirmada #' . $transaction['id'], 'R$ ' . number_format($transaction['amount_brl'], 2, ',', '.') . ' — Lojista: ' . ($userData['full_name'] ?? 'N/A')]);
-                }
             } catch (Throwable $e) {}
 
             // 4. Disparar Webhook Externo para o Lojista (callback_url da transação)
