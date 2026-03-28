@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Package, Save, Upload, Link, ImageIcon, Truck,
-  ToggleLeft, ToggleRight, AlertCircle, CheckCircle, Loader2
+  ToggleLeft, ToggleRight, AlertCircle, CheckCircle, Loader2,
+  Zap, KeyRound, X, Plus, Trash2
 } from 'lucide-react';
 
 const CATEGORIES = ['Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
@@ -66,14 +67,24 @@ export default function CriarProdutoPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Auto-delivery (stock) state
+  const [autoDelivery, setAutoDelivery] = useState(false);
+  const [stockText, setStockText] = useState('');       // bulk textarea
+  const [existingStock, setExistingStock] = useState(null); // { available, used, total }
+  const [singleItem, setSingleItem] = useState('');
+  const [stockItems, setStockItems] = useState([]);     // local preview list (new items)
+
   // Load product data for edit mode
   useEffect(() => {
     if (!isEdit) return;
     const load = async () => {
       try {
-        const res = await fetch('/get_products.php');
-        const data = await res.json();
-        const product = (data.products || []).find(p => String(p.id) === String(id));
+        const [prodRes, stockRes] = await Promise.all([
+          fetch('/get_products.php'),
+          fetch(`/manage_stock.php?product_id=${id}`),
+        ]);
+        const prodData = await prodRes.json();
+        const product = (prodData.products || []).find(p => String(p.id) === String(id));
         if (product) {
           setForm({
             name: product.name || '',
@@ -89,11 +100,33 @@ export default function CriarProdutoPage() {
           });
           if (product.image_url) setUploadPreview(product.image_url);
         }
+        const stockData = await stockRes.json();
+        if (stockData.success && stockData.stats?.total > 0) {
+          setExistingStock(stockData.stats);
+          setAutoDelivery(true);
+        }
       } catch {}
       setLoadingProduct(false);
     };
     load();
   }, [id, isEdit]);
+
+  const addSingleItem = () => {
+    const v = singleItem.trim();
+    if (!v) return;
+    setStockItems(prev => [...prev, v]);
+    setSingleItem('');
+  };
+
+  const removeSingleItem = (idx) => {
+    setStockItems(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // All items to save = stockItems list + bulk textarea lines
+  const allNewItems = [
+    ...stockItems,
+    ...stockText.split('\n').map(s => s.trim()).filter(Boolean),
+  ];
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -124,12 +157,12 @@ export default function CriarProdutoPage() {
 
     setSaving(true);
     try {
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+      // 1. Save product
       const res = await fetch('/manage_product.php', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
         body: JSON.stringify({
           action: isEdit ? 'update' : 'create',
           id: isEdit ? id : undefined,
@@ -139,12 +172,25 @@ export default function CriarProdutoPage() {
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        setSuccess(isEdit ? 'Produto atualizado!' : 'Produto enviado para aprovação!');
-        setTimeout(() => navigate('/vendedor/produtos'), 1500);
-      } else {
-        setError(data.error || 'Erro ao salvar.');
+      if (!data.success) { setError(data.error || 'Erro ao salvar.'); setSaving(false); return; }
+
+      const productId = isEdit ? id : data.id;
+
+      // 2. If auto-delivery enabled and we have new items, bulk-add to stock
+      if (autoDelivery && allNewItems.length > 0 && productId) {
+        await fetch('/manage_stock.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'bulk_add',
+            product_id: productId,
+            items: allNewItems.join('\n'),
+          }),
+        });
       }
+
+      setSuccess(isEdit ? 'Produto atualizado!' : 'Produto enviado para aprovação!');
+      setTimeout(() => navigate('/vendedor/produtos'), 1500);
     } catch { setError('Erro de conexão.'); }
     setSaving(false);
   };
@@ -382,7 +428,123 @@ export default function CriarProdutoPage() {
           </div>
         </div>
 
-        {/* Seção 4: Visibilidade */}
+        {/* Seção 4: Entrega Automática (Stock) */}
+        <div className={`${sectionCls} transition-all`}>
+          {/* Toggle header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${autoDelivery ? 'bg-primary/20' : 'bg-white/5'}`}>
+                <Zap size={16} className={autoDelivery ? 'text-primary' : 'text-white/30'} />
+              </div>
+              <div>
+                <p className="font-black text-white text-sm">Entrega Automática via Estoque</p>
+                <p className="text-xs text-white/40 mt-0.5">Cadastre suas chaves, contas ou links — o sistema entrega automaticamente após o pagamento</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAutoDelivery(v => !v)}
+              className="transition-colors flex-shrink-0 ml-4"
+            >
+              {autoDelivery
+                ? <ToggleRight size={40} className="text-primary" />
+                : <ToggleLeft size={40} className="text-white/20" />}
+            </button>
+          </div>
+
+          {autoDelivery && (
+            <div className="space-y-4 pt-2">
+
+              {/* Existing stock stats (edit mode) */}
+              {existingStock && (
+                <div className="grid grid-cols-3 gap-3">
+                  {[['Disponíveis', existingStock.available, 'text-green-400'], ['Usados', existingStock.used, 'text-white/40'], ['Total', existingStock.total, 'text-white']].map(([l, v, c]) => (
+                    <div key={l} className="bg-white/[0.03] rounded-xl p-3 text-center border border-white/5">
+                      <p className={`text-xl font-black ${c}`}>{v}</p>
+                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{l}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Info banner */}
+              <div className="flex items-start gap-2 p-3 bg-primary/5 border border-primary/10 rounded-xl">
+                <Zap size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-white/50 leading-relaxed">
+                  Cada item é uma <strong className="text-white/70">conta, chave, link ou código</strong>. Após o pagamento, o sistema sorteia e entrega um item automaticamente para o comprador.
+                </p>
+              </div>
+
+              {/* Single item input */}
+              <div>
+                <label className={labelCls}>Adicionar um item</label>
+                <div className="flex gap-2">
+                  <input
+                    value={singleItem}
+                    onChange={e => setSingleItem(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSingleItem())}
+                    placeholder="Ex: usuario@email.com:senha123 ou CHAVE-XXXX-YYYY"
+                    className={inputCls}
+                  />
+                  <button
+                    type="button"
+                    onClick={addSingleItem}
+                    disabled={!singleItem.trim()}
+                    className="px-4 py-2 rounded-xl bg-primary text-black font-black disabled:opacity-30 hover:bg-primary/90 transition-all flex-shrink-0"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview list of added items */}
+              {stockItems.length > 0 && (
+                <div className="space-y-1.5">
+                  {stockItems.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 px-3 py-2 bg-white/[0.03] border border-white/10 rounded-xl">
+                      <KeyRound size={12} className="text-primary/60 flex-shrink-0" />
+                      <span className="flex-1 text-xs font-mono text-white/70 truncate">{item}</span>
+                      <button type="button" onClick={() => removeSingleItem(i)} className="p-1 text-red-400/40 hover:text-red-400 transition-colors rounded">
+                        <X size={11} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Bulk paste area */}
+              <div>
+                <label className={labelCls}>
+                  Colar em massa
+                  <span className="ml-2 text-white/20 font-normal normal-case">— um item por linha</span>
+                </label>
+                <textarea
+                  rows={6}
+                  value={stockText}
+                  onChange={e => setStockText(e.target.value)}
+                  placeholder={`conta1@email.com:senha1\nconta2@email.com:senha2\nCHAVE-AAAA-BBBB\nhttps://link-de-acesso.com/token`}
+                  className={`${inputCls} resize-none font-mono text-xs`}
+                />
+                {stockText.trim() && (
+                  <p className="text-xs text-primary/70 font-bold mt-1">
+                    {stockText.trim().split('\n').filter(Boolean).length} itens prontos para adicionar
+                  </p>
+                )}
+              </div>
+
+              {(stockItems.length > 0 || stockText.trim()) && (
+                <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                  <CheckCircle size={14} className="text-green-400 flex-shrink-0" />
+                  <p className="text-xs text-green-400 font-semibold">
+                    {stockItems.length + stockText.trim().split('\n').filter(Boolean).length} itens serão adicionados ao estoque ao salvar o produto
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Seção 5: Visibilidade */}
         <div className={`${sectionCls} !space-y-0`}>
           <div className="flex items-center justify-between">
             <div>
