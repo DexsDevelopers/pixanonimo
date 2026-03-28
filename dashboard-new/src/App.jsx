@@ -37,6 +37,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProdutosPage from './pages/ProdutosPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
+import AdminProdutosPage from './pages/AdminProdutosPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -334,6 +335,16 @@ export default function App() {
             <DashboardLayout {...commonProps} activeTab="checkout-builder">
               <CheckoutBuilderPage />
             </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/produtos" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-produtos">
+                <AdminProdutosPage />
+              </DashboardLayout>
+            </AdminRoute>
           </PrivateRoute>
         } />
 

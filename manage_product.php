@@ -16,7 +16,7 @@ try {
     switch ($action) {
 
         case 'create':
-            $stmt = $pdo->prepare("INSERT INTO products (user_id, name, description, price, image_url, category, type, delivery_info, vitrine, stock, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+            $stmt = $pdo->prepare("INSERT INTO products (user_id, name, description, price, image_url, category, type, delivery_info, vitrine, stock, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
             $stmt->execute([
                 $userId,
                 trim($input['name'] ?? ''),
