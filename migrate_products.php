@@ -81,6 +81,27 @@ foreach ($tables as $name => $sql) {
     }
 }
 
+// ALTER TABLE: add columns that may be missing from older schema versions
+$alters = [
+    ['table' => 'products', 'column' => 'delivery_method',
+     'sql' => "ALTER TABLE products ADD COLUMN delivery_method VARCHAR(50) DEFAULT '' AFTER type"],
+];
+
+foreach ($alters as $alt) {
+    try {
+        $exists = $pdo->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+        $exists->execute([$alt['table'], $alt['column']]);
+        if ((int)$exists->fetchColumn() === 0) {
+            $pdo->exec($alt['sql']);
+            $results[] = ['table' => "{$alt['table']}.{$alt['column']}", 'status' => 'ok', 'msg' => 'Coluna adicionada'];
+        } else {
+            $results[] = ['table' => "{$alt['table']}.{$alt['column']}", 'status' => 'ok', 'msg' => 'Coluna já existe'];
+        }
+    } catch (PDOException $e) {
+        $results[] = ['table' => "{$alt['table']}.{$alt['column']}", 'status' => 'error', 'msg' => $e->getMessage()];
+    }
+}
+
 echo "<pre style='background:#0d0d0d;color:#4ade80;padding:2rem;font-family:monospace;min-height:100vh;margin:0;'>";
 echo "=== MIGRATE PRODUCTS ===\n\n";
 foreach ($results as $r) {
