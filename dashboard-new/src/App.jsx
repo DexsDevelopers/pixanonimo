@@ -34,6 +34,9 @@ import AffiliatePage from './pages/AffiliatePage';
 import DemoPage from './pages/DemoPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import ProdutosPage from './pages/ProdutosPage';
+import LojaPage from './pages/LojaPage';
+import VitrinePage from './pages/VitrinePage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -330,6 +333,30 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="checkout-builder">
               <CheckoutBuilderPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/vendedor/produtos" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="produtos">
+              <ProdutosPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/vendedor/loja" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="loja">
+              <LojaPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/vitrine" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="vitrine">
+              <VitrinePage />
             </DashboardLayout>
           </PrivateRoute>
         } />
