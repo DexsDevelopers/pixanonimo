@@ -35,6 +35,7 @@ import DemoPage from './pages/DemoPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProdutosPage from './pages/ProdutosPage';
+import CriarProdutoPage from './pages/CriarProdutoPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
 import AdminProdutosPage from './pages/AdminProdutosPage';
@@ -354,6 +355,20 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="produtos">
               <ProdutosPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+        <Route path="/vendedor/produtos/novo" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="produtos">
+              <CriarProdutoPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+        <Route path="/vendedor/produtos/editar/:id" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="produtos">
+              <CriarProdutoPage />
             </DashboardLayout>
           </PrivateRoute>
         } />
