@@ -93,6 +93,50 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
 
             $pdo->commit();
             write_log('INFO', 'Transação Confirmada', ['transaction_id' => $transaction['id'], 'user_id' => $transaction['user_id']]);
+
+            // === AUTO-DELIVERY: assign stock item to product order ===
+            try {
+                $orderStmt = $pdo->prepare("SELECT o.*, p.delivery_method, p.delivery_info FROM orders o JOIN products p ON p.id = o.product_id WHERE o.transaction_id = ? AND o.status = 'pending' LIMIT 1");
+                $orderStmt->execute([$transaction['id']]);
+                $order = $orderStmt->fetch();
+
+                if ($order) {
+                    // Try to pick an available stock item
+                    $pdo->beginTransaction();
+                    $stockItem = $pdo->prepare("SELECT id, content FROM product_stock_items WHERE product_id = ? AND status = 'available' ORDER BY id ASC LIMIT 1 FOR UPDATE");
+                    $stockItem->execute([$order['product_id']]);
+                    $item = $stockItem->fetch();
+
+                    $deliveredContent = null;
+                    if ($item) {
+                        // Mark stock item as used
+                        $pdo->prepare("UPDATE product_stock_items SET status = 'used', order_id = ?, used_at = NOW() WHERE id = ?")->execute([$order['id'], $item['id']]);
+                        // Update product stock count
+                        $pdo->prepare("UPDATE products SET stock = (SELECT COUNT(*) FROM product_stock_items WHERE product_id = ? AND status = 'available'), orders_count = orders_count + 1 WHERE id = ?")->execute([$order['product_id'], $order['product_id']]);
+                        $deliveredContent = $item['content'];
+                    } else {
+                        // No stock items — use delivery_info as fallback
+                        $pdo->prepare("UPDATE products SET orders_count = orders_count + 1 WHERE id = ?")->execute([$order['product_id']]);
+                        $deliveredContent = $order['delivery_info'];
+                    }
+
+                    // Update order status and delivered_content
+                    $pdo->prepare("UPDATE orders SET status = 'paid', delivered_content = ? WHERE id = ?")->execute([$deliveredContent, $order['id']]);
+                    $pdo->commit();
+
+                    // Notify seller of new sale
+                    try {
+                        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'success')")
+                            ->execute([$order['seller_id'], '🛒 Novo Pedido!', 'Você vendeu 1x produto #' . $order['product_id'] . ' por R$ ' . number_format($order['amount'], 2, ',', '.') . '.']);
+                    } catch (Throwable $e) {}
+
+                    write_log('INFO', 'Auto-Delivery Processado', ['order_id' => $order['id'], 'has_stock_item' => (bool)$item]);
+                }
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                write_log('ERROR', 'Auto-Delivery Falhou', ['error' => $e->getMessage()]);
+            }
+            // === END AUTO-DELIVERY ===
             
             // 3.5 Enviar Notificações
             $userData = getUser($transaction['user_id']);

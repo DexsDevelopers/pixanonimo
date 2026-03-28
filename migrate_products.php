@@ -70,6 +70,17 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+    'product_stock_items' => "CREATE TABLE IF NOT EXISTS product_stock_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        content TEXT NOT NULL,
+        status ENUM('available','used') DEFAULT 'available',
+        order_id INT DEFAULT NULL,
+        used_at TIMESTAMP NULL DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
 ];
 
 foreach ($tables as $name => $sql) {
@@ -85,6 +96,10 @@ foreach ($tables as $name => $sql) {
 $alters = [
     ['table' => 'products', 'column' => 'delivery_method',
      'sql' => "ALTER TABLE products ADD COLUMN delivery_method VARCHAR(50) DEFAULT '' AFTER type"],
+    ['table' => 'orders', 'column' => 'delivery_token',
+     'sql' => "ALTER TABLE orders ADD COLUMN delivery_token VARCHAR(64) UNIQUE AFTER delivery_data"],
+    ['table' => 'orders', 'column' => 'delivered_content',
+     'sql' => "ALTER TABLE orders ADD COLUMN delivered_content TEXT AFTER delivery_token"],
 ];
 
 foreach ($alters as $alt) {

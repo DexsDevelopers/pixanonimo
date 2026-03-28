@@ -38,6 +38,7 @@ import ProdutosPage from './pages/ProdutosPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
 import AdminProdutosPage from './pages/AdminProdutosPage';
+import EntregaPage from './pages/EntregaPage';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -216,6 +217,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/entrega/:token" element={<EntregaPage />} />
 
         <Route path="/dashboard" element={
           <PrivateRoute>

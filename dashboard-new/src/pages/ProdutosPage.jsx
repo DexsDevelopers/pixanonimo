@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Package, Plus, Pencil, Trash2, Eye, EyeOff, Sparkles, X, Check, AlertCircle, ToggleLeft, ToggleRight, Upload, Link, ImageIcon, Truck, Mail, Download, HandCoins, Box } from 'lucide-react';
+import { Package, Plus, Pencil, Trash2, Eye, EyeOff, Sparkles, X, Check, AlertCircle, ToggleLeft, ToggleRight, Upload, Link, ImageIcon, Truck, Mail, Download, HandCoins, Box, Database, KeyRound, ChevronDown, RefreshCw } from 'lucide-react';
 
 const CATEGORIES = ['Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
 const TYPES = [
@@ -238,6 +238,129 @@ function ProductModal({ product, onClose, onSave }) {
   );
 }
 
+function StockModal({ product, onClose }) {
+  const [items, setItems] = useState([]);
+  const [stats, setStats] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+  const [singleText, setSingleText] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/manage_stock.php?product_id=${product.id}`);
+      const data = await res.json();
+      if (data.success) { setItems(data.items || []); setStats(data.stats || {}); }
+    } catch {}
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchItems(); }, [product.id]);
+
+  const addSingle = async () => {
+    if (!singleText.trim()) return;
+    setSaving(true);
+    await fetch('/manage_stock.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'add', product_id: product.id, content: singleText.trim() }),
+    });
+    setSingleText('');
+    await fetchItems();
+    setSaving(false);
+  };
+
+  const addBulk = async () => {
+    if (!bulkText.trim()) return;
+    setSaving(true);
+    await fetch('/manage_stock.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'bulk_add', product_id: product.id, items: bulkText }),
+    });
+    setBulkText(''); setBulkMode(false);
+    await fetchItems();
+    setSaving(false);
+  };
+
+  const deleteItem = async (itemId) => {
+    await fetch('/manage_stock.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', product_id: product.id, item_id: itemId }),
+    });
+    await fetchItems();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-white/5">
+          <div>
+            <h2 className="font-black flex items-center gap-2"><Database size={16} className="text-primary" /> Estoque Digital</h2>
+            <p className="text-xs text-white/40 mt-0.5 truncate max-w-xs">{product.name}</p>
+          </div>
+          <button onClick={onClose} className="p-2 text-white/30 hover:text-white rounded-lg hover:bg-white/5 transition-all"><X size={16} /></button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3 p-4 border-b border-white/5">
+          {[['Disponíveis', stats.available || 0, 'text-green-400'], ['Usados', stats.used || 0, 'text-white/40'], ['Total', stats.total || 0, 'text-white']].map(([l, v, c]) => (
+            <div key={l} className="bg-white/[0.03] rounded-xl p-3 text-center">
+              <p className={`text-xl font-black ${c}`}>{v}</p>
+              <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{l}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Add item */}
+        <div className="p-4 border-b border-white/5 space-y-3">
+          <div className="flex gap-2">
+            <button onClick={() => setBulkMode(false)} className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${!bulkMode ? 'bg-white text-black' : 'bg-white/5 text-white/50'}`}>Um por vez</button>
+            <button onClick={() => setBulkMode(true)} className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${bulkMode ? 'bg-white text-black' : 'bg-white/5 text-white/50'}`}>Colar em massa</button>
+          </div>
+          {bulkMode ? (
+            <div className="space-y-2">
+              <p className="text-xs text-white/30">Cole seus itens, um por linha (chaves, links, senhas, etc)</p>
+              <textarea rows={5} value={bulkText} onChange={e => setBulkText(e.target.value)} placeholder="item1\nitem2\nitem3" className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-primary/40 resize-none font-mono" />
+              <button onClick={addBulk} disabled={saving || !bulkText.trim()} className="w-full py-2.5 rounded-xl bg-primary text-black font-black text-sm disabled:opacity-50">Adicionar {bulkText.trim().split('\n').filter(Boolean).length} itens</button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input value={singleText} onChange={e => setSingleText(e.target.value)} onKeyDown={e => e.key === 'Enter' && addSingle()} placeholder="Ex: CHAVE-1234-ABCD ou https://..." className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
+              <button onClick={addSingle} disabled={saving || !singleText.trim()} className="px-4 py-2 rounded-xl bg-primary text-black font-black text-sm disabled:opacity-50 flex items-center gap-1.5"><Plus size={14} /></button>
+            </div>
+          )}
+        </div>
+
+        {/* Items list */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
+          {loading ? (
+            <div className="flex justify-center py-8"><RefreshCw size={18} className="text-white/20 animate-spin" /></div>
+          ) : items.length === 0 ? (
+            <div className="text-center py-8">
+              <KeyRound size={28} className="text-white/10 mx-auto mb-2" />
+              <p className="text-sm text-white/30">Nenhum item no estoque</p>
+              <p className="text-xs text-white/20 mt-1">Adicione chaves, links ou senhas acima</p>
+            </div>
+          ) : items.map(item => (
+            <div key={item.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${item.status === 'used' ? 'border-white/5 bg-white/[0.01] opacity-40' : 'border-white/10 bg-white/[0.03]'}`}>
+              <KeyRound size={13} className={item.status === 'used' ? 'text-white/20' : 'text-primary/60'} />
+              <span className="flex-1 text-xs font-mono text-white/80 truncate">{item.content}</span>
+              <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${item.status === 'used' ? 'bg-white/5 text-white/20' : 'bg-green-500/10 text-green-400'}`}>{item.status === 'used' ? 'Usado' : 'Livre'}</span>
+              {item.status === 'available' && (
+                <button onClick={() => deleteItem(item.id)} className="p-1 text-red-500/30 hover:text-red-400 transition-colors rounded"><X size={11} /></button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatusBadge({ status }) {
   const map = { active: ['bg-green-500/10 text-green-400 border-green-500/20', 'Ativo'], inactive: ['bg-white/5 text-white/40 border-white/10', 'Inativo'], pending: ['bg-yellow-500/10 text-yellow-400 border-yellow-500/20', 'Pendente'] };
   const [cls, label] = map[status] || map.inactive;
@@ -248,6 +371,7 @@ export default function ProdutosPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null);
+  const [stockModal, setStockModal] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [filter, setFilter] = useState('all');
 
@@ -294,6 +418,7 @@ export default function ProdutosPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
       {modal && <ProductModal product={modal === 'new' ? null : modal} onClose={() => setModal(null)} onSave={() => { setModal(null); fetchProducts(); }} />}
+      {stockModal && <StockModal product={stockModal} onClose={() => setStockModal(null)} />}
 
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
@@ -363,16 +488,24 @@ export default function ProdutosPage() {
                   {p.vitrine ? <span className="flex items-center gap-1 text-[10px] text-primary/70 font-bold"><Sparkles size={10} />Vitrine</span> : null}
                 </div>
                 {p.stock !== -1 && <p className="text-xs text-white/40 mb-3">Estoque: {p.stock} unidades</p>}
-                <div className="flex gap-2">
-                  <button onClick={() => handleToggleStatus(p)} title={p.status === 'active' ? 'Desativar' : 'Ativar'} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all text-white/50 hover:text-white">
-                    {p.status === 'active' ? <Eye size={14} /> : <EyeOff size={14} />}
-                  </button>
-                  <button onClick={() => setModal(p)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all text-white/60 hover:text-white text-xs font-semibold">
-                    <Pencil size={12} /> Editar
-                  </button>
-                  <button onClick={() => handleDelete(p.id)} disabled={deleting === p.id} className="p-2 rounded-lg bg-red-500/5 hover:bg-red-500/10 transition-all text-red-500/50 hover:text-red-400">
-                    <Trash2 size={14} />
-                  </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <button onClick={() => handleToggleStatus(p)} title={p.status === 'active' ? 'Desativar' : 'Ativar'} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all text-white/50 hover:text-white">
+                      {p.status === 'active' ? <Eye size={14} /> : <EyeOff size={14} />}
+                    </button>
+                    <button onClick={() => setModal(p)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all text-white/60 hover:text-white text-xs font-semibold">
+                      <Pencil size={12} /> Editar
+                    </button>
+                    <button onClick={() => handleDelete(p.id)} disabled={deleting === p.id} className="p-2 rounded-lg bg-red-500/5 hover:bg-red-500/10 transition-all text-red-500/50 hover:text-red-400">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  {(p.type === 'digital' || p.type === 'service') && (
+                    <button onClick={() => setStockModal(p)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-all text-xs font-bold">
+                      <Database size={12} /> Gerenciar Estoque Digital
+                      {p.stock > 0 && <span className="ml-1 bg-primary/20 text-primary text-[9px] font-black px-1.5 rounded-full">{p.stock}</span>}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
