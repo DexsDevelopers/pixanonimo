@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Package, Plus, Pencil, Trash2, Eye, EyeOff, Sparkles, Tag, DollarSign, Image, FileText, X, Check, AlertCircle, ToggleLeft, ToggleRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Package, Plus, Pencil, Trash2, Eye, EyeOff, Sparkles, X, Check, AlertCircle, ToggleLeft, ToggleRight, Upload, Link, ImageIcon, Truck, Mail, Download, HandCoins, Box } from 'lucide-react';
 
 const CATEGORIES = ['Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
 const TYPES = [
-  { value: 'digital', label: 'Digital' },
-  { value: 'physical', label: 'Físico' },
-  { value: 'service', label: 'Serviço' },
+  { value: '', label: 'Selecione o tipo *', disabled: true },
+  { value: 'digital', label: '💾 Digital (arquivo, acesso online)' },
+  { value: 'physical', label: '📦 Físico (envio pelos Correios)' },
+  { value: 'service', label: '🛠️ Serviço (prestação de serviço)' },
+];
+const DELIVERY_METHODS = [
+  { value: '', label: 'Como será entregue? *', disabled: true },
+  { value: 'email', label: '📧 Por e-mail após pagamento' },
+  { value: 'link', label: '🔗 Link de acesso automático' },
+  { value: 'download', label: '⬇️ Download direto' },
+  { value: 'manual', label: '✋ Entrega manual pelo vendedor' },
+  { value: 'shipping', label: '🚚 Envio físico (Correios/transportadora)' },
+  { value: 'whatsapp', label: '💬 Via WhatsApp' },
+  { value: 'other', label: '📋 Outro (especificar)' },
 ];
 
 function ProductModal({ product, onClose, onSave }) {
@@ -14,18 +25,45 @@ function ProductModal({ product, onClose, onSave }) {
     description: product?.description || '',
     price: product?.price || '',
     category: product?.category || 'Digital',
-    type: product?.type || 'digital',
+    type: product?.type || '',
     image_url: product?.image_url || '',
+    delivery_method: product?.delivery_method || '',
     delivery_info: product?.delivery_info || '',
     vitrine: product?.vitrine ? '1' : '0',
     stock: product?.stock ?? -1,
   });
+  const [imageMode, setImageMode] = useState('url'); // 'url' | 'upload'
+  const [uploadPreview, setUploadPreview] = useState(product?.image_url || null);
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const fileRef = useRef();
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setError('');
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const res = await fetch('/upload_image.php', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) {
+        setForm(f => ({ ...f, image_url: data.url }));
+        setUploadPreview(data.url);
+      } else setError(data.error || 'Erro no upload.');
+    } catch { setError('Erro de conexão no upload.'); }
+    setUploading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.price) { setError('Nome e preço são obrigatórios.'); return; }
+    if (!form.name.trim()) { setError('Nome do produto é obrigatório.'); return; }
+    if (!form.price) { setError('Preço é obrigatório.'); return; }
+    if (!form.type) { setError('Selecione o tipo do produto.'); return; }
+    if (!form.delivery_method) { setError('Selecione a forma de entrega.'); return; }
+    if (!form.delivery_info.trim()) { setError('Descreva como o produto será entregue.'); return; }
+
     setSaving(true); setError('');
     try {
       const res = await fetch('/manage_product.php', {
@@ -40,62 +78,142 @@ function ProductModal({ product, onClose, onSave }) {
     setSaving(false);
   };
 
+  const inputCls = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40";
+  const labelCls = "block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5";
+  const requiredStar = <span className="text-red-400">*</span>;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
+      <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto custom-scrollbar">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 sticky top-0 bg-[#111] z-10">
           <h2 className="text-lg font-black">{product ? 'Editar Produto' : 'Novo Produto'}</h2>
           <button onClick={onClose} className="p-2 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/5"><X size={18} /></button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"><AlertCircle size={14} />{error}</div>}
 
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+              <AlertCircle size={14} className="flex-shrink-0" />{error}
+            </div>
+          )}
+
+          {/* Nome */}
           <div>
-            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Nome do Produto *</label>
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Curso de Marketing Digital" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
+            <label className={labelCls}>Nome do Produto {requiredStar}</label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Curso de Marketing Digital" className={inputCls} />
           </div>
 
+          {/* Preço + Tipo */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Preço (R$) *</label>
-              <input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0,00" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
+              <label className={labelCls}>Preço (R$) {requiredStar}</label>
+              <input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0,00" className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Tipo</label>
-              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/40">
-                {TYPES.map(t => <option key={t.value} value={t.value} className="bg-[#111]">{t.label}</option>)}
+              <label className={labelCls}>Tipo do Produto {requiredStar}</label>
+              <select
+                value={form.type}
+                onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
+                className={`${inputCls} ${!form.type ? 'text-white/30' : 'text-white'}`}
+              >
+                {TYPES.map(t => <option key={t.value} value={t.value} disabled={t.disabled} className="bg-[#111] text-white">{t.label}</option>)}
               </select>
             </div>
           </div>
 
+          {/* Categoria + Estoque */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Categoria</label>
-              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/40">
+              <label className={labelCls}>Categoria</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className={inputCls}>
                 {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#111]">{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Estoque (-1 = ilimitado)</label>
-              <input type="number" min="-1" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
+              <label className={labelCls}>Estoque <span className="text-white/20 normal-case font-normal">(-1 = ilimitado)</span></label>
+              <input type="number" min="-1" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className={inputCls} />
             </div>
           </div>
 
+          {/* Descrição */}
           <div>
-            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Descrição</label>
-            <textarea rows={3} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Descreva seu produto..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40 resize-none" />
+            <label className={labelCls}>Descrição</label>
+            <textarea rows={3} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Descreva seu produto em detalhes..." className={`${inputCls} resize-none`} />
           </div>
 
+          {/* Imagem: Upload ou URL */}
           <div>
-            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">URL da Imagem</label>
-            <input value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className={labelCls + " mb-0"}>Imagem do Produto</label>
+              <div className="flex gap-1 bg-white/5 p-1 rounded-lg">
+                <button type="button" onClick={() => setImageMode('upload')} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${imageMode === 'upload' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white'}`}>
+                  <Upload size={11} /> Upload
+                </button>
+                <button type="button" onClick={() => setImageMode('url')} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${imageMode === 'url' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white'}`}>
+                  <Link size={11} /> URL
+                </button>
+              </div>
+            </div>
+
+            {imageMode === 'upload' ? (
+              <div>
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full border-2 border-dashed border-white/10 rounded-xl py-6 flex flex-col items-center gap-2 hover:border-primary/30 hover:bg-primary/5 transition-all disabled:opacity-50"
+                >
+                  {uploading ? (
+                    <><div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" /><span className="text-xs text-white/40">Enviando...</span></>
+                  ) : uploadPreview ? (
+                    <><img src={uploadPreview} alt="preview" className="w-24 h-24 object-cover rounded-xl" /><span className="text-xs text-primary font-semibold">Clique para trocar</span></>
+                  ) : (
+                    <><ImageIcon size={24} className="text-white/20" /><span className="text-xs text-white/40">Clique para selecionar</span><span className="text-[10px] text-white/20">JPG, PNG, WEBP até 5MB</span></>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <input value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://exemplo.com/imagem.jpg" className={inputCls} />
+            )}
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Informações de Entrega</label>
-            <textarea rows={2} value={form.delivery_info} onChange={e => setForm(f => ({ ...f, delivery_info: e.target.value }))} placeholder="Como o produto será entregue após o pagamento..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40 resize-none" />
+          {/* Forma de Entrega */}
+          <div className="space-y-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+            <div className="flex items-center gap-2 mb-1">
+              <Truck size={14} className="text-primary" />
+              <span className="text-xs font-black text-white/60 uppercase tracking-widest">Entrega {requiredStar}</span>
+            </div>
+            <div>
+              <label className={labelCls}>Forma de Entrega {requiredStar}</label>
+              <select
+                value={form.delivery_method}
+                onChange={e => setForm(f => ({ ...f, delivery_method: e.target.value }))}
+                className={`${inputCls} ${!form.delivery_method ? 'text-white/30' : 'text-white'}`}
+              >
+                {DELIVERY_METHODS.map(d => <option key={d.value} value={d.value} disabled={d.disabled} className="bg-[#111] text-white">{d.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Detalhes da Entrega {requiredStar}</label>
+              <textarea
+                rows={3}
+                value={form.delivery_info}
+                onChange={e => setForm(f => ({ ...f, delivery_info: e.target.value }))}
+                placeholder={
+                  form.delivery_method === 'email' ? 'Ex: O acesso será enviado para seu e-mail em até 24h...' :
+                  form.delivery_method === 'link' ? 'Ex: Você receberá um link de acesso imediato após o pagamento...' :
+                  form.delivery_method === 'download' ? 'Ex: O arquivo estará disponível para download imediatamente...' :
+                  form.delivery_method === 'shipping' ? 'Ex: Enviamos pelos Correios em até 3 dias úteis, código de rastreio por e-mail...' :
+                  form.delivery_method === 'whatsapp' ? 'Ex: Entraremos em contato via WhatsApp em até 1h...' :
+                  'Descreva exatamente como o comprador vai receber o produto...'
+                }
+                className={`${inputCls} resize-none`}
+              />
+            </div>
           </div>
 
+          {/* Vitrine toggle */}
           <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/10 rounded-xl">
             <div>
               <p className="text-sm font-bold text-white">Exibir na Vitrine PixGhost</p>
@@ -106,10 +224,12 @@ function ProductModal({ product, onClose, onSave }) {
             </button>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <p className="text-[11px] text-white/20 text-center">Campos com {requiredStar} são obrigatórios. Produto ficará pendente até aprovação do admin.</p>
+
+          <div className="flex gap-3 pt-1">
             <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-white/10 text-white/60 hover:bg-white/5 transition-all text-sm font-semibold">Cancelar</button>
             <button type="submit" disabled={saving} className="flex-1 py-3 rounded-xl bg-primary text-black font-black text-sm hover:bg-primary/90 transition-all disabled:opacity-50">
-              {saving ? 'Salvando...' : (product ? 'Salvar' : 'Criar Produto')}
+              {saving ? 'Salvando...' : (product ? 'Salvar Alterações' : 'Enviar para Aprovação')}
             </button>
           </div>
         </form>

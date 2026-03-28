@@ -16,7 +16,7 @@ try {
     switch ($action) {
 
         case 'create':
-            $stmt = $pdo->prepare("INSERT INTO products (user_id, name, description, price, image_url, category, type, delivery_info, vitrine, stock, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+            $stmt = $pdo->prepare("INSERT INTO products (user_id, name, description, price, image_url, category, type, delivery_method, delivery_info, vitrine, stock, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
             $stmt->execute([
                 $userId,
                 trim($input['name'] ?? ''),
@@ -25,6 +25,7 @@ try {
                 trim($input['image_url'] ?? ''),
                 $input['category'] ?? 'Digital',
                 $input['type'] ?? 'digital',
+                trim($input['delivery_method'] ?? ''),
                 trim($input['delivery_info'] ?? ''),
                 ($input['vitrine'] ?? '0') === '1' ? 1 : 0,
                 (int)($input['stock'] ?? -1),
@@ -39,7 +40,7 @@ try {
             $check->execute([$id, $userId]);
             if (!$check->fetch()) { echo json_encode(['success' => false, 'error' => 'Produto não encontrado.']); exit; }
 
-            $stmt = $pdo->prepare("UPDATE products SET name=?, description=?, price=?, image_url=?, category=?, type=?, delivery_info=?, vitrine=?, stock=?, status=?, updated_at=NOW() WHERE id = ? AND user_id = ?");
+            $stmt = $pdo->prepare("UPDATE products SET name=?, description=?, price=?, image_url=?, category=?, type=?, delivery_method=?, delivery_info=?, vitrine=?, stock=?, status=?, updated_at=NOW() WHERE id = ? AND user_id = ?");
             $stmt->execute([
                 trim($input['name'] ?? ''),
                 trim($input['description'] ?? ''),
@@ -47,6 +48,7 @@ try {
                 trim($input['image_url'] ?? ''),
                 $input['category'] ?? 'Digital',
                 $input['type'] ?? 'digital',
+                trim($input['delivery_method'] ?? ''),
                 trim($input['delivery_info'] ?? ''),
                 ($input['vitrine'] ?? '0') === '1' ? 1 : 0,
                 (int)($input['stock'] ?? -1),
