@@ -19,10 +19,43 @@ import {
     RefreshCw,
     KeyRound,
     Eye,
-    EyeOff
+    EyeOff,
+    UserCheck,
+    UserX,
+    Clock,
+    Package,
+    ArrowDownToLine,
+    Activity,
+    CalendarDays,
+    CalendarRange,
+    BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { cn } from '../lib/utils';
+
+const fmt = (v) => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtN = (v) => Number(v || 0).toLocaleString('pt-BR');
+
+function StatCard({ icon, label, value, sub, color = 'text-white', border = 'border-white/5', badge }) {
+    return (
+        <div className={`bg-white/[0.03] border ${border} rounded-2xl p-5 flex flex-col gap-3`}>
+            <div className="flex items-center justify-between">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color === 'text-primary' ? 'bg-primary/10' : color === 'text-green-400' ? 'bg-green-500/10' : color === 'text-yellow-400' ? 'bg-yellow-500/10' : color === 'text-red-400' ? 'bg-red-500/10' : color === 'text-blue-400' ? 'bg-blue-500/10' : color === 'text-purple-400' ? 'bg-purple-500/10' : 'bg-white/5'}`}>
+                    <span className={color}>{icon}</span>
+                </div>
+                {badge !== undefined && (
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${badge > 0 ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-white/5 text-white/20 border-white/10'}`}>{badge}</span>
+                )}
+            </div>
+            <div>
+                <p className={`text-2xl font-black ${color}`}>{value}</p>
+                <p className="text-xs text-white/40 font-semibold mt-0.5">{label}</p>
+                {sub && <p className="text-[11px] text-white/25 mt-0.5">{sub}</p>}
+            </div>
+        </div>
+    );
+}
 
 export default function AdminPage() {
     const [adminData, setAdminData] = useState(null);
@@ -175,6 +208,73 @@ export default function AdminPage() {
                     </button>
                 </div>
             </div>
+
+            {/* ── Dashboard de Métricas ── */}
+            {adminData && (() => {
+                const s = adminData.stats;
+                return (
+                    <div className="space-y-4">
+                        {/* Section label */}
+                        <div className="flex items-center gap-2">
+                            <BarChart3 size={16} className="text-primary" />
+                            <h2 className="text-sm font-black text-white/50 uppercase tracking-widest">Visão Geral da Plataforma</h2>
+                        </div>
+
+                        {/* Row 1: Users */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                            <StatCard icon={<Users size={16} />}         label="Total de Usuários"       value={fmtN(s.total_users)}         color="text-white" />
+                            <StatCard icon={<CalendarDays size={16} />}  label="Cadastros Hoje"          value={fmtN(s.users_today)}         color="text-primary"   sub="novos hoje" />
+                            <StatCard icon={<CalendarRange size={16} />} label="Cadastros 7 dias"        value={fmtN(s.users_this_week)}     color="text-blue-400"  sub="últimos 7 dias" />
+                            <StatCard icon={<UserCheck size={16} />}     label="Contas Aprovadas"        value={fmtN(s.approved_users)}      color="text-green-400" />
+                            <StatCard icon={<Clock size={16} />}         label="Aguardando Aprovação"    value={fmtN(s.pending_users)}       color="text-yellow-400" badge={s.pending_users} />
+                            <StatCard icon={<UserX size={16} />}         label="Bloqueados"              value={fmtN(s.blocked_users)}       color="text-red-400" />
+                        </div>
+
+                        {/* Row 2: Revenue */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                            <StatCard icon={<Activity size={16} />}          label="Faturamento Hoje"        value={`R$ ${fmt(s.revenue_today)}`}        color="text-primary"   border="border-primary/10" />
+                            <StatCard icon={<TrendingUp size={16} />}         label="Faturamento 7 dias"      value={`R$ ${fmt(s.revenue_this_week)}`}    color="text-green-400" />
+                            <StatCard icon={<DollarSign size={16} />}         label="Faturamento 30 dias"     value={`R$ ${fmt(s.revenue_this_month)}`}   color="text-blue-400" />
+                            <StatCard icon={<Wallet size={16} />}             label="Volume Total Plataforma" value={`R$ ${fmt(s.revenue_total)}`}        color="text-white"     sub="todas as transações pagas" />
+                        </div>
+
+                        {/* Row 3: Misc */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                            <StatCard icon={<CreditCard size={16} />}         label="Vendas Hoje"             value={fmtN(s.tx_today)}            color="text-primary" />
+                            <StatCard icon={<Clock size={16} />}              label="Transações Pendentes"    value={fmtN(s.pending_tx)}          color="text-yellow-400" badge={s.pending_tx} />
+                            <StatCard icon={<Package size={16} />}            label="Produtos Ativos"         value={fmtN(s.active_products)}     color="text-green-400" sub={`${fmtN(s.pending_products)} aguardando aprovação`} badge={s.pending_products} />
+                            <StatCard icon={<ArrowDownToLine size={16} />}    label="Saques Pendentes"        value={fmtN(s.pending_withdrawals)} color="text-orange-400" badge={s.pending_withdrawals} />
+                            <StatCard icon={<Zap size={16} />}                label="Contas Demo"             value={fmtN(s.demo_users)}          color="text-purple-400" />
+                        </div>
+
+                        {/* Mini bar chart: new registrations last 7 days */}
+                        {s.registration_chart && s.registration_chart.length > 0 && (
+                            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                                <p className="text-xs font-black text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <CalendarDays size={13} className="text-primary" /> Novos Cadastros — Últimos 7 dias
+                                </p>
+                                <ResponsiveContainer width="100%" height={100}>
+                                    <BarChart data={s.registration_chart} barSize={28}>
+                                        <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)', fontWeight: 700 }} axisLine={false} tickLine={false} />
+                                        <YAxis hide allowDecimals={false} />
+                                        <Tooltip
+                                            cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                                            contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
+                                            labelStyle={{ color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}
+                                            formatter={(v) => [`${v} cadastros`, '']}
+                                        />
+                                        <Bar dataKey="count" radius={[6,6,0,0]}>
+                                            {s.registration_chart.map((entry, i) => (
+                                                <Cell key={i} fill={entry.count > 0 ? '#4ade80' : 'rgba(255,255,255,0.07)'} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
 
             {/* Gestão de Usuários */}
             <div className="glass rounded-[40px] border-white/5 overflow-hidden">

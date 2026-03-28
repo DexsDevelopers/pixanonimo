@@ -16,6 +16,48 @@ $currentDefTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
 $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
 $totalProfit = (float)($stmtProfit->fetchColumn() ?: 0);
 
+// ── Dashboard Metrics ──────────────────────────────────────────────────────────
+$today    = date('Y-m-d');
+$weekAgo  = date('Y-m-d', strtotime('-7 days'));
+$monthAgo = date('Y-m-d', strtotime('-30 days'));
+
+// Users
+$totalUsers       = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0")->fetchColumn();
+$usersToday       = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND DATE(created_at) = '$today'")->fetchColumn();
+$usersThisWeek    = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND DATE(created_at) >= '$weekAgo'")->fetchColumn();
+$usersThisMonth   = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND DATE(created_at) >= '$monthAgo'")->fetchColumn();
+$approvedUsers    = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND status = 'approved'")->fetchColumn();
+$pendingUsers     = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND status = 'pending'")->fetchColumn();
+$blockedUsers     = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_admin = 0 AND status = 'blocked'")->fetchColumn();
+$demoUsers        = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_demo = 1")->fetchColumn();
+
+// Transactions / Revenue
+$txToday          = (int)$pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'paid' AND DATE(created_at) = '$today'")->fetchColumn();
+$txThisWeek       = (int)$pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'paid' AND DATE(created_at) >= '$weekAgo'")->fetchColumn();
+$revenueToday     = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND DATE(created_at) = '$today'")->fetchColumn() ?: 0);
+$revenueThisWeek  = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND DATE(created_at) >= '$weekAgo'")->fetchColumn() ?: 0);
+$revenueThisMonth = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND DATE(created_at) >= '$monthAgo'")->fetchColumn() ?: 0);
+$revenueTotal     = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid'")->fetchColumn() ?: 0);
+$pendingTx        = (int)$pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'pending'")->fetchColumn();
+
+// Products & Orders
+$totalProducts    = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+$activeProducts   = (int)$pdo->query("SELECT COUNT(*) FROM products WHERE status = 'active'")->fetchColumn();
+$pendingProducts  = (int)$pdo->query("SELECT COUNT(*) FROM products WHERE status = 'pending'")->fetchColumn();
+
+// Withdrawals
+$pendingWithdraws = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'pending'")->fetchColumn();
+$withdrawsTotal   = (float)($pdo->query("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status = 'paid'")->fetchColumn() ?: 0);
+
+// New registrations chart (last 7 days)
+$registrationChart = [];
+for ($i = 6; $i >= 0; $i--) {
+    $day   = date('Y-m-d', strtotime("-$i days"));
+    $label = date('d/m', strtotime("-$i days"));
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE DATE(created_at) = '$day' AND is_admin = 0")->fetchColumn();
+    $registrationChart[] = ['day' => $label, 'count' => $count];
+}
+
 // 2. Lista de Usuários (Filtros)
 $search = $_GET['search'] ?? '';
 $status_filter = $_GET['status_filter'] ?? '';
@@ -59,11 +101,37 @@ header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'stats' => [
-        'platform_profit' => $totalProfit,
-        'affiliate_rate' => $currentAffRate,
-        'default_tax' => $currentDefTax
+        'platform_profit'   => $totalProfit,
+        'affiliate_rate'    => $currentAffRate,
+        'default_tax'       => $currentDefTax,
+        // Users
+        'total_users'       => $totalUsers,
+        'users_today'       => $usersToday,
+        'users_this_week'   => $usersThisWeek,
+        'users_this_month'  => $usersThisMonth,
+        'approved_users'    => $approvedUsers,
+        'pending_users'     => $pendingUsers,
+        'blocked_users'     => $blockedUsers,
+        'demo_users'        => $demoUsers,
+        // Transactions
+        'tx_today'          => $txToday,
+        'tx_this_week'      => $txThisWeek,
+        'revenue_today'     => $revenueToday,
+        'revenue_this_week' => $revenueThisWeek,
+        'revenue_this_month'=> $revenueThisMonth,
+        'revenue_total'     => $revenueTotal,
+        'pending_tx'        => $pendingTx,
+        // Products
+        'total_products'    => $totalProducts,
+        'active_products'   => $activeProducts,
+        'pending_products'  => $pendingProducts,
+        // Withdrawals
+        'pending_withdrawals' => $pendingWithdraws,
+        'withdrawals_total'   => $withdrawsTotal,
+        // Chart
+        'registration_chart'  => $registrationChart,
     ],
-    'users' => $users,
+    'users'       => $users,
     'withdrawals' => $withdrawals,
-    'apis' => $apis
+    'apis'        => $apis
 ]);
