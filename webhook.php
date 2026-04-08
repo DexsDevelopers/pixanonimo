@@ -26,13 +26,29 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
     // Suporte a diferentes nomes de status (completed ou paid)
     $status = $pixData['status'] ?? ($data['status'] ?? '');
     
-    if (($status === 'completed' || $status === 'paid' || $status === 'PAID') && !empty($pixId)) {
-        write_log('INFO', 'Webhook Identificado para Processamento', ['pix_id' => $pixId, 'status' => $status]);
+    // Also grab external_id sent back by PixGo (always reliable regardless of API account)
+    $externalId = $pixData['external_id'] ?? ($data['external_id'] ?? '');
 
-    // Buscar a transação pendente
-    $stmt = $pdo->prepare("SELECT * FROM transactions WHERE pix_id = ? AND status = 'pending'");
-    $stmt->execute([$pixId]);
-    $transaction = $stmt->fetch();
+    if (($status === 'completed' || $status === 'paid' || $status === 'PAID') && (!empty($pixId) || !empty($externalId))) {
+        write_log('INFO', 'Webhook Identificado para Processamento', ['pix_id' => $pixId, 'external_id' => $externalId, 'status' => $status]);
+
+    // Buscar a transação pendente — tenta pix_id primeiro, depois external_id como fallback
+    $transaction = null;
+    if (!empty($pixId)) {
+        $stmt = $pdo->prepare("SELECT * FROM transactions WHERE pix_id = ? AND status = 'pending'");
+        $stmt->execute([$pixId]);
+        $transaction = $stmt->fetch() ?: null;
+    }
+    if (!$transaction && !empty($externalId)) {
+        $stmt = $pdo->prepare("SELECT * FROM transactions WHERE external_id = ? AND status = 'pending'");
+        $stmt->execute([$externalId]);
+        $transaction = $stmt->fetch() ?: null;
+        if ($transaction && !empty($pixId)) {
+            // Atualiza o pix_id na transação para futuras referências
+            $pdo->prepare("UPDATE transactions SET pix_id = ? WHERE id = ?")->execute([$pixId, $transaction['id']]);
+        }
+    }
+    write_log('INFO', 'Transação Lookup', ['found' => (bool)$transaction, 'via_pix_id' => !empty($pixId), 'via_external_id' => !empty($externalId)]);
 
     if ($transaction) {
         $pdo->beginTransaction();

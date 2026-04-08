@@ -81,11 +81,12 @@ try {
     }
 
     // Chamada Real PixGo
+    $externalId = 'chk_' . $checkoutId . '_' . time();
     $data = [
         'amount' => $totalAmount,
         'description' => 'Pedido em ' . mb_substr($checkout['title'], 0, 30),
         'webhook_url' => getFullUrl('webhook.php'),
-        'external_id' => 'chk_' . $checkoutId . '_' . time(),
+        'external_id' => $externalId,
         'payer' => [
             'name' => empty($customerName) ? 'Cliente Checkout' : $customerName
         ]
@@ -118,7 +119,6 @@ try {
         $qrImage = $pixData['qr_image_url'] ?? '';
         $pixCode = $pixData['pix_code'] ?? ($pixData['payload'] ?? ($pixData['qr_code'] ?? ($pixData['qrcodepix'] ?? '')));
         
-        $externalId = 'chk_' . $checkoutId . '_' . time();
         $pixgoFee = $totalAmount * 0.02;
         if ($totalAmount < 50) $pixgoFee += 1.00;
         $platformFee = $totalAmount * ($user['commission_rate'] / 100);
