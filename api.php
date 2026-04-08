@@ -75,7 +75,7 @@ try {
         throw new Exception('Usuário não está habilitado para receber pagamentos.');
     }
 
-    $currentPixGoKey = getActivePixGoKey();
+    $currentPixGoKey = getActivePixGoKey(!empty($user['is_admin']));
 
     // Ambiente de Simulação / Teste
     if ($currentPixGoKey === 'SUA_API_KEY_AQUI' || empty($currentPixGoKey)) {
