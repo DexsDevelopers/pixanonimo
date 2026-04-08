@@ -129,10 +129,20 @@ try {
         case 'add_api':
             $name = strip_tags(trim($data['name'] ?? 'Nova API'));
             $key = strip_tags(trim($data['api_key'] ?? ''));
+            $isAdminOnly = isset($data['is_admin_only']) && $data['is_admin_only'] == '1' ? 1 : 0;
             if (empty($key)) throw new Exception("Chave API é obrigatória");
-            
-            $stmt = $pdo->prepare("INSERT INTO pixgo_apis (name, api_key, status) VALUES (?, ?, 'active')");
-            $stmt->execute([$name, $key]);
+            // Auto-add column if missing
+            try { $pdo->exec("ALTER TABLE pixgo_apis ADD COLUMN is_admin_only TINYINT(1) DEFAULT 0"); } catch (PDOException $e) {}
+            $stmt = $pdo->prepare("INSERT INTO pixgo_apis (name, api_key, status, is_admin_only) VALUES (?, ?, 'active', ?)");
+            $stmt->execute([$name, $key, $isAdminOnly]);
+            echo json_encode(['success' => true]);
+            break;
+
+        case 'set_api_type':
+            $id = (int)$data['id'];
+            $isAdminOnly = isset($data['is_admin_only']) && $data['is_admin_only'] == '1' ? 1 : 0;
+            try { $pdo->exec("ALTER TABLE pixgo_apis ADD COLUMN is_admin_only TINYINT(1) DEFAULT 0"); } catch (PDOException $e) {}
+            $pdo->prepare("UPDATE pixgo_apis SET is_admin_only = ? WHERE id = ?")->execute([$isAdminOnly, $id]);
             echo json_encode(['success' => true]);
             break;
 

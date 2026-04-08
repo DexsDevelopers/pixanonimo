@@ -134,15 +134,24 @@ function getUser($userId) {
 /**
  * Retorna uma chave de API PixGo ativa aleatoriamente do banco de dados.
  */
-function getActivePixGoKey() {
+function getActivePixGoKey($adminOnly = false) {
     global $pdo;
     try {
+        if ($adminOnly) {
+            // Prefer admin-only APIs; fall back to any active API if none exist
+            $stmt = $pdo->query("SELECT api_key FROM pixgo_apis WHERE status = 'active' AND is_admin_only = 1 ORDER BY RAND() LIMIT 1");
+            $key = $stmt->fetchColumn();
+            if ($key) return $key;
+        }
+        // For users: only non-admin-only APIs
+        $stmt = $pdo->query("SELECT api_key FROM pixgo_apis WHERE status = 'active' AND is_admin_only = 0 ORDER BY RAND() LIMIT 1");
+        $key = $stmt->fetchColumn();
+        if ($key) return $key;
+
+        // Final fallback: any active API
         $stmt = $pdo->query("SELECT api_key FROM pixgo_apis WHERE status = 'active' ORDER BY RAND() LIMIT 1");
         $key = $stmt->fetchColumn();
-        
-        if ($key) {
-            return $key;
-        }
+        if ($key) return $key;
     } catch (PDOException $e) {
         write_log('error', 'Erro ao buscar chaves de API: ' . $e->getMessage());
     }
