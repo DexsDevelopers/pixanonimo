@@ -110,7 +110,8 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                                                 amount: tx.amount_brl ? tx.amount_brl.replace(/\./g, '').replace(',', '.') : 0,
                                                 code: tx.pix_code || '',
                                                 image: tx.qr_image || '',
-                                                secondsOld: tx.seconds_old || 0
+                                                secondsOld: tx.seconds_old || 0,
+                                                createdAt: Date.now() - ((tx.seconds_old || 0) * 1000)
                                             })}
                                             className="p-2.5 rounded-full bg-white/5 text-primary hover:bg-primary hover:text-black transition-all duration-300 border border-white/5 hover:border-primary active:scale-95"
                                             title="Ver QR Code"

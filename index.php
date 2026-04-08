@@ -27,7 +27,7 @@ if ($isAuth && $requestPath === '/') {
     <title>Ghost Pix - Dashboard Premium</title>
     
     <!-- React Build Assets -->
-    <script type="module" crossorigin src="/assets/dashboard-react/index-DFdnLQ36.js"></script>
+    <script type="module" crossorigin src="/assets/dashboard-react/index-BYyrTZdr.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/dashboard-react/index-DaGOHuyu.css">
     
     <!-- Preload fonts to avoid layout shift -->

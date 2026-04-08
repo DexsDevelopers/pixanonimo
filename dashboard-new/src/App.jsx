@@ -179,7 +179,7 @@ export default function App() {
   const handleManualPix = async (pixData) => {
     try {
       if (!pixData?.id) return;
-      setActivePix(pixData);
+      setActivePix({ ...pixData, createdAt: Date.now() });
       fetchDashboard();
     } catch (err) {
       console.error(err);
