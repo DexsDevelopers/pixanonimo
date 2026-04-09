@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
-import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
 
-export default function WithdrawalsPage({ balance, availableForWithdraw, pendingWithdrawals, transactions = [] }) {
+const BADGE = {
+    approved: 'bg-primary/10 text-primary border-primary/20',
+    pending:  'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    rejected: 'bg-red-500/10 text-red-400 border-red-500/20',
+};
+
+export default function WithdrawalsPage({ balance, availableForWithdraw, pendingWithdrawals }) {
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [withdrawals, setWithdrawals] = useState([]);
+    const [loadingW, setLoadingW] = useState(true);
     const withdrawFee = 3.50;
 
     const displayAvailable = availableForWithdraw ?? balance;
     const hasPending = pendingWithdrawals && parseFloat(String(pendingWithdrawals).replace(/\./g, '').replace(',', '.')) > 0;
 
-    const recentWithdrawals = transactions.filter(t => t.badge === 'approved').slice(0, 3);
+    const fetchWithdrawals = async () => {
+        setLoadingW(true);
+        try {
+            const res = await fetch('/get_withdrawals.php');
+            const data = await res.json();
+            if (data.success) setWithdrawals(data.withdrawals);
+        } catch (e) { console.error(e); }
+        setLoadingW(false);
+    };
+
+    useEffect(() => { fetchWithdrawals(); }, []);
 
     const handleWithdraw = async () => {
         const val = parseFloat(amount);
@@ -40,6 +58,7 @@ export default function WithdrawalsPage({ balance, availableForWithdraw, pending
             if (data.status === 'success') {
                 setResult({ success: true, message: `Saque de R$ ${val.toFixed(2).replace('.', ',')} solicitado com sucesso! Prazo: até 2 dias úteis.` });
                 setAmount('');
+                fetchWithdrawals();
             } else {
                 setResult({ success: false, error: data.error || 'Erro ao processar saque.' });
             }
@@ -126,25 +145,32 @@ export default function WithdrawalsPage({ balance, availableForWithdraw, pending
 
                 <div className="space-y-6">
                     <div className="glass p-8 rounded-[40px]">
-                        <h3 className="text-lg font-black mb-6 flex items-center gap-2">
-                            <History size={18} className="text-primary" />
-                            Status Recentes
+                        <h3 className="text-lg font-black mb-4 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                                <History size={18} className="text-primary" />
+                                Histórico de Saques
+                            </span>
+                            <button onClick={fetchWithdrawals} title="Atualizar" className="p-1.5 rounded-full hover:bg-white/10 transition-all">
+                                <RefreshCw size={14} className={`text-white/40 ${loadingW ? 'animate-spin' : ''}`} />
+                            </button>
                         </h3>
-                        <div className="space-y-6">
-                            {recentWithdrawals.length > 0 ? (
-                                recentWithdrawals.map((tx, i) => (
-                                    <div key={i} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                        <div className="space-y-4">
+                            {loadingW ? (
+                                <div className="flex justify-center py-6"><Loader2 size={20} className="animate-spin text-white/20" /></div>
+                            ) : withdrawals.length > 0 ? (
+                                withdrawals.slice(0, 6).map((w) => (
+                                    <div key={w.id} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
                                         <div>
-                                            <p className="text-sm font-bold text-white">R$ {tx.amount_brl}</p>
-                                            <p className="text-[10px] text-white/40">{tx.date}</p>
+                                            <p className="text-sm font-bold text-white">R$ {w.amount}</p>
+                                            <p className="text-[10px] text-white/40">{w.date}</p>
+                                            {w.pix_key && <p className="text-[10px] text-white/25 truncate max-w-[120px]">{w.pix_key}</p>}
                                         </div>
-                                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase tracking-wider border border-primary/20">{tx.status}</span>
+                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${BADGE[w.badge] ?? BADGE.pending}`}>{w.status}</span>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-xs text-white/20 text-center py-4">Nenhum saque recente.</p>
+                                <p className="text-xs text-white/20 text-center py-6">Nenhum saque solicitado ainda.</p>
                             )}
-                            <p className="text-[10px] text-center text-white/20 font-bold uppercase tracking-widest pt-4 cursor-pointer hover:text-white transition-colors">Ver histórico completo</p>
                         </div>
                     </div>
                 </div>
