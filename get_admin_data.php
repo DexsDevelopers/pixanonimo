@@ -38,7 +38,7 @@ $revenueToday     = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM
 $revenueThisWeek  = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND DATE(created_at) >= '$weekAgo'")->fetchColumn() ?: 0);
 $revenueThisMonth = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND DATE(created_at) >= '$monthAgo'")->fetchColumn() ?: 0);
 $revenueTotal     = (float)($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid'")->fetchColumn() ?: 0);
-$pendingTx        = (int)$pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'pending'")->fetchColumn();
+$pendingTx        = (int)$pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)")->fetchColumn();
 
 // Products & Orders
 $totalProducts    = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
