@@ -27,7 +27,7 @@ function CountdownTimer({ secondsOld }) {
     );
 }
 
-export default function TransactionsTable({ transactions = [], loading = false, onViewQr, onDelete }) {
+export default function TransactionsTable({ transactions = [], loading = false, onViewQr, onDelete, showSeller = false }) {
     const [copiedId, setCopiedId] = useState(null);
 
     const handleCopy = (code, id) => {
@@ -55,7 +55,7 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                     <History className="text-white/20" size={32} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Sem movimentação</h3>
-                <p className="text-white/40 max-w-sm mx-auto">Suas vendas aparecerão aqui em tempo real.</p>
+                <p className="text-white/40 max-w-sm mx-auto">{showSeller ? 'Nenhuma venda na plataforma ainda.' : 'Suas vendas aparecerão aqui em tempo real.'}</p>
             </div>
         );
     }
@@ -66,6 +66,7 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                 <thead>
                     <tr className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-black">
                         <th className="px-6 py-2">Cliente / ID</th>
+                        {showSeller && <th className="px-6 py-2">Vendedor</th>}
                         <th className="px-6 py-2">Valor Total</th>
                         <th className="px-6 py-2 text-center">Status / Expiração</th>
                         <th className="px-6 py-2 text-right">Ações</th>
@@ -80,6 +81,11 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                                     <span className="text-white/20 text-[10px] font-medium uppercase tracking-wider">#{tx.id} • {tx.date}</span>
                                 </div>
                             </td>
+                            {showSeller && (
+                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
+                                    <span className="text-white/70 font-semibold text-xs bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name || '—'}</span>
+                                </td>
+                            )}
                             <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
                                 <span className="text-white font-black text-base">R$ {tx.amount_brl}</span>
                             </td>

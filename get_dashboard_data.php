@@ -53,42 +53,69 @@ $stats = [
     'pending_count' => 0
 ];
 
+$isAdmin = (bool)$user['is_admin'];
+
 if ($user['is_demo'] == 1) {
-    // Lógica Demo: Receita Total = Saldo Atual + Saques Concluídos
+    // Lógica Demo
     $stmtW = $pdo->prepare("SELECT SUM(amount) as total FROM withdrawals WHERE user_id = ? AND status = 'completed'");
     $stmtW->execute([$userId]);
     $totalWithdrawn = $stmtW->fetch()['total'] ?? 0;
-    
     $totalPaidVal = $user['balance'] + $totalWithdrawn;
-    // No demo, os multiplicadores são fixos por enquanto
     $stats['total_paid'] = number_format($totalPaidVal, 2, ',', '.');
     $stats['month_volume'] = number_format($totalPaidVal * 0.82, 2, ',', '.');
     $stats['today_volume'] = number_format($totalPaidVal * 0.14, 2, ',', '.');
     $stats['pending_count'] = floor($totalPaidVal / 140);
+} elseif ($isAdmin) {
+    // Admin: estatísticas de toda a plataforma
+    $todayStart = date('Y-m-d 00:00:00');
+
+    $r = $pdo->query("SELECT SUM(amount_brl) as vol FROM transactions WHERE status = 'paid' AND created_at >= '$todayStart'")->fetch();
+    $stats['today_volume'] = number_format($r['vol'] ?? 0, 2, ',', '.');
+
+    $sqlPeriod = str_replace(' AND created_at', ' AND t.created_at', $periodSQL);
+    $r2 = $pdo->query("SELECT SUM(amount_brl) as vol FROM transactions t WHERE status = 'paid'" . $periodSQL)->fetch();
+    $stats['month_volume'] = number_format($r2['vol'] ?? 0, 2, ',', '.');
+
+    $r3 = $pdo->query("SELECT SUM(amount_brl) as vol FROM transactions WHERE status = 'paid'" . $periodSQL)->fetch();
+    $stats['total_paid'] = number_format($r3['vol'] ?? 0, 2, ',', '.');
+
+    $r4 = $pdo->query("SELECT COUNT(*) as qtd FROM transactions WHERE status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)")->fetch();
+    $stats['pending_count'] = $r4['qtd'] ?? 0;
+
+    // Total de usuários ativos
+    $r5 = $pdo->query("SELECT COUNT(*) as cnt FROM users WHERE is_admin = 0 AND status = 'approved'")->fetch();
+    $stats['total_users'] = (int)($r5['cnt'] ?? 0);
+
+    // Saques pendentes na plataforma
+    $r6 = $pdo->query("SELECT COUNT(*) as cnt, COALESCE(SUM(amount),0) as vol FROM withdrawals WHERE status = 'pending'")->fetch();
+    $stats['pending_withdrawals_count'] = (int)($r6['cnt'] ?? 0);
+    $stats['pending_withdrawals_volume'] = number_format($r6['vol'] ?? 0, 2, ',', '.');
+
+    // Saldo total da plataforma
+    $r7 = $pdo->query("SELECT COALESCE(SUM(balance),0) as total FROM users WHERE is_admin = 0")->fetch();
+    $stats['platform_balance'] = number_format($r7['total'] ?? 0, 2, ',', '.');
 } else {
-    // Volume Hoje (a partir de meia-noite no timezone do servidor)
+    // Usuário comum
     $todayStart = date('Y-m-d 00:00:00');
     $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= ?");
     $stmtToday->execute([$userId, $todayStart]);
     $stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Volume no Período Selecionado
     $stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
     $stmtMonth->execute([$userId]);
     $stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Total Acumulado no Período
     $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
     $stmtTotal->execute([$userId]);
     $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Cobranças Pendentes (< 20 min)
     $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)");
     $stmtPending->execute([$userId]);
     $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
 }
 
 // --- 3. ÚLTIMAS TRANSAÇÕES ---
+$isAdmin = $isAdmin ?? (bool)$user['is_admin'];
 if ($user['is_demo'] == 1) {
     // Gerar transações fake para conta demo
     $fakeNames = ['João Silva', 'Maria Oliveira', 'Pedro Santos', 'Ana Costa', 'Lucas Ferreira', 'Juliana Souza', 'Carlos Lima', 'Fernanda Rocha', 'Rafael Almeida', 'Camila Ribeiro', 'Bruno Martins', 'Patrícia Gomes', 'Diego Araújo', 'Larissa Pereira', 'Thiago Barbosa'];
@@ -134,30 +161,38 @@ if ($user['is_demo'] == 1) {
     // Restaurar seed aleatório
     srand();
 } else {
-    $stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
-    $stmtRows->execute([$userId]);
-    $rows = $stmtRows->fetchAll();
-
     $formattedRows = [];
+    if ($isAdmin) {
+        // Admin vê todas as transações com nome do vendedor
+        $stmtRows = $pdo->query(
+            "SELECT t.*, u.full_name as seller_name,
+             (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(t.created_at)) as seconds_old
+             FROM transactions t
+             JOIN users u ON t.user_id = u.id
+             ORDER BY t.created_at DESC LIMIT 30"
+        );
+        $rows = $stmtRows->fetchAll();
+    } else {
+        $stmtRows = $pdo->prepare(
+            "SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old
+             FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10"
+        );
+        $stmtRows->execute([$userId]);
+        $rows = $stmtRows->fetchAll();
+    }
+
     foreach ($rows as $t) {
-        // Lógica de status
         $status = $t['status'];
         $displayStatus = 'Pendente';
         $badgeClass = 'pending';
-
         if ($status == 'paid') {
             $displayStatus = 'Pago';
             $badgeClass = 'approved';
         } elseif ($status == 'pending') {
-            if ($t['seconds_old'] > 1200) {
-                $displayStatus = 'Expirado';
-                $badgeClass = 'expired';
-            }
+            if ($t['seconds_old'] > 1200) { $displayStatus = 'Expirado'; $badgeClass = 'expired'; }
         } elseif ($status == 'rejected') {
-            $displayStatus = 'Rejeitado';
-            $badgeClass = 'rejected';
+            $displayStatus = 'Rejeitado'; $badgeClass = 'rejected';
         }
-
         $formattedRows[] = [
             'id' => $t['id'],
             'date' => date('d/m/Y H:i', strtotime($t['created_at'])),
@@ -166,6 +201,7 @@ if ($user['is_demo'] == 1) {
             'status' => $displayStatus,
             'badge' => $badgeClass,
             'customer_name' => $t['customer_name'] ?? 'Sem nome',
+            'seller_name' => $t['seller_name'] ?? null,
             'qr_image' => $t['qr_image'] ?? '',
             'pix_code' => $t['pix_code'] ?? '',
             'seconds_old' => (int)$t['seconds_old']
@@ -193,6 +229,7 @@ foreach ($notifs as $n) {
 header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
+    'is_admin_view' => $isAdmin,
     'balance' => $stats['balance_fmt'],
     'available_for_withdraw' => number_format($availableForWithdraw, 2, ',', '.'),
     'pending_withdrawals' => number_format($pendingWithdrawals, 2, ',', '.'),
