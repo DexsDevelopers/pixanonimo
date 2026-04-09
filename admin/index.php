@@ -435,6 +435,13 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
            RESPONSIVIDADE MOBILE — Admin Geral
            ============================================================ */
         @media (max-width: 900px) {
+
+            /* ── Impede overflow horizontal global ── */
+            body, .main-content, .card.glass.full-width, .table-responsive {
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+
             /* ── Cabeçalho da página ── */
             .admin-header {
                 flex-direction: column !important;
@@ -445,23 +452,20 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 flex-direction: column !important;
                 align-items: stretch !important;
                 gap: 0.75rem !important;
-                width: 100%;
+                width: 100% !important;
             }
             .header-actions .stat-card {
                 min-width: unset !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
-                flex-direction: row !important;
-                flex-wrap: wrap !important;
             }
             .header-actions form.stat-card {
                 min-width: unset !important;
                 width: 100% !important;
-                flex-direction: row !important;
                 flex-wrap: wrap !important;
-                justify-content: space-between !important;
                 gap: 0.75rem !important;
                 padding: 1rem !important;
+                box-sizing: border-box !important;
             }
             .btn-demo {
                 width: 100% !important;
@@ -473,114 +477,134 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 flex-direction: column !important;
                 gap: 0.6rem !important;
             }
-            .filter-form > div,
-            .filter-form > select,
-            .filter-form > button {
+            .filter-form > *,
+            .filter-form > div {
                 width: 100% !important;
-                max-width: none !important;
+                max-width: 100% !important;
                 flex: none !important;
+                box-sizing: border-box !important;
             }
+            .filter-form > button,
             .filter-form > a {
                 width: 100% !important;
                 height: 44px !important;
                 border-radius: 12px !important;
-            }
-            .filter-form > button { height: 44px !important; }
-
-            /* ── Cabeçalho da seção de usuários ── */
-            .card.glass.full-width > div[style*="space-between"] {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 1rem !important;
+                box-sizing: border-box !important;
             }
 
-            /* ── Tabelas → Layout de Cartão ── */
-            .table-responsive {
-                overflow-x: visible !important;
+            /* ── Seção de usuários: título + filtros ── */
+            .card.glass.full-width > div {
+                flex-wrap: wrap !important;
             }
+
+            /* ═══════════════════════════════════════════════════
+               TABELA → CARTÕES  (a chave está no display:block
+               em TODOS os níveis: table, tbody, tr, td)
+            ═══════════════════════════════════════════════════ */
+
+            /* 1. A tabela deixa de ser tabela */
             .transaction-table {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
                 border-spacing: 0 !important;
-                table-layout: auto !important;
+                overflow: hidden !important;
             }
 
-            /* Ocultar cabeçalho da tabela */
+            /* 2. thead some */
             .transaction-table thead {
                 display: none !important;
             }
 
-            /* Cada linha vira um cartão */
+            /* 3. tbody também vira bloco */
+            .transaction-table tbody {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            /* 4. Cada linha vira um cartão */
             .transaction-table tbody tr.responsive-row {
                 display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
                 margin-bottom: 1rem !important;
                 border-radius: 16px !important;
-                border: 1px solid rgba(255,255,255,0.08) !important;
+                border: 1px solid rgba(255,255,255,0.09) !important;
                 background: rgba(255,255,255,0.025) !important;
-                padding: 0.6rem 0.85rem !important;
+                padding: 0.5rem 0.9rem 0.7rem !important;
                 overflow: hidden !important;
             }
 
-            /* Células padrão: label à esquerda, valor à direita */
+            /* 5. Cada célula vira uma linha flex */
             .transaction-table td {
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                padding: 0.55rem 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 0.5rem 0 !important;
                 border-bottom: 1px solid rgba(255,255,255,0.05) !important;
                 white-space: normal !important;
-                overflow: visible !important;
+                overflow: hidden !important;
                 text-overflow: unset !important;
-                gap: 0.5rem !important;
+                gap: 0.6rem !important;
                 font-size: 0.82rem !important;
+                min-height: 36px !important;
             }
             .transaction-table td:last-child {
                 border-bottom: none !important;
             }
 
-            /* Label vem do data-label */
+            /* 6. Label automático via data-label */
             .transaction-table td::before {
                 content: attr(data-label);
-                font-size: 0.58rem !important;
+                display: block !important;
+                font-size: 0.56rem !important;
                 font-weight: 800 !important;
                 text-transform: uppercase !important;
-                letter-spacing: 0.07em !important;
-                color: rgba(255,255,255,0.28) !important;
+                letter-spacing: 0.08em !important;
+                color: rgba(255,255,255,0.25) !important;
                 white-space: nowrap !important;
-                min-width: 72px !important;
+                min-width: 68px !important;
                 flex-shrink: 0 !important;
             }
 
-            /* Células complexas (com formulários) → coluna */
+            /* 7. Células com conteúdo complexo (forms/multi-item) → coluna */
             .transaction-table td[data-label="Usuário / Demo"],
             .transaction-table td[data-label="Email / Pix"],
             .transaction-table td[data-label="Ações"] {
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 justify-content: flex-start !important;
-                gap: 0.35rem !important;
+                gap: 0.3rem !important;
             }
             .transaction-table td[data-label="Usuário / Demo"]::before,
             .transaction-table td[data-label="Email / Pix"]::before,
             .transaction-table td[data-label="Ações"]::before {
-                margin-bottom: 0.1rem !important;
+                margin-bottom: 0.2rem !important;
             }
 
-            /* Formulários dentro das células */
-            .transaction-table td form {
+            /* 8. Formulários e inputs dentro das células */
+            .transaction-table td form,
+            .transaction-table td > div {
                 width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                flex-wrap: wrap !important;
             }
-            .pix-input-admin {
-                flex: 1 !important;
-                min-width: 0 !important;
-                width: auto !important;
-            }
-            .balance-input-admin {
-                width: 80px !important;
-            }
+            .transaction-table td input,
+            .pix-input-admin,
+            .balance-input-admin,
             .tx-input-admin {
-                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
+            .pix-input-admin  { flex: 1 !important; min-width: 0 !important; width: auto !important; }
+            .balance-input-admin { width: 80px !important; }
+            .tx-input-admin   { width: 100% !important; }
 
-            /* Botões de ação — distribuídos em linha */
+            /* 9. Botões de ação */
             .transaction-table td[data-label="Ações"] > div {
                 display: flex !important;
                 flex-wrap: wrap !important;
@@ -590,14 +614,12 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
             .transaction-table td[data-label="Ações"] .badge {
                 flex: 1 !important;
                 text-align: center !important;
-                min-width: 60px !important;
+                min-width: 70px !important;
+                cursor: pointer !important;
             }
-
-            /* Formulário de saques — coluna */
             .transaction-table td[data-label="Ações"] form {
                 flex-direction: column !important;
                 align-items: stretch !important;
-                justify-content: flex-start !important;
             }
             .transaction-table td[data-label="Ações"] form .badge {
                 width: 100% !important;
@@ -605,16 +627,11 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 padding: 8px !important;
             }
 
-            /* Botão "Atualizar Taxas" */
-            #global-comm-form {
-                text-align: left !important;
-            }
-            #global-comm-form .btn-primary,
-            #global-comm-form button {
-                width: 100% !important;
-            }
+            /* 10. "Atualizar Taxas" */
+            #global-comm-form { text-align: left !important; }
+            #global-comm-form button { width: 100% !important; }
 
-            /* ── Modais ── */
+            /* ── Modais → bottom-sheet ── */
             .modal-overlay {
                 padding: 0 !important;
                 align-items: flex-end !important;
@@ -627,6 +644,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                 border-radius: 24px 24px 0 0 !important;
                 padding: 1.5rem !important;
                 margin: 0 !important;
+                box-sizing: border-box !important;
             }
         }
     </style>
