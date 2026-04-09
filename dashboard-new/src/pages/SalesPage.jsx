@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { History, Search, Download, CheckCircle, Clock, XCircle, AlertCircle, LayoutGrid } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { History, Search, Download, CheckCircle, Clock, XCircle, AlertCircle, LayoutGrid, RefreshCw } from 'lucide-react';
 import TransactionsTable from '../components/TransactionsTable';
 
 const STATUS_FILTERS = [
@@ -10,12 +10,26 @@ const STATUS_FILTERS = [
     { key: 'rejected', label: 'Rejeitados',icon: AlertCircle,  active: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', inactive: 'text-white/40' },
 ];
 
-export default function SalesPage({ transactions, loading, onViewQr, onDelete }) {
+export default function SalesPage({ onViewQr, onDelete }) {
+    const [allTransactions, setAllTransactions] = useState([]);
+    const [loadingTx, setLoadingTx] = useState(true);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
+    const fetchTransactions = useCallback(async () => {
+        setLoadingTx(true);
+        try {
+            const res = await fetch('/get_transactions.php?limit=500');
+            const data = await res.json();
+            if (data.success) setAllTransactions(data.transactions);
+        } catch (e) { console.error(e); }
+        setLoadingTx(false);
+    }, []);
+
+    useEffect(() => { fetchTransactions(); }, [fetchTransactions]);
+
     const filtered = useMemo(() => {
-        let list = transactions ?? [];
+        let list = allTransactions;
         if (statusFilter !== 'all') {
             list = list.filter(t => t.badge === statusFilter);
         }
@@ -28,16 +42,21 @@ export default function SalesPage({ transactions, loading, onViewQr, onDelete })
             );
         }
         return list;
-    }, [transactions, statusFilter, search]);
+    }, [allTransactions, statusFilter, search]);
 
     const counts = useMemo(() => {
         const c = { all: 0, approved: 0, pending: 0, expired: 0, rejected: 0 };
-        (transactions ?? []).forEach(t => {
+        allTransactions.forEach(t => {
             c.all++;
             if (c[t.badge] !== undefined) c[t.badge]++;
         });
         return c;
-    }, [transactions]);
+    }, [allTransactions]);
+
+    const handleDelete = async (id) => {
+        if (onDelete) await onDelete(id);
+        fetchTransactions();
+    };
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -50,6 +69,9 @@ export default function SalesPage({ transactions, loading, onViewQr, onDelete })
                     <p className="text-white/40 font-medium">Acompanhe e gerencie todas as suas transações em tempo real.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button onClick={fetchTransactions} className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-all" title="Atualizar">
+                        <RefreshCw size={18} className={`text-white/60 ${loadingTx ? 'animate-spin' : ''}`} />
+                    </button>
                     <button className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-full p-3 transition-all" title="Exportar CSV">
                         <Download size={20} className="text-white/60" />
                     </button>
@@ -102,9 +124,9 @@ export default function SalesPage({ transactions, loading, onViewQr, onDelete })
             <div className="space-y-6">
                 <TransactionsTable
                     transactions={filtered}
-                    loading={loading}
+                    loading={loadingTx}
                     onViewQr={onViewQr}
-                    onDelete={onDelete}
+                    onDelete={handleDelete}
                 />
             </div>
         </div>
