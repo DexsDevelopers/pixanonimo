@@ -539,6 +539,7 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                 <th class="col-id">ID</th>
                                 <th class="col-user">Usuário / Demo</th>
                                 <th class="col-email">Email / Pix</th>
+                                <th style="width:120px;">WhatsApp</th>
                                 <th class="col-balance">Saldo</th>
                                 <th class="col-rate">Taxa (%)</th>
                                 <th class="col-status">Status</th>
@@ -568,6 +569,23 @@ $totalProfit = $stmtProfit->fetchColumn() ?: 0;
                                         <input type="text" name="pix_key" value="<?php echo htmlspecialchars($u['pix_key']); ?>" class="pix-input-admin" style="padding: 3px 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
                                         <button type="submit" name="update_pix" class="btn-icon-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--purple); border: none; border-radius: 4px; cursor: pointer; height: 24px; width: 24px;"><i class="fas fa-save" style="font-size: 0.7rem;"></i></button>
                                     </form>
+                                </td>
+                                <td data-label="WhatsApp">
+                                    <?php if (!empty($u['whatsapp'])): ?>
+                                        <a href="https://wa.me/55<?php echo preg_replace('/\D/', '', $u['whatsapp']); ?>" target="_blank"
+                                           style="display:inline-flex; align-items:center; gap:5px; background:rgba(37,211,102,0.12); border:1px solid rgba(37,211,102,0.25); color:#25D366; border-radius:8px; padding:4px 8px; font-size:0.72rem; font-weight:700; text-decoration:none; white-space:nowrap;"
+                                           title="Abrir WhatsApp">
+                                            <i class="fab fa-whatsapp"></i>
+                                            <?php
+                                                $wn = preg_replace('/\D/', '', $u['whatsapp']);
+                                                if (strlen($wn) === 11) echo '(' . substr($wn,0,2) . ') ' . substr($wn,2,5) . '-' . substr($wn,7);
+                                                elseif (strlen($wn) === 10) echo '(' . substr($wn,0,2) . ') ' . substr($wn,2,4) . '-' . substr($wn,6);
+                                                else echo $u['whatsapp'];
+                                            ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span style="font-size:0.7rem; color:rgba(255,255,255,0.2); font-style:italic;">—</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td data-label="Saldo">
                                     <form method="POST" style="display: flex; align-items: center; gap: 5px;">
