@@ -13,8 +13,9 @@ $userId = $_SESSION['user_id'];
 try { $pdo->exec("ALTER TABLE users ADD COLUMN withdraw_method VARCHAR(10) DEFAULT 'pix'"); } catch (PDOException $e) {}
 try { $pdo->exec("ALTER TABLE users ADD COLUMN crypto_address VARCHAR(255) DEFAULT ''"); } catch (PDOException $e) {}
 try { $pdo->exec("ALTER TABLE users ADD COLUMN crypto_network VARCHAR(20) DEFAULT ''"); } catch (PDOException $e) {}
+try { $pdo->exec("ALTER TABLE users ADD COLUMN whatsapp VARCHAR(20) DEFAULT NULL"); } catch (PDOException $e) {}
 
-$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token, withdraw_method, crypto_address, crypto_network, api_key FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT balance, commission_rate, pix_key, status, is_demo, is_admin, full_name, email, referral_token, withdraw_method, crypto_address, crypto_network, api_key, whatsapp FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
@@ -204,6 +205,7 @@ echo json_encode([
         'crypto_address' => $user['crypto_address'] ?? '',
         'crypto_network' => $user['crypto_network'] ?? '',
         'api_token' => $user['api_key'] ?? '',
+        'whatsapp' => $user['whatsapp'] ?? '',
         'is_admin' => (bool)$user['is_admin'],
         'avatar_url' => (function() use ($userId) {
             $dir = __DIR__ . '/uploads/avatars/';

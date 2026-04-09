@@ -14,6 +14,7 @@ import TransactionsTable from './components/TransactionsTable';
 import GeneratePixCard from './components/GeneratePixCard';
 import PixModal from './components/PixModal';
 import PushManager from './components/PushManager';
+import WhatsAppPopup from './components/WhatsAppPopup';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -107,6 +108,7 @@ export default function App() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePix, setActivePix] = useState(null);
+  const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
 
   useEffect(() => {
     console.log("APP MOUNTED. Current path:", location.pathname);
@@ -166,7 +168,10 @@ export default function App() {
       const res = await fetch('/get_dashboard_data.php');
       const data = await res.json();
       console.log("Dashboard data user:", JSON.stringify(data?.user));
-      if (data.success) setDashboardData(data);
+      if (data.success) {
+        setDashboardData(data);
+        if (!data.user?.whatsapp) setShowWhatsAppPopup(true);
+      }
     } catch (err) {
       console.error("Erro ao carregar dashboard:", err);
     } finally {
@@ -210,6 +215,7 @@ export default function App() {
 
   return (
     <>
+      {showWhatsAppPopup && <WhatsAppPopup onClose={() => setShowWhatsAppPopup(false)} />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/demo" element={<DemoPage />} />
