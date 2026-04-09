@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/db.php';
 require_once 'includes/MailService.php';
+require_once 'includes/TelegramService.php';
 
 if (!isAdmin()) {
     echo json_encode(['success' => false, 'error' => 'Não autorizado']);
@@ -60,9 +61,10 @@ try {
                 
                 $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")->execute([$userId, $title, $msg, $type]);
                 
-                if ($value == 'approved') {
-                    $u = getUser($userId);
-                    if ($u) MailService::notifyApproval($u['email'], $u['full_name']);
+                $u = getUser($userId);
+                if ($u) {
+                    if ($value == 'approved') MailService::notifyApproval($u['email'], $u['full_name']);
+                    try { TelegramService::notifyUserStatusChanged($u['full_name'], $u['email'], $value); } catch (Throwable $e) {}
                 }
             }
 
@@ -84,7 +86,7 @@ try {
             $hash = $data['tx_hash'] ?? '';
             $stmt = $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?");
             if ($stmt->execute([$hash, $wId])) {
-                $stmtW = $pdo->prepare("SELECT user_id, amount FROM withdrawals WHERE id = ?");
+                $stmtW = $pdo->prepare("SELECT w.user_id, w.amount, w.pix_key, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ?");
                 $stmtW->execute([$wId]);
                 $w = $stmtW->fetch();
                 if ($w) {
@@ -93,6 +95,7 @@ try {
                     
                     $u = getUser($w['user_id']);
                     if ($u) MailService::notifyWithdrawalPaid($u['email'], $u['full_name'], $w['amount']);
+                    try { TelegramService::notifyWithdrawalApproved($w['full_name'], (float)$w['amount'], $w['pix_key'] ?? '', $hash); } catch (Throwable $e) {}
                 }
             }
             echo json_encode(['success' => true]);
@@ -100,7 +103,7 @@ try {
 
         case 'reject_withdraw':
             $wId = (int)$data['withdraw_id'];
-            $stmt = $pdo->prepare("SELECT user_id, amount FROM withdrawals WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT w.user_id, w.amount, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ?");
             $stmt->execute([$wId]);
             $w = $stmt->fetch();
             if ($w) {
@@ -110,6 +113,7 @@ try {
                 $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
                     ->execute([$w['user_id'], "Seu saque de R$ " . number_format($w['amount'], 2, ',', '.') . " foi rejeitado."]);
                 $pdo->commit();
+                try { TelegramService::notifyWithdrawalRejected($w['full_name'], (float)$w['amount']); } catch (Throwable $e) {}
             }
             echo json_encode(['success' => true]);
             break;

@@ -177,6 +177,7 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
             try {
                 TelegramService::notifySale(
                     (float)$transaction['amount_brl'],
+                    (float)$transaction['amount_net_brl'],
                     $realPayerName ?: ($transaction['customer_name'] ?? 'Sem nome'),
                     $userData['full_name'] ?? 'N/A',
                     (int)$transaction['id']

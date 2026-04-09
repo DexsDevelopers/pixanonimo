@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Notificar Admin via Telegram
-        try { TelegramService::notifyNewUser($full_name, $email); } catch (Throwable $e) {}
+        try { TelegramService::notifyNewUser($full_name, $email, $_SERVER['REMOTE_ADDR'] ?? ''); } catch (Throwable $e) {}
 
         // Notificar Admin (Push + In-App)
         if (class_exists('PushService')) {
