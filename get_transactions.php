@@ -15,9 +15,9 @@ $stmt = $pdo->prepare(
      FROM transactions
      WHERE user_id = ?
      ORDER BY created_at DESC
-     LIMIT ? OFFSET ?"
+     LIMIT {$limit} OFFSET {$offset}"
 );
-$stmt->execute([$userId, $limit, $offset]);
+$stmt->execute([$userId]);
 $rows = $stmt->fetchAll();
 
 $stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE user_id = ?");
