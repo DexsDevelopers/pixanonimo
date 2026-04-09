@@ -38,6 +38,12 @@ switch ($period) {
 // --- 2. ESTATÍSTICAS ---
 $displayBalance = $user['balance'];
 
+// Saldo disponível para saque = saldo total - saques pendentes ainda não aprovados
+$pendingW = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
+$pendingW->execute([$userId]);
+$pendingWithdrawals = (float)$pendingW->fetchColumn();
+$availableForWithdraw = max(0, $user['balance'] - $pendingWithdrawals);
+
 $stats = [
     'balance_fmt' => number_format($displayBalance, 2, ',', '.'),
     'today_volume' => 0,
@@ -187,6 +193,8 @@ header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'balance' => $stats['balance_fmt'],
+    'available_for_withdraw' => number_format($availableForWithdraw, 2, ',', '.'),
+    'pending_withdrawals' => number_format($pendingWithdrawals, 2, ',', '.'),
     'stats' => $stats,
     'user' => [
         'name' => $user['full_name'] ?? 'Usuário',

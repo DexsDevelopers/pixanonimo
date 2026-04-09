@@ -274,7 +274,7 @@ export default function App() {
         <Route path="/saques" element={
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="saques">
-              <WithdrawalsPage balance={commonProps.balance} transactions={dashboardData?.transactions} />
+              <WithdrawalsPage balance={commonProps.balance} availableForWithdraw={dashboardData?.available_for_withdraw} pendingWithdrawals={dashboardData?.pending_withdrawals} transactions={dashboardData?.transactions} />
             </DashboardLayout>
           </PrivateRoute>
         } />

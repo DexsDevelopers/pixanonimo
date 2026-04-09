@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-export default function WithdrawalsPage({ balance, transactions = [] }) {
+export default function WithdrawalsPage({ balance, availableForWithdraw, pendingWithdrawals, transactions = [] }) {
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const withdrawFee = 3.50;
+
+    const displayAvailable = availableForWithdraw ?? balance;
+    const hasPending = pendingWithdrawals && parseFloat(String(pendingWithdrawals).replace(/\./g, '').replace(',', '.')) > 0;
 
     const recentWithdrawals = transactions.filter(t => t.badge === 'approved').slice(0, 3);
 
@@ -16,9 +19,9 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
             return;
         }
 
-        const balanceNum = parseFloat(String(balance).replace(/\./g, '').replace(',', '.'));
-        if (val > balanceNum) {
-            setResult({ success: false, error: `Saldo insuficiente. Seu saldo é R$ ${balance}.` });
+        const availableNum = parseFloat(String(displayAvailable).replace(/\./g, '').replace(',', '.'));
+        if (val > availableNum) {
+            setResult({ success: false, error: `Saldo disponível para saque: R$ ${displayAvailable}.` });
             return;
         }
 
@@ -64,8 +67,13 @@ export default function WithdrawalsPage({ balance, transactions = [] }) {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Saldo Disponível</label>
-                                <div className="text-4xl font-black text-white">R$ {balance}</div>
+                                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Disponível para Saque</label>
+                                <div className="text-4xl font-black text-white">R$ {displayAvailable}</div>
+                                {hasPending && (
+                                    <p className="text-[10px] text-orange-400/80 mt-1 font-bold">
+                                        ⏳ R$ {pendingWithdrawals} em saques pendentes
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Status da Conta</label>

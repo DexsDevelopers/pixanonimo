@@ -50,13 +50,20 @@ if (!$user['pix_key']) {
 }
 
 try {
+    // Verificar se já há saques pendentes que consumiriam o saldo
+    $pendingStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
+    $pendingStmt->execute([$userId]);
+    $pendingTotal = (float)$pendingStmt->fetchColumn();
+    $availableBalance = $user['balance'] - $pendingTotal;
+
+    if ($amount > $availableBalance) {
+        echo json_encode(['error' => 'Saldo insuficiente. Saldo disponível para saque: R$ ' . number_format($availableBalance, 2, ',', '.') . ' (considerando saques pendentes).']);
+        exit;
+    }
+
     $pdo->beginTransaction();
 
-    // 1. Debitar valor total do saldo virtual
-    $stmt = $pdo->prepare("UPDATE users SET balance = balance - ? WHERE id = ?");
-    $stmt->execute([$amount, $userId]);
-
-    // 2. Registrar pedido de saque (valor líquido que o usuário recebe)
+    // Registrar pedido de saque (o saldo só é debitado quando o admin aprovar)
     $stmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, status) VALUES (?, ?, ?, 'pending')");
     $stmt->execute([$userId, $netAmount, $user['pix_key']]);
 

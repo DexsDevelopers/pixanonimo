@@ -90,6 +90,9 @@ try {
                 $stmtW->execute([$wId]);
                 $w = $stmtW->fetch();
                 if ($w) {
+                    // Debitar saldo somente agora (na aprovação)
+                    $pdo->prepare("UPDATE users SET balance = balance - ? WHERE id = ?")->execute([$w['amount'], $w['user_id']]);
+
                     $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
                         ->execute([$w['user_id'], "Seu saque de R$ " . number_format($w['amount'], 2, ',', '.') . " foi processado."]);
                     
@@ -108,7 +111,7 @@ try {
             $w = $stmt->fetch();
             if ($w) {
                 $pdo->beginTransaction();
-                $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$w['amount'], $w['user_id']]);
+                // Saldo não precisa ser devolvido pois nunca foi debitado (debitamos só na aprovação)
                 $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wId]);
                 $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
                     ->execute([$w['user_id'], "Seu saque de R$ " . number_format($w['amount'], 2, ',', '.') . " foi rejeitado."]);
