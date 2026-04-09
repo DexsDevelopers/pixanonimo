@@ -36,12 +36,7 @@ switch ($period) {
 }
 
 // --- 2. ESTATÍSTICAS ---
-// Para admin: usar lucro da plataforma como saldo
 $displayBalance = $user['balance'];
-if (isAdmin()) {
-    $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'" . $periodSQL);
-    $displayBalance = $stmtProfit->fetchColumn() ?: 0;
-}
 
 $stats = [
     'balance_fmt' => number_format($displayBalance, 2, ',', '.'),
@@ -64,25 +59,33 @@ if ($user['is_demo'] == 1) {
     $stats['today_volume'] = number_format($totalPaidVal * 0.14, 2, ',', '.');
     $stats['pending_count'] = floor($totalPaidVal / 140);
 } else {
-    // Volume Hoje (24h) - Fixo para o KPI superior
-    $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
-    $stmtToday->execute([$userId]);
-    $stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
+    if (isAdmin()) {
+        // Admin: mostrar estatísticas de TODA a plataforma
+        $stats['today_volume'] = number_format($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)")->fetchColumn(), 2, ',', '.');
+        $stats['month_volume']  = number_format($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid'" . $periodSQL)->fetchColumn(), 2, ',', '.');
+        $stats['total_paid']    = number_format($pdo->query("SELECT COALESCE(SUM(amount_brl),0) FROM transactions WHERE status = 'paid'" . $periodSQL)->fetchColumn(), 2, ',', '.');
+        $stats['pending_count'] = $pdo->query("SELECT COUNT(*) FROM transactions WHERE status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)")->fetchColumn();
+    } else {
+        // Volume Hoje (24h) - Fixo para o KPI superior
+        $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
+        $stmtToday->execute([$userId]);
+        $stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Volume no Período Selecionado (Exibido no card Receita)
-    $stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
-    $stmtMonth->execute([$userId]);
-    $stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
+        // Volume no Período Selecionado (Exibido no card Receita)
+        $stmtMonth = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
+        $stmtMonth->execute([$userId]);
+        $stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Total Acumulado no Período
-    $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
-    $stmtTotal->execute([$userId]);
-    $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
+        // Total Acumulado no Período
+        $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
+        $stmtTotal->execute([$userId]);
+        $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    // Cobranças Pendentes no Período (Apenas as que não expiraram: < 20 min)
-    $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)" . $periodSQL);
-    $stmtPending->execute([$userId]);
-    $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
+        // Cobranças Pendentes no Período (Apenas as que não expiraram: < 20 min)
+        $stmtPending = $pdo->prepare("SELECT COUNT(*) as qtd FROM transactions WHERE user_id = ? AND status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 20 MINUTE)" . $periodSQL);
+        $stmtPending->execute([$userId]);
+        $stats['pending_count'] = $stmtPending->fetch()['qtd'] ?? 0;
+    }
 }
 
 // --- 3. ÚLTIMAS TRANSAÇÕES ---
@@ -131,8 +134,13 @@ if ($user['is_demo'] == 1) {
     // Restaurar seed aleatório
     srand();
 } else {
-    $stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
-    $stmtRows->execute([$userId]);
+    if (isAdmin()) {
+        // Admin vê as últimas transações de toda a plataforma
+        $stmtRows = $pdo->query("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions ORDER BY created_at DESC LIMIT 20");
+    } else {
+        $stmtRows = $pdo->prepare("SELECT *, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at)) as seconds_old FROM transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
+        $stmtRows->execute([$userId]);
+    }
     $rows = $stmtRows->fetchAll();
 
     $formattedRows = [];
