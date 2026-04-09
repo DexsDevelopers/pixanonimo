@@ -59,9 +59,10 @@ if ($user['is_demo'] == 1) {
     $stats['today_volume'] = number_format($totalPaidVal * 0.14, 2, ',', '.');
     $stats['pending_count'] = floor($totalPaidVal / 140);
 } else {
-    // Volume Hoje (24h)
-    $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
-    $stmtToday->execute([$userId]);
+    // Volume Hoje (a partir de meia-noite no timezone do servidor)
+    $todayStart = date('Y-m-d 00:00:00');
+    $stmtToday = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid' AND created_at >= ?");
+    $stmtToday->execute([$userId, $todayStart]);
     $stats['today_volume'] = number_format($stmtToday->fetch()['vol'] ?? 0, 2, ',', '.');
 
     // Volume no Período Selecionado
