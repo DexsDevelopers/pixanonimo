@@ -90,6 +90,36 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmtW = $pdo->query("SELECT w.*, u.email, u.pix_key FROM withdrawals w JOIN users u ON w.user_id = u.id WHERE w.status = 'pending' ORDER BY w.created_at DESC");
 $withdrawals = $stmtW->fetchAll(PDO::FETCH_ASSOC);
 
+// 3b. Últimas transações da plataforma (todas as vendas)
+$stmtTx = $pdo->query(
+    "SELECT t.id, t.amount_brl, t.amount_net_brl, t.status, t.created_at,
+            t.customer_name, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(t.created_at)) as seconds_old,
+            u.full_name as seller_name
+     FROM transactions t
+     JOIN users u ON t.user_id = u.id
+     ORDER BY t.created_at DESC LIMIT 40"
+);
+$rawTx = $stmtTx->fetchAll(PDO::FETCH_ASSOC);
+$allTransactions = [];
+foreach ($rawTx as $t) {
+    $status = $t['status'];
+    $displayStatus = 'Pendente'; $badgeClass = 'pending';
+    if ($status === 'paid')    { $displayStatus = 'Pago';      $badgeClass = 'approved'; }
+    elseif ($status === 'pending' && $t['seconds_old'] > 1200) { $displayStatus = 'Expirado'; $badgeClass = 'expired'; }
+    elseif ($status === 'rejected') { $displayStatus = 'Rejeitado'; $badgeClass = 'rejected'; }
+    $allTransactions[] = [
+        'id'           => $t['id'],
+        'date'         => date('d/m/Y H:i', strtotime($t['created_at'])),
+        'amount_brl'   => number_format($t['amount_brl'], 2, ',', '.'),
+        'amount_net_brl' => number_format($t['amount_net_brl'], 2, ',', '.'),
+        'status'       => $displayStatus,
+        'badge'        => $badgeClass,
+        'customer_name'=> $t['customer_name'] ?? 'Sem nome',
+        'seller_name'  => $t['seller_name'],
+        'seconds_old'  => (int)$t['seconds_old'],
+    ];
+}
+
 // 4. APIs PixGo
 try {
     $apis = $pdo->query("SELECT * FROM pixgo_apis ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -131,7 +161,8 @@ echo json_encode([
         // Chart
         'registration_chart'  => $registrationChart,
     ],
-    'users'       => $users,
-    'withdrawals' => $withdrawals,
-    'apis'        => $apis
+    'users'            => $users,
+    'withdrawals'      => $withdrawals,
+    'all_transactions' => $allTransactions,
+    'apis'             => $apis
 ]);

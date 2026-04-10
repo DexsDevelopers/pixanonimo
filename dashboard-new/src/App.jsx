@@ -229,72 +229,7 @@ export default function App() {
         <Route path="/dashboard" element={
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="dashboard">
-              {dashboardData?.is_admin_view ? (
-                /* ── ADMIN DASHBOARD ── */
-                <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">Admin</span>
-                      </div>
-                      <h1 className="text-3xl font-black tracking-tight text-white">Visão <span className="text-primary italic">Geral da Plataforma</span></h1>
-                      <p className="text-white/40 font-medium">Dados consolidados de todos os usuários em tempo real.</p>
-                    </div>
-                    <button onClick={fetchDashboard} className="lp-btn-primary py-2 px-6 text-sm">ATUALIZAR</button>
-                  </div>
-
-                  {/* Admin Stats - Row 1 */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                    <StatCard label="Volume Hoje (Plataforma)" value={`R$ ${dashboardData?.stats?.today_volume || '0,00'}`} icon={<History size={24} />} />
-                    <StatCard label="Volume no Período" value={`R$ ${dashboardData?.stats?.month_volume || '0,00'}`} icon={<LayoutDashboard size={24} />} />
-                    <StatCard label="Total de Usuários Ativos" value={dashboardData?.stats?.total_users || '0'} icon={<Wallet size={24} />} trend="Aprovados" />
-                    <StatCard label="Pendentes Agora" value={dashboardData?.stats?.pending_count || '0'} icon={<History size={24} />} trend="Últimos 20min" />
-                  </div>
-
-                  {/* Admin Stats - Row 2 */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
-                    <div className="glass rounded-[28px] p-6 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Wallet className="text-primary" size={22} />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Saldo Total dos Usuários</p>
-                        <p className="text-2xl font-black text-white">R$ {dashboardData?.stats?.platform_balance || '0,00'}</p>
-                      </div>
-                    </div>
-                    <div className="glass rounded-[28px] p-6 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
-                        <History className="text-orange-400" size={22} />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Saques Pendentes</p>
-                        <p className="text-2xl font-black text-white">{dashboardData?.stats?.pending_withdrawals_count || '0'} pedidos</p>
-                        <p className="text-xs text-orange-400 font-bold">R$ {dashboardData?.stats?.pending_withdrawals_volume || '0,00'}</p>
-                      </div>
-                    </div>
-                    <div className="glass rounded-[28px] p-6 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <LayoutDashboard className="text-primary" size={22} />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Total Vendido (Período)</p>
-                        <p className="text-2xl font-black text-white">R$ {dashboardData?.stats?.total_paid || '0,00'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* All Transactions */}
-                  <div className="space-y-6">
-                    <h2 className="text-xl font-black flex items-center gap-2 border-b border-white/5 pb-4">
-                      <History className="text-primary" size={20} /> Todas as Vendas Recentes
-                      <span className="ml-auto text-[10px] font-black text-white/20 uppercase tracking-widest">Últimas 30</span>
-                    </h2>
-                    <TransactionsTable transactions={dashboardData?.transactions} loading={loading} onViewQr={setActivePix} onDelete={handleDeleteTransaction} showSeller={true} />
-                  </div>
-                </div>
-              ) : (
-                /* ── USER DASHBOARD ── */
-                <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+              <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <h1 className="text-3xl font-black tracking-tight text-white">Olá, <span className="text-primary italic">{userData?.name?.split(' ')[0] || 'Ghost'}</span> 👋</h1>
@@ -322,7 +257,6 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-              )}
             </DashboardLayout>
           </PrivateRoute>
         } />

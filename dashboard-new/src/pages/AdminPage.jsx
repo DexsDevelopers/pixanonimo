@@ -276,6 +276,67 @@ export default function AdminPage() {
                 );
             })()}
 
+            {/* ── Vendas Recentes da Plataforma ── */}
+            {adminData?.all_transactions?.length > 0 && (
+                <div className="glass rounded-[40px] border-white/5 overflow-hidden">
+                    <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                                <Activity size={22} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold">Vendas Recentes da Plataforma</h3>
+                                <p className="text-xs text-white/30 font-medium mt-0.5">Últimas 40 transações de todos os usuários</p>
+                            </div>
+                        </div>
+                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{adminData.all_transactions.length} registros</span>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[700px]">
+                            <thead>
+                                <tr className="text-left border-b border-white/5">
+                                    <th className="p-5 pl-8 text-[10px] font-black text-white/20 uppercase tracking-widest">ID / Data</th>
+                                    <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest">Cliente</th>
+                                    <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest">Vendedor</th>
+                                    <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Valor</th>
+                                    <th className="p-5 pr-8 text-[10px] font-black text-white/20 uppercase tracking-widest text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {adminData.all_transactions.map(tx => (
+                                    <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                                        <td className="p-5 pl-8">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black text-white/20">#{tx.id}</span>
+                                                <span className="text-xs text-white/40 font-medium">{tx.date}</span>
+                                            </div>
+                                        </td>
+                                        <td className="p-5">
+                                            <span className="text-sm font-semibold text-white/80">{tx.customer_name}</span>
+                                        </td>
+                                        <td className="p-5">
+                                            <span className="text-xs font-bold text-white/50 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name}</span>
+                                        </td>
+                                        <td className="p-5 text-right">
+                                            <span className="text-sm font-black text-white">R$ {tx.amount_brl}</span>
+                                        </td>
+                                        <td className="p-5 pr-8 text-center">
+                                            <span className={cn(
+                                                'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider',
+                                                tx.badge === 'approved' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                                                tx.badge === 'expired'  ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                tx.badge === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                            )}>{tx.status}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
             {/* Gestão de Usuários */}
             <div className="glass rounded-[40px] border-white/5 overflow-hidden">
                 <div className="p-8 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
