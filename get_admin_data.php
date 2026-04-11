@@ -62,7 +62,7 @@ for ($i = 6; $i >= 0; $i--) {
 $search = $_GET['search'] ?? '';
 $status_filter = $_GET['status_filter'] ?? '';
 
-$sql = "SELECT id, full_name, email, pix_key, whatsapp, balance, commission_rate, status, is_demo, created_at FROM users WHERE is_admin = 0";
+$sql = "SELECT id, full_name, email, pix_key, whatsapp, withdraw_method, crypto_address, balance, commission_rate, status, is_demo, created_at FROM users WHERE is_admin = 0";
 $params = [];
 
 if (!empty($search)) {

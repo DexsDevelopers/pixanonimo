@@ -348,125 +348,147 @@ export default function SettingsPage({ userData }) {
                                             </div>
                                         </div>
 
-                                        {/* Method Selector */}
-                                        <div className="grid grid-cols-3 gap-2">
+                                        {/* Method Cards with Toggle */}
+                                        <div className="space-y-2">
                                             {[
-                                                { id: 'pix', label: 'PIX', emoji: '⚡' },
-                                                { id: 'btc', label: 'Bitcoin', emoji: '₿' },
-                                                { id: 'usdt', label: 'USDT', emoji: '💲' },
-                                            ].map(m => (
-                                                <button
-                                                    key={m.id}
-                                                    onClick={() => setWithdrawMethod(m.id)}
-                                                    className={cn(
-                                                        "py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all border",
-                                                        withdrawMethod === m.id
-                                                            ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_20px_rgba(74,222,128,0.1)]"
-                                                            : "bg-white/[0.02] border-white/5 text-white/30 hover:bg-white/5 hover:text-white/50"
-                                                    )}
-                                                >
-                                                    <span className="text-base mr-1">{m.emoji}</span> {m.label}
-                                                </button>
-                                            ))}
-                                        </div>
-
-                                        {/* PIX Fields */}
-                                        {withdrawMethod === 'pix' && (
-                                            <div className="space-y-3 animate-in fade-in duration-300">
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Sua Chave PIX</label>
-                                                    <input
-                                                        type="text"
-                                                        value={pixKey}
-                                                        onChange={(e) => setPixKey(e.target.value)}
-                                                        placeholder="Ex: seuemail@pix.com.br"
-                                                        className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-mono text-sm text-white/60 focus:outline-none focus:border-primary/50 transition-all"
-                                                    />
-                                                </div>
-                                                <div className="flex items-start gap-2 text-[10px] text-white/30">
-                                                    <span className="text-primary font-black">•</span>
-                                                    <span>CPF, CNPJ, Email, Telefone ou Chave Aleatória</span>
-                                                </div>
-                                                <div className="flex items-start gap-2 text-[10px] text-white/30">
-                                                    <span className="text-primary font-black">•</span>
-                                                    <span>Esta chave será usada para saques de seu saldo disponível</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Crypto Fields (BTC or USDT) */}
-                                        {(withdrawMethod === 'btc' || withdrawMethod === 'usdt') && (
-                                            <div className="space-y-4 animate-in fade-in duration-300">
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">
-                                                        Endereço {withdrawMethod === 'btc' ? 'Bitcoin (BTC)' : 'USDT'}
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={cryptoAddress}
-                                                        onChange={(e) => setCryptoAddress(e.target.value)}
-                                                        placeholder={withdrawMethod === 'btc' ? 'Ex: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj...' : 'Ex: TXqH4j5bME1chy5g7j2bN3n...'}
-                                                        className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-mono text-[11px] text-white/60 focus:outline-none focus:border-primary/50 transition-all"
-                                                    />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Rede (Network)</label>
-                                                    <select
-                                                        value={cryptoNetwork}
-                                                        onChange={(e) => setCryptoNetwork(e.target.value)}
-                                                        className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 text-sm text-white/60 focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
-                                                    >
-                                                        <option value="" className="bg-[#111]">Selecione a rede</option>
-                                                        {withdrawMethod === 'btc' ? (
-                                                            <>
-                                                                <option value="bitcoin" className="bg-[#111]">Bitcoin (BTC) — Rede Principal</option>
-                                                                <option value="lightning" className="bg-[#111]">Lightning Network — Mais Rápido</option>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <option value="trc20" className="bg-[#111]">TRC-20 (Tron) — Mais Barato</option>
-                                                                <option value="erc20" className="bg-[#111]">ERC-20 (Ethereum) — Mais Usado</option>
-                                                                <option value="bep20" className="bg-[#111]">BEP-20 (BSC) — Rápido e Barato</option>
-                                                            </>
-                                                        )}
-                                                    </select>
-                                                </div>
-
-                                                {/* Warning Box */}
-                                                <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 space-y-3">
-                                                    <div className="flex items-center gap-2">
-                                                        <AlertTriangle size={16} className="text-amber-400 shrink-0" />
-                                                        <span className="text-xs font-black text-amber-400 uppercase tracking-wider">Atenção — Leia antes de salvar</span>
-                                                    </div>
-                                                    <div className="space-y-2 text-[11px] text-amber-200/60 leading-relaxed">
-                                                        <p><strong className="text-amber-300">1. Endereço correto:</strong> Confira o endereço com cuidado. Envios para endereço errado são <strong>irreversíveis</strong> e o dinheiro será perdido para sempre.</p>
-                                                        <p><strong className="text-amber-300">2. Rede correta:</strong> Selecione a mesma rede que sua carteira/exchange suporta. Ex: se sua Binance aceita USDT por TRC-20, escolha TRC-20 aqui.</p>
-                                                        <p><strong className="text-amber-300">3. Valor mínimo:</strong> Cada rede tem um valor mínimo de envio. Valores abaixo do mínimo podem ser perdidos.</p>
-                                                        <p><strong className="text-amber-300">4. Tempo de confirmação:</strong> Bitcoin pode levar 10-60 min. USDT via TRC-20 leva 1-5 min. Lightning é quase instantâneo.</p>
-                                                    </div>
-                                                </div>
-
-                                                {/* How-to Guide */}
-                                                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
-                                                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Como receber em {withdrawMethod === 'btc' ? 'Bitcoin' : 'USDT'}</span>
-                                                    <div className="space-y-2">
-                                                        {[
-                                                            `Abra sua carteira ou exchange (Binance, Coinbase, Trust Wallet, etc.)`,
-                                                            `Vá em "Depositar" ou "Receber" e selecione ${withdrawMethod === 'btc' ? 'Bitcoin (BTC)' : 'USDT'}`,
-                                                            `Escolha a rede correta (a mesma que você selecionou acima)`,
-                                                            `Copie o endereço de depósito e cole no campo acima`,
-                                                            `Salve as alterações e pronto! Seus saques serão enviados para esse endereço`
-                                                        ].map((step, i) => (
-                                                            <div key={i} className="flex items-start gap-3">
-                                                                <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                                                                <span className="text-[11px] text-white/40">{step}</span>
+                                                { id: 'pix',  label: 'PIX',     emoji: '⚡', desc: 'Transferência instantânea em Reais',   limit: false },
+                                                { id: 'btc',  label: 'Bitcoin', emoji: '₿',  desc: 'Receba em criptomoeda Bitcoin',        limit: true  },
+                                                { id: 'usdt', label: 'USDT',    emoji: '💲', desc: 'Stablecoin atrelada ao Dólar',         limit: true  },
+                                            ].map(m => {
+                                                const isActive = withdrawMethod === m.id;
+                                                return (
+                                                    <div key={m.id} className={cn(
+                                                        "border rounded-2xl overflow-hidden transition-all",
+                                                        isActive ? "border-primary/30 bg-primary/[0.04]" : "border-white/5 bg-white/[0.02]"
+                                                    )}>
+                                                        {/* Card Header / Toggle Row */}
+                                                        <button
+                                                            onClick={() => setWithdrawMethod(m.id)}
+                                                            className="w-full flex items-center justify-between p-4 text-left"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={cn(
+                                                                    "w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all",
+                                                                    isActive ? "bg-primary/10" : "bg-white/5"
+                                                                )}>{m.emoji}</span>
+                                                                <div>
+                                                                    <p className={cn("font-black text-sm", isActive ? "text-primary" : "text-white/60")}>{m.label}</p>
+                                                                    <p className="text-[11px] text-white/25">{m.desc}</p>
+                                                                </div>
                                                             </div>
-                                                        ))}
+                                                            {/* Toggle Switch */}
+                                                            <div className={cn(
+                                                                "w-11 h-6 rounded-full transition-all relative shrink-0",
+                                                                isActive ? "bg-primary" : "bg-white/10"
+                                                            )}>
+                                                                <span className={cn(
+                                                                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
+                                                                    isActive ? "left-6" : "left-1"
+                                                                )} />
+                                                            </div>
+                                                        </button>
+
+                                                        {/* Expanded Fields */}
+                                                        {isActive && (
+                                                            <div className="px-4 pb-4 pt-1 space-y-3 border-t border-white/5 animate-in fade-in duration-200">
+                                                                {/* $10 minimum warning for crypto */}
+                                                                {m.limit && (
+                                                                    <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5 mt-3">
+                                                                        <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+                                                                        <span className="text-[11px] text-amber-300 font-bold">
+                                                                            Limite mínimo de saque: <strong>$10 dólares</strong> — saques abaixo desse valor não serão processados.
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* PIX key field */}
+                                                                {m.id === 'pix' && (
+                                                                    <div className="space-y-2 pt-1">
+                                                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-2">Sua Chave PIX</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={pixKey}
+                                                                            onChange={(e) => setPixKey(e.target.value)}
+                                                                            placeholder="CPF, CNPJ, Email, Telefone ou Chave Aleatória"
+                                                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 font-mono text-sm text-white/70 focus:outline-none focus:border-primary/50 transition-all"
+                                                                        />
+                                                                        <p className="text-[10px] text-white/25 ml-2">Esta chave será usada para saques do seu saldo disponível</p>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Crypto fields */}
+                                                                {(m.id === 'btc' || m.id === 'usdt') && (
+                                                                    <div className="space-y-3 pt-1">
+                                                                        <div className="space-y-2">
+                                                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-2">
+                                                                                Endereço {m.id === 'btc' ? 'Bitcoin (BTC)' : 'USDT'}
+                                                                            </label>
+                                                                            <input
+                                                                                type="text"
+                                                                                value={cryptoAddress}
+                                                                                onChange={(e) => setCryptoAddress(e.target.value)}
+                                                                                placeholder={m.id === 'btc' ? 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj...' : 'TXqH4j5bME1chy5g7j2bN3n...'}
+                                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 font-mono text-[11px] text-white/70 focus:outline-none focus:border-primary/50 transition-all"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="space-y-2">
+                                                                            <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-2">Rede (Network)</label>
+                                                                            <select
+                                                                                value={cryptoNetwork}
+                                                                                onChange={(e) => setCryptoNetwork(e.target.value)}
+                                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 text-sm text-white/60 focus:outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
+                                                                            >
+                                                                                <option value="" className="bg-[#111]">Selecione a rede</option>
+                                                                                {m.id === 'btc' ? (
+                                                                                    <>
+                                                                                        <option value="bitcoin"   className="bg-[#111]">Bitcoin (BTC) — Rede Principal</option>
+                                                                                        <option value="lightning" className="bg-[#111]">Lightning Network — Mais Rápido</option>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <option value="trc20" className="bg-[#111]">TRC-20 (Tron) — Mais Barato</option>
+                                                                                        <option value="erc20" className="bg-[#111]">ERC-20 (Ethereum) — Mais Usado</option>
+                                                                                        <option value="bep20" className="bg-[#111]">BEP-20 (BSC) — Rápido e Barato</option>
+                                                                                    </>
+                                                                                )}
+                                                                            </select>
+                                                                        </div>
+                                                                        {/* Attention */}
+                                                                        <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3 space-y-1.5">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <AlertTriangle size={13} className="text-amber-400 shrink-0" />
+                                                                                <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider">Atenção</span>
+                                                                            </div>
+                                                                            <div className="space-y-1 text-[10px] text-amber-200/50 leading-relaxed">
+                                                                                <p><strong className="text-amber-300">Endereço errado</strong> = dinheiro perdido permanentemente.</p>
+                                                                                <p><strong className="text-amber-300">Rede errada</strong> = pode perder os fundos. Use a mesma rede da sua exchange.</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        {/* How-to */}
+                                                                        <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 space-y-2">
+                                                                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Como receber em {m.id === 'btc' ? 'Bitcoin' : 'USDT'}</span>
+                                                                            <div className="space-y-1.5">
+                                                                                {[
+                                                                                    `Abra sua carteira ou exchange (Binance, Trust Wallet, etc.)`,
+                                                                                    `Vá em "Depositar" / "Receber" e selecione ${m.id === 'btc' ? 'Bitcoin (BTC)' : 'USDT'}`,
+                                                                                    `Escolha a rede correta (a mesma selecionada acima)`,
+                                                                                    `Copie o endereço de depósito, cole no campo acima e salve`
+                                                                                ].map((step, i) => (
+                                                                                    <div key={i} className="flex items-start gap-2">
+                                                                                        <span className="w-4 h-4 rounded-full bg-primary/10 text-primary text-[9px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                                                                                        <span className="text-[10px] text-white/35">{step}</span>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                </div>
-                                            </div>
-                                        )}
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
 

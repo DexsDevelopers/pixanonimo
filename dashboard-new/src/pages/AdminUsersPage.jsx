@@ -182,14 +182,30 @@ export default function AdminUsersPage() {
                                     <td className="p-6">
                                         <div className="flex flex-col gap-1">
                                             <span className="text-xs text-white/40">{user.email}</span>
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    defaultValue={user.pix_key}
-                                                    onBlur={e => e.target.value !== user.pix_key && handleAction('update_user_field', { user_id: user.id, field: 'pix_key', value: e.target.value })}
-                                                    className="bg-transparent border-none text-[11px] text-white/60 p-0 focus:outline-none focus:text-white transition-colors"
-                                                />
-                                                <CreditCard size={10} className="text-white/10 group-hover:text-primary transition-colors" />
-                                            </div>
+                                            {/* Payment method badge */}
+                                            <span className={cn(
+                                                "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full w-fit border",
+                                                user.withdraw_method === 'btc'  ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
+                                                user.withdraw_method === 'usdt' ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' :
+                                                'bg-primary/10 text-primary border-primary/20'
+                                            )}>
+                                                {user.withdraw_method === 'btc' ? '₿ Bitcoin' : user.withdraw_method === 'usdt' ? '💲 USDT' : '⚡ PIX'}
+                                            </span>
+                                            {/* Show correct key based on method */}
+                                            {(!user.withdraw_method || user.withdraw_method === 'pix') ? (
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        defaultValue={user.pix_key}
+                                                        onBlur={e => e.target.value !== user.pix_key && handleAction('update_user_field', { user_id: user.id, field: 'pix_key', value: e.target.value })}
+                                                        className="bg-transparent border-none text-[11px] text-white/60 p-0 focus:outline-none focus:text-white transition-colors"
+                                                    />
+                                                    <CreditCard size={10} className="text-white/10 group-hover:text-primary transition-colors" />
+                                                </div>
+                                            ) : (
+                                                <span className="text-[11px] text-white/50 font-mono truncate max-w-[180px]" title={user.crypto_address}>
+                                                    {user.crypto_address || <span className="italic text-white/20">sem endereço</span>}
+                                                </span>
+                                            )}
                                             {user.whatsapp ? (
                                                 <a
                                                     href={`https://wa.me/55${user.whatsapp.replace(/\D/g, '')}`}
