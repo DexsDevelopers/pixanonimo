@@ -7,31 +7,92 @@ class TelegramService
     private static function divider(): string { return "━━━━━━━━━━━━━━━━━━━━"; }
     private static function footer(): string  { return "\n" . self::divider() . "\n🤖 <i>Ghost Pix • " . date('d/m/Y \à\s H:i') . "</i>"; }
 
-    public static function send(string $message, string $parseMode = 'HTML'): bool
+    private static function token(): string  { return defined('TELEGRAM_BOT_TOKEN') ? TELEGRAM_BOT_TOKEN : ''; }
+    private static function chatId(): string { return defined('TELEGRAM_CHAT_ID')   ? TELEGRAM_CHAT_ID   : ''; }
+
+    private static function api(string $method, array $payload): array
     {
-        $token  = defined('TELEGRAM_BOT_TOKEN') ? TELEGRAM_BOT_TOKEN : '';
-        $chatId = defined('TELEGRAM_CHAT_ID')   ? TELEGRAM_CHAT_ID   : '';
-
-        if (empty($token) || empty($chatId)) return false;
-
-        $ch = curl_init("https://api.telegram.org/bot{$token}/sendMessage");
+        $token = self::token();
+        if (!$token) return ['ok' => false];
+        $ch = curl_init("https://api.telegram.org/bot{$token}/{$method}");
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode([
-                'chat_id'                  => $chatId,
-                'text'                     => $message,
-                'parse_mode'               => $parseMode,
-                'disable_web_page_preview' => true,
-            ]),
+            CURLOPT_POSTFIELDS     => json_encode($payload),
             CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
             CURLOPT_TIMEOUT        => 10,
             CURLOPT_CONNECTTIMEOUT => 5,
         ]);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_exec($ch);
+        $raw = curl_exec($ch);
         curl_close($ch);
-        return $httpCode === 200;
+        return json_decode($raw ?: '{}', true) ?: ['ok' => false];
+    }
+
+    public static function send(string $message, string $parseMode = 'HTML'): bool
+    {
+        $token  = self::token();
+        $chatId = self::chatId();
+        if (empty($token) || empty($chatId)) return false;
+
+        $res = self::api('sendMessage', [
+            'chat_id'                  => $chatId,
+            'text'                     => $message,
+            'parse_mode'               => $parseMode,
+            'disable_web_page_preview' => true,
+        ]);
+        return !empty($res['ok']);
+    }
+
+    public static function sendWithKeyboard(string $message, array $keyboard, string $chatId = '', string $parseMode = 'HTML'): ?int
+    {
+        $chatId = $chatId ?: self::chatId();
+        if (!self::token() || !$chatId) return null;
+
+        $res = self::api('sendMessage', [
+            'chat_id'                  => $chatId,
+            'text'                     => $message,
+            'parse_mode'               => $parseMode,
+            'disable_web_page_preview' => true,
+            'reply_markup'             => ['inline_keyboard' => $keyboard],
+        ]);
+        return $res['ok'] ? ($res['result']['message_id'] ?? null) : null;
+    }
+
+    public static function editMessageText(string $text, int $messageId, string $chatId = '', array $keyboard = []): bool
+    {
+        $chatId = $chatId ?: self::chatId();
+        $payload = [
+            'chat_id'                  => $chatId,
+            'message_id'               => $messageId,
+            'text'                     => $text,
+            'parse_mode'               => 'HTML',
+            'disable_web_page_preview' => true,
+        ];
+        if ($keyboard) $payload['reply_markup'] = ['inline_keyboard' => $keyboard];
+        $res = self::api('editMessageText', $payload);
+        return !empty($res['ok']);
+    }
+
+    public static function answerCallback(string $callbackQueryId, string $text = '', bool $alert = false): bool
+    {
+        $res = self::api('answerCallbackQuery', [
+            'callback_query_id' => $callbackQueryId,
+            'text'              => $text,
+            'show_alert'        => $alert,
+        ]);
+        return !empty($res['ok']);
+    }
+
+    public static function replyTo(string $chatId, string $message, string $parseMode = 'HTML'): bool
+    {
+        if (!self::token()) return false;
+        $res = self::api('sendMessage', [
+            'chat_id'                  => $chatId,
+            'text'                     => $message,
+            'parse_mode'               => $parseMode,
+            'disable_web_page_preview' => true,
+        ]);
+        return !empty($res['ok']);
     }
 
     // ─── VENDA CONFIRMADA ────────────────────────────────────────────
@@ -148,17 +209,51 @@ class TelegramService
         return self::send($msg);
     }
 
-    // ─── NOVO PRODUTO CRIADO ─────────────────────────────────────────
+    // ─── NOVO PRODUTO CRIADO (com botões aprovar/recusar) ───────────
     public static function notifyNewProduct(string $sellerName, string $productName, float $price, string $category = ''): bool
     {
+        return (bool) self::notifyNewProductAdmin($sellerName, $productName, $price, 0, $category);
+    }
+
+    public static function notifyNewProductAdmin(
+        string $sellerName, string $productName, float $price,
+        int $productId = 0, string $category = ''
+    ): ?int {
         $priceFmt = number_format($price, 2, ',', '.');
         $catLine  = $category ? "\n🏷️ <b>Categoria:</b> {$category}" : '';
+        $idLine   = $productId ? "\n🆔 <b>ID:</b>        <code>#{$productId}</code>" : '';
         $msg =
             "🛍️ <b>NOVO PRODUTO CADASTRADO</b>\n" . self::divider() . "\n\n"
           . "📦 <b>Produto:</b>  {$productName}\n"
           . "💵 <b>Preço:</b>    R$ {$priceFmt}\n"
           . "🏪 <b>Vendedor:</b> {$sellerName}"
           . $catLine
+          . $idLine . "\n\n"
+          . "⚠️ <i>Aguardando revisão. Use os botões abaixo ou o painel.</i>"
+          . self::footer();
+
+        $keyboard = $productId ? [[
+            ['text' => '✅ Aprovar', 'callback_data' => "prod_approve_{$productId}"],
+            ['text' => '❌ Recusar', 'callback_data' => "prod_reject_{$productId}"],
+        ]] : [];
+
+        return $keyboard
+            ? self::sendWithKeyboard($msg, $keyboard)
+            : (self::send($msg) ? 1 : null);
+    }
+
+    // ─── PRODUTO APROVADO / RECUSADO ─────────────────────────────────
+    public static function notifyProductStatus(int $productId, string $productName, string $sellerName, string $status, string $reason = ''): bool
+    {
+        $icon   = $status === 'active' ? '✅' : '❌';
+        $label  = $status === 'active' ? 'APROVADO' : 'RECUSADO';
+        $rLine  = $reason ? "\n💬 <b>Motivo:</b> {$reason}" : '';
+        $msg =
+            "{$icon} <b>PRODUTO {$label}</b>\n" . self::divider() . "\n\n"
+          . "📦 <b>Produto:</b>  {$productName}\n"
+          . "🏪 <b>Vendedor:</b> {$sellerName}\n"
+          . "🆔 <b>ID:</b>       <code>#{$productId}</code>"
+          . $rLine
           . self::footer();
         return self::send($msg);
     }

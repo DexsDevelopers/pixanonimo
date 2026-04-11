@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/TelegramService.php';
 header('Content-Type: application/json');
 
 if (!isLoggedIn()) { echo json_encode(['success' => false, 'error' => 'Não autorizado']); exit; }
@@ -30,7 +31,23 @@ try {
                 ($input['vitrine'] ?? '0') === '1' ? 1 : 0,
                 (int)($input['stock'] ?? -1),
             ]);
-            echo json_encode(['success' => true, 'id' => $pdo->lastInsertId()]);
+            $newId = (int) $pdo->lastInsertId();
+
+            // Notificar admin via Telegram com botões de aprovação
+            try {
+                $seller = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+                $seller->execute([$userId]);
+                $sellerName = $seller->fetchColumn() ?: 'Desconhecido';
+                TelegramService::notifyNewProductAdmin(
+                    $sellerName,
+                    trim($input['name'] ?? ''),
+                    (float)($input['price'] ?? 0),
+                    $newId,
+                    $input['category'] ?? ''
+                );
+            } catch (Throwable $e) {}
+
+            echo json_encode(['success' => true, 'id' => $newId]);
             break;
 
         case 'update':

@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/TelegramService.php';
 header('Content-Type: application/json');
 
 if (!isLoggedIn()) { echo json_encode(['success' => false, 'error' => 'Não autorizado']); exit; }
@@ -91,12 +92,13 @@ if ($method === 'GET') {
                     ->execute([$id]);
 
                 // Notificar o vendedor (in-app)
-                $product = $pdo->prepare("SELECT user_id, name FROM products WHERE id = ?");
+                $product = $pdo->prepare("SELECT p.user_id, p.name, p.price, u.full_name AS seller_name FROM products p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
                 $product->execute([$id]);
                 $prod = $product->fetch();
                 if ($prod) {
                     $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'success')")
                         ->execute([$prod['user_id'], '✅ Produto Aprovado!', 'Seu produto "' . $prod['name'] . '" foi aprovado e está disponível na plataforma.']);
+                    try { TelegramService::notifyProductStatus($id, $prod['name'], $prod['seller_name'], 'active'); } catch (Throwable $e) {}
                 }
 
                 echo json_encode(['success' => true, 'message' => 'Produto aprovado.']);
@@ -108,14 +110,15 @@ if ($method === 'GET') {
                     ->execute([$id]);
 
                 // Notificar o vendedor (in-app)
-                $product = $pdo->prepare("SELECT user_id, name FROM products WHERE id = ?");
+                $product = $pdo->prepare("SELECT p.user_id, p.name, u.full_name AS seller_name FROM products p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
                 $product->execute([$id]);
                 $prod = $product->fetch();
                 if ($prod) {
-                    $msg = 'Seu produto "' . $prod['name'] . '" não foi aprovado.';
-                    if ($reason) $msg .= ' Motivo: ' . $reason;
+                    $notifMsg = 'Seu produto "' . $prod['name'] . '" não foi aprovado.';
+                    if ($reason) $notifMsg .= ' Motivo: ' . $reason;
                     $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
-                        ->execute([$prod['user_id'], '❌ Produto Reprovado', $msg]);
+                        ->execute([$prod['user_id'], '❌ Produto Reprovado', $notifMsg]);
+                    try { TelegramService::notifyProductStatus($id, $prod['name'], $prod['seller_name'], 'inactive', $reason); } catch (Throwable $e) {}
                 }
 
                 echo json_encode(['success' => true, 'message' => 'Produto reprovado.']);
