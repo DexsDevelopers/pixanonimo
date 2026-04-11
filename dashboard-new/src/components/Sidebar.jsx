@@ -18,6 +18,7 @@ import {
     Link2,
     Palette,
     ShieldCheck,
+    Users,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -94,7 +95,8 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
     ];
 
     const adminItems = [
-        { id: 'admin', icon: <ShieldCheck size={18} />, label: 'Admin Geral', path: '/admin', accent: true },
+        { id: 'admin',          icon: <ShieldCheck size={18} />, label: 'Admin Geral',        path: '/admin',           accent: true },
+        { id: 'admin-usuarios', icon: <Users size={18} />,      label: 'Gestão de Usuários', path: '/admin/usuarios',   accent: true },
         { id: 'admin-vendas', icon: <ShoppingBag size={18} />, label: 'Todas as Vendas', path: '/admin/vendas', accent: true },
         { id: 'admin-produtos', icon: <Package size={18} />, label: 'Moderar Produtos', path: '/admin/produtos', accent: true },
         { id: 'apis', icon: <Settings size={18} />, label: 'Gestão de APIs', path: '/admin/apis', accent: true },

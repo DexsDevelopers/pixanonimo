@@ -41,6 +41,22 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'create_user':
+            $email     = filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL);
+            $password  = password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT);
+            $full_name = strip_tags(trim($data['full_name'] ?? 'Usuário'));
+            $pix_key   = strip_tags(trim($data['pix_key'] ?? ''));
+            $status    = in_array($data['status'] ?? 'pending', ['pending','approved']) ? $data['status'] : 'pending';
+
+            $defTaxStmt  = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
+            $defaultTax  = (float)($defTaxStmt->fetchColumn() ?: '4.0');
+
+            $stmt = $pdo->prepare("INSERT INTO users (email, password, full_name, pix_key, status, referral_token, is_demo, commission_rate) VALUES (?, ?, ?, ?, ?, ?, 0, ?)");
+            $stmt->execute([$email, $password, $full_name, $pix_key, $status, bin2hex(random_bytes(8)), $defaultTax]);
+
+            echo json_encode(['success' => true]);
+            break;
+
         case 'update_user_field':
             $userId = (int)$data['user_id'];
             $field = $data['field']; // 'pix_key', 'balance', 'commission_rate', 'is_demo', 'status'

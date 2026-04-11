@@ -40,6 +40,7 @@ import CriarProdutoPage from './pages/CriarProdutoPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
 import AdminProdutosPage from './pages/AdminProdutosPage';
+import AdminUsersPage from './pages/AdminUsersPage';
 import EntregaPage from './pages/EntregaPage';
 
 // Proteção de Rota Admin
@@ -344,6 +345,16 @@ export default function App() {
             <DashboardLayout {...commonProps} activeTab="checkout-builder">
               <CheckoutBuilderPage />
             </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/usuarios" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-usuarios">
+                <AdminUsersPage />
+              </DashboardLayout>
+            </AdminRoute>
           </PrivateRoute>
         } />
 
