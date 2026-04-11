@@ -271,6 +271,22 @@ export default function VitrinePage() {
         </div>
       </div>
 
+      {/* ── Aviso de compra sem reembolso ── */}
+      <div className="flex items-start gap-4 bg-amber-500/[0.07] border border-amber-500/25 rounded-2xl px-5 py-4">
+        <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0 mt-0.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-5 h-5 text-amber-400">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-black text-amber-300 mb-1">Atenção antes de comprar</p>
+          <p className="text-[12px] text-amber-200/60 leading-relaxed">
+            <strong className="text-amber-300">Todo produto adquirido nesta vitrine não possui reembolso.</strong>{' '}
+            As compras são definitivas e de responsabilidade exclusiva do comprador. Certifique-se de que está adquirindo de um vendedor confiável — verifique as avaliações e o histórico antes de finalizar sua compra.
+          </p>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
