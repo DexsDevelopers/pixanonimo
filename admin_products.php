@@ -88,7 +88,8 @@ if ($method === 'GET') {
     try {
         switch ($action) {
             case 'approve':
-                $pdo->prepare("UPDATE products SET status = 'active', updated_at = NOW() WHERE id = ?")
+                // Aprova o produto E coloca na vitrine
+                $pdo->prepare("UPDATE products SET status = 'active', vitrine = 1, updated_at = NOW() WHERE id = ?")
                     ->execute([$id]);
 
                 // Notificar o vendedor (in-app)
@@ -97,31 +98,42 @@ if ($method === 'GET') {
                 $prod = $product->fetch();
                 if ($prod) {
                     $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'success')")
-                        ->execute([$prod['user_id'], '✅ Produto Aprovado!', 'Seu produto "' . $prod['name'] . '" foi aprovado e está disponível na plataforma.']);
+                        ->execute([$prod['user_id'], '✅ Produto Aprovado!', 'Seu produto "' . $prod['name'] . '" foi aprovado e agora aparece na vitrine.']);
                     try { TelegramService::notifyProductStatus($id, $prod['name'], $prod['seller_name'], 'active'); } catch (Throwable $e) {}
                 }
 
-                echo json_encode(['success' => true, 'message' => 'Produto aprovado.']);
+                echo json_encode(['success' => true, 'message' => 'Produto aprovado e adicionado à vitrine.']);
                 break;
 
             case 'reject':
+                // Remove da vitrine mas mantém o produto ativo para o vendedor usar em checkouts próprios
                 $reason = trim($input['reason'] ?? '');
-                $pdo->prepare("UPDATE products SET status = 'inactive', updated_at = NOW() WHERE id = ?")
+                $pdo->prepare("UPDATE products SET vitrine = 0, updated_at = NOW() WHERE id = ?")
                     ->execute([$id]);
 
                 // Notificar o vendedor (in-app)
-                $product = $pdo->prepare("SELECT p.user_id, p.name, u.full_name AS seller_name FROM products p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
+                $product = $pdo->prepare("SELECT p.user_id, p.name, u.full_name AS seller_name, p.status FROM products p JOIN users u ON u.id = p.user_id WHERE p.id = ?");
                 $product->execute([$id]);
                 $prod = $product->fetch();
                 if ($prod) {
-                    $notifMsg = 'Seu produto "' . $prod['name'] . '" não foi aprovado.';
-                    if ($reason) $notifMsg .= ' Motivo: ' . $reason;
-                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
-                        ->execute([$prod['user_id'], '❌ Produto Reprovado', $notifMsg]);
-                    try { TelegramService::notifyProductStatus($id, $prod['name'], $prod['seller_name'], 'inactive', $reason); } catch (Throwable $e) {}
+                    // Se estava pending (nunca aprovado), mantemos inativo. Se já estava active, removemos só da vitrine
+                    if ($prod['status'] === 'pending') {
+                        $pdo->prepare("UPDATE products SET status = 'inactive' WHERE id = ?")->execute([$id]);
+                        $notifMsg = 'Seu produto "' . $prod['name'] . '" não foi aprovado para a vitrine.';
+                        if ($reason) $notifMsg .= ' Motivo: ' . $reason;
+                        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
+                            ->execute([$prod['user_id'], '❌ Produto Reprovado', $notifMsg]);
+                        try { TelegramService::notifyProductStatus($id, $prod['name'], $prod['seller_name'], 'inactive', $reason); } catch (Throwable $e) {}
+                    } else {
+                        // Já estava aprovado antes - só removemos da vitrine
+                        $notifMsg = 'Seu produto "' . $prod['name'] . '" foi removido da vitrine pública.';
+                        if ($reason) $notifMsg .= ' Motivo: ' . $reason;
+                        $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
+                            ->execute([$prod['user_id'], '📤 Removido da Vitrine', $notifMsg . ' O produto continua ativo para seus checkouts.']);
+                    }
                 }
 
-                echo json_encode(['success' => true, 'message' => 'Produto reprovado.']);
+                echo json_encode(['success' => true, 'message' => 'Produto removido da vitrine.']);
                 break;
 
             case 'delete':

@@ -30,6 +30,14 @@ function RejectModal({ product, onClose, onConfirm }) {
     const [reason, setReason] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const isPending = product.status === 'pending';
+    const title = isPending ? 'Reprovar Produto' : 'Remover da Vitrine';
+    const colorClass = isPending ? 'text-red-400' : 'text-amber-400';
+    const btnClass = isPending
+        ? 'bg-red-500/20 text-red-400 border-red-500/20 hover:bg-red-500/30'
+        : 'bg-amber-500/20 text-amber-400 border-amber-500/20 hover:bg-amber-500/30';
+    const actionText = loading ? (isPending ? 'Reprovando...' : 'Removendo...') : (isPending ? 'Confirmar Reprovação' : 'Confirmar Remoção');
+
     const handle = async () => {
         setLoading(true);
         await onConfirm(product.id, reason);
@@ -40,8 +48,8 @@ function RejectModal({ product, onClose, onConfirm }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-md">
                 <div className="flex items-center justify-between p-5 border-b border-white/5">
-                    <h2 className="font-black flex items-center gap-2 text-red-400">
-                        <ShieldX size={18} /> Reprovar Produto
+                    <h2 className={`font-black flex items-center gap-2 ${colorClass}`}>
+                        <ShieldX size={18} /> {title}
                     </h2>
                     <button onClick={onClose} className="p-2 text-white/30 hover:text-white rounded-lg hover:bg-white/5 transition-all">
                         <X size={16} />
@@ -52,15 +60,22 @@ function RejectModal({ product, onClose, onConfirm }) {
                         <p className="text-sm font-bold">{product.name}</p>
                         <p className="text-xs text-white/40 mt-0.5">por {product.seller_name}</p>
                     </div>
+                    {!isPending && (
+                        <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                            <p className="text-xs text-amber-300/80 leading-relaxed">
+                                ⚠️ <strong>Remover da vitrine</strong> não desativa o produto. O vendedor continua podendo vendê-lo nos checkouts próprios.
+                            </p>
+                        </div>
+                    )}
                     <div>
                         <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">
-                            Motivo da reprovação (opcional)
+                            Motivo {isPending ? 'da reprovação' : 'da remoção'} (opcional)
                         </label>
                         <textarea
                             rows={3}
                             value={reason}
                             onChange={e => setReason(e.target.value)}
-                            placeholder="Explique ao vendedor por que o produto foi reprovado..."
+                            placeholder={isPending ? "Explique ao vendedor por que o produto foi reprovado..." : "Explique por que está removendo da vitrine..."}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-red-500/30 resize-none"
                         />
                     </div>
@@ -69,8 +84,8 @@ function RejectModal({ product, onClose, onConfirm }) {
                         <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-white/10 text-white/60 hover:bg-white/5 transition-all text-sm font-semibold">
                             Cancelar
                         </button>
-                        <button onClick={handle} disabled={loading} className="flex-1 py-3 rounded-xl bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition-all text-sm font-bold disabled:opacity-50">
-                            {loading ? 'Reprovando...' : 'Confirmar Reprovação'}
+                        <button onClick={handle} disabled={loading} className={`flex-1 py-3 rounded-xl border ${btnClass} transition-all text-sm font-bold disabled:opacity-50`}>
+                            {actionText}
                         </button>
                     </div>
                 </div>
@@ -183,21 +198,32 @@ function ProductDetailModal({ product, onClose, onApprove, onReject, onDelete })
 
                     {/* Actions — available for all statuses */}
                     <div className="flex gap-2 pt-2 flex-wrap">
-                        {product.status !== 'active' && (
+                        {/* Aprovar: para pendentes ou removidos da vitrine */}
+                        {(product.status === 'pending' || product.vitrine == 0) && (
                             <button
                                 onClick={handleApprove}
                                 disabled={loading === 'approve'}
                                 className="flex-1 py-3 rounded-xl bg-primary text-black font-black text-sm hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
-                                <Check size={15} /> {loading === 'approve' ? 'Aprovando...' : 'Aprovar'}
+                                <Check size={15} /> {loading === 'approve' ? 'Aprovando...' : (product.status === 'pending' ? 'Aprovar' : 'Colocar na Vitrine')}
                             </button>
                         )}
-                        {product.status !== 'inactive' && (
+                        {/* Remover da Vitrine: para produtos na vitrine */}
+                        {product.vitrine == 1 && (
+                            <button
+                                onClick={() => { onReject(product); onClose(); }}
+                                className="flex-1 py-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10 transition-all font-bold text-sm flex items-center justify-center gap-2"
+                            >
+                                <X size={15} /> Remover da Vitrine
+                            </button>
+                        )}
+                        {/* Reprovar definitivo: só para pendentes */}
+                        {product.status === 'pending' && (
                             <button
                                 onClick={() => { onReject(product); onClose(); }}
                                 className="flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/10 transition-all font-bold text-sm flex items-center justify-center gap-2"
                             >
-                                <X size={15} /> {product.status === 'active' ? 'Revogar' : 'Reprovar'}
+                                <X size={15} /> Reprovar
                             </button>
                         )}
                         <button
@@ -452,23 +478,35 @@ export default function AdminProdutosPage() {
                                     >
                                         <Eye size={13} /> Ver
                                     </button>
-                                    {(p.status === 'pending' || p.status === 'inactive') && (
+                                    {/* Aprovar/Colocar na Vitrine */}
+                                    {(p.status === 'pending' || p.vitrine == 0) && (
                                         <button
                                             onClick={() => handleApprove(p.id)}
                                             disabled={actionLoading === p.id}
                                             className="px-3 py-2 bg-primary/10 border border-primary/20 rounded-xl text-primary hover:bg-primary/20 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
                                         >
                                             {actionLoading === p.id ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
-                                            Aprovar
+                                            {p.status === 'pending' ? 'Aprovar' : 'Vitrine'}
                                         </button>
                                     )}
-                                    {(p.status === 'pending' || p.status === 'active') && (
+                                    {/* Remover da Vitrine (amarelo) */}
+                                    {p.vitrine == 1 && (
+                                        <button
+                                            onClick={() => setRejectModal(p)}
+                                            disabled={actionLoading === p.id}
+                                            className="px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl text-amber-400 hover:bg-amber-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
+                                        >
+                                            <X size={13} /> Remover
+                                        </button>
+                                    )}
+                                    {/* Reprovar definitivo (vermelho) - só pendentes */}
+                                    {p.status === 'pending' && (
                                         <button
                                             onClick={() => setRejectModal(p)}
                                             disabled={actionLoading === p.id}
                                             className="px-3 py-2 bg-red-500/5 border border-red-500/20 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
                                         >
-                                            <X size={13} /> {p.status === 'active' ? 'Revogar' : 'Reprovar'}
+                                            <X size={13} /> Reprovar
                                         </button>
                                     )}
                                     <button
