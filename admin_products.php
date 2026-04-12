@@ -124,6 +124,12 @@ if ($method === 'GET') {
                 echo json_encode(['success' => true, 'message' => 'Produto reprovado.']);
                 break;
 
+            case 'delete':
+                $pdo->prepare("DELETE FROM products WHERE id = ?")
+                    ->execute([$id]);
+                echo json_encode(['success' => true, 'message' => 'Produto apagado.']);
+                break;
+
             default:
                 echo json_encode(['success' => false, 'error' => 'Ação inválida.']);
         }

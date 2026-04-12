@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    Package, Check, X, Search, Clock, ShieldCheck, ShieldX,
+    Package, Check, X, Search, ShieldCheck, ShieldX,
     User, Tag, DollarSign, Sparkles, ChevronRight, Eye,
-    AlertCircle, Filter, RefreshCw
+    AlertCircle, RefreshCw, Trash2
 } from 'lucide-react';
 
 const STATUS_TABS = [
@@ -79,12 +79,20 @@ function RejectModal({ product, onClose, onConfirm }) {
     );
 }
 
-function ProductDetailModal({ product, onClose, onApprove, onReject }) {
+function ProductDetailModal({ product, onClose, onApprove, onReject, onDelete }) {
     const [loading, setLoading] = useState('');
 
     const handleApprove = async () => {
         setLoading('approve');
         await onApprove(product.id);
+        setLoading('');
+        onClose();
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm('Tem certeza que deseja apagar este produto permanentemente?')) return;
+        setLoading('delete');
+        await onDelete(product.id);
         setLoading('');
         onClose();
     };
@@ -173,15 +181,9 @@ function ProductDetailModal({ product, onClose, onApprove, onReject }) {
                         </span>
                     </div>
 
-                    {/* Actions */}
-                    {product.status === 'pending' && (
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => { onReject(product); onClose(); }}
-                                className="flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/10 transition-all font-bold text-sm flex items-center justify-center gap-2"
-                            >
-                                <X size={15} /> Reprovar
-                            </button>
+                    {/* Actions — available for all statuses */}
+                    <div className="flex gap-2 pt-2 flex-wrap">
+                        {product.status !== 'active' && (
                             <button
                                 onClick={handleApprove}
                                 disabled={loading === 'approve'}
@@ -189,8 +191,23 @@ function ProductDetailModal({ product, onClose, onApprove, onReject }) {
                             >
                                 <Check size={15} /> {loading === 'approve' ? 'Aprovando...' : 'Aprovar'}
                             </button>
-                        </div>
-                    )}
+                        )}
+                        {product.status !== 'inactive' && (
+                            <button
+                                onClick={() => { onReject(product); onClose(); }}
+                                className="flex-1 py-3 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/10 transition-all font-bold text-sm flex items-center justify-center gap-2"
+                            >
+                                <X size={15} /> {product.status === 'active' ? 'Revogar' : 'Reprovar'}
+                            </button>
+                        )}
+                        <button
+                            onClick={handleDelete}
+                            disabled={loading === 'delete'}
+                            className="flex-1 py-3 rounded-xl border border-red-900/40 bg-red-950/20 text-red-500 hover:bg-red-950/40 transition-all font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                            <Trash2 size={15} /> {loading === 'delete' ? 'Apagando...' : 'Apagar'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,6 +270,19 @@ export default function AdminProdutosPage() {
         setActionLoading(null);
     };
 
+    const handleDelete = async (id) => {
+        setActionLoading(id);
+        try {
+            await fetch('/admin_products.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id }),
+            });
+            fetchProducts();
+        } catch {}
+        setActionLoading(null);
+    };
+
     const perPage = 20;
     const totalPages = Math.ceil(total / perPage);
 
@@ -264,6 +294,7 @@ export default function AdminProdutosPage() {
                     onClose={() => setDetail(null)}
                     onApprove={async (id) => { await handleApprove(id); setDetail(null); }}
                     onReject={(prod) => { setDetail(null); setRejectModal(prod); }}
+                    onDelete={async (id) => { await handleDelete(id); setDetail(null); }}
                 />
             )}
             {rejectModal && (
@@ -413,7 +444,7 @@ export default function AdminProdutosPage() {
                                     )}
                                 </div>
 
-                                {/* Actions */}
+                                {/* Actions — all statuses */}
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     <button
                                         onClick={() => setDetail(p)}
@@ -421,29 +452,35 @@ export default function AdminProdutosPage() {
                                     >
                                         <Eye size={13} /> Ver
                                     </button>
-                                    {p.status === 'pending' && (
-                                        <>
-                                            <button
-                                                onClick={() => setRejectModal(p)}
-                                                disabled={actionLoading === p.id}
-                                                className="px-3 py-2 bg-red-500/5 border border-red-500/20 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                            >
-                                                <X size={13} /> Reprovar
-                                            </button>
-                                            <button
-                                                onClick={() => handleApprove(p.id)}
-                                                disabled={actionLoading === p.id}
-                                                className="px-3 py-2 bg-primary/10 border border-primary/20 rounded-xl text-primary hover:bg-primary/20 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                            >
-                                                {actionLoading === p.id ? (
-                                                    <RefreshCw size={13} className="animate-spin" />
-                                                ) : (
-                                                    <Check size={13} />
-                                                )}
-                                                Aprovar
-                                            </button>
-                                        </>
+                                    {(p.status === 'pending' || p.status === 'inactive') && (
+                                        <button
+                                            onClick={() => handleApprove(p.id)}
+                                            disabled={actionLoading === p.id}
+                                            className="px-3 py-2 bg-primary/10 border border-primary/20 rounded-xl text-primary hover:bg-primary/20 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
+                                        >
+                                            {actionLoading === p.id ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
+                                            Aprovar
+                                        </button>
                                     )}
+                                    {(p.status === 'pending' || p.status === 'active') && (
+                                        <button
+                                            onClick={() => setRejectModal(p)}
+                                            disabled={actionLoading === p.id}
+                                            className="px-3 py-2 bg-red-500/5 border border-red-500/20 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
+                                        >
+                                            <X size={13} /> {p.status === 'active' ? 'Revogar' : 'Reprovar'}
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={async () => {
+                                            if (!window.confirm('Apagar "' + p.name + '" permanentemente?')) return;
+                                            await handleDelete(p.id);
+                                        }}
+                                        disabled={actionLoading === p.id}
+                                        className="px-3 py-2 bg-red-950/20 border border-red-900/30 rounded-xl text-red-500 hover:bg-red-950/40 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
+                                    >
+                                        <Trash2 size={13} /> Apagar
+                                    </button>
                                 </div>
                             </div>
                         </div>
