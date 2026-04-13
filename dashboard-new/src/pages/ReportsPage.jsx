@@ -293,20 +293,27 @@ export default function ReportsPage() {
 }
 
 function MetricCard({ title, value, change, icon }) {
-    const isUp = change >= 0;
-    const changeStr = change === 0 ? '0%' : `${isUp ? '+' : ''}${change}%`;
+    const hasComparison = change !== null && change !== undefined;
+    const isUp = hasComparison && change >= 0;
+    const changeStr = !hasComparison ? null : change === 0 ? '0%' : `${isUp ? '+' : ''}${change}%`;
     return (
         <div className="bg-[#0a0a0b]/50 p-5 rounded-[24px] border border-white/5 backdrop-blur-md hover:border-white/10 transition-all duration-300 group">
             <div className="flex items-center justify-between mb-3">
                 <div className="p-2.5 rounded-xl bg-white/[0.04] text-primary group-hover:scale-110 transition-transform duration-300">
                     {icon}
                 </div>
-                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    isUp ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'
-                }`}>
-                    {isUp ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
-                    {changeStr}
-                </div>
+                {changeStr !== null ? (
+                    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${
+                        isUp ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'
+                    }`}>
+                        {isUp ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
+                        {changeStr}
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold text-white/30 bg-white/5">
+                        — sem comparação
+                    </div>
+                )}
             </div>
             <p className="text-white/40 text-xs font-bold uppercase tracking-wider">{title}</p>
             <h4 className="text-2xl font-black text-white mt-1">{value}</h4>

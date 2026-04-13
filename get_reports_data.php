@@ -153,22 +153,22 @@ $stmt->execute([$userId]);
 $prevTotalCount = (int)$stmt->fetchColumn();
 $prevConversion = $prevTotalCount > 0 ? round(($prevSalesCount / $prevTotalCount) * 100, 1) : 0;
 
-// Calcular variações
+// Calcular variações (null = sem período anterior para comparar)
 function calcChange($current, $previous) {
-    if ($previous == 0) return $current > 0 ? 100.0 : 0.0;
+    if ($previous == 0) return null;
     return round((($current - $previous) / $previous) * 100, 1);
 }
 
 $volumeChange = calcChange($currentVolume, $prevVolume);
 $taxesChange = calcChange($currentTaxes, $prevTaxes);
 $salesChange = calcChange($currentSalesCount, $prevSalesCount);
-$convChange = round($currentConversion - $prevConversion, 1);
+$convChange = ($prevTotalCount == 0) ? null : round($currentConversion - $prevConversion, 1);
 
 // --- 3. DADOS DO GRÁFICO DIÁRIO ---
 $dailySalesData = [];
 $dailyConvData = [];
 
-$dateFormat = $daysBack <= 30 ? '%d/%m' : '%m/%Y';
+$dateFormat = $daysBack <= 90 ? '%d/%m' : '%m/%Y';
 $groupBy = $daysBack <= 90 ? 'DATE(t.created_at)' : "DATE_FORMAT(t.created_at, '%Y-%m')";
 
 $sql = "SELECT 
