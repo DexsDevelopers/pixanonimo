@@ -36,6 +36,7 @@ import DemoPage from './pages/DemoPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ProdutosPage from './pages/ProdutosPage';
+import CuponsPage from './pages/CuponsPage';
 import CriarProdutoPage from './pages/CriarProdutoPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
@@ -386,6 +387,14 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="produtos">
               <CriarProdutoPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/vendedor/cupons" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="cupons">
+              <CuponsPage />
             </DashboardLayout>
           </PrivateRoute>
         } />

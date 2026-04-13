@@ -87,6 +87,11 @@ function BuyModal({ product, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState(null);
   const [error, setError] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [couponInfo, setCouponInfo] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
 
   const [copied, setCopied] = useState(false);
   const deliveryUrl = pixData?.delivery_token ? `${window.location.origin}/entrega/${pixData.delivery_token}` : null;
@@ -99,6 +104,27 @@ function BuyModal({ product, onClose, onSuccess }) {
     }
   };
 
+  const applyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setCouponLoading(true); setCouponError(''); setCouponInfo(null);
+    try {
+      const res = await fetch('/validate_coupon.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, product_id: product.id, amount: parseFloat(product.price) }),
+      });
+      const data = await res.json();
+      if (data.valid) { setCouponInfo(data); setCouponCode(code); setCouponError(''); }
+      else setCouponError(data.error || 'Cupom inválido');
+    } catch { setCouponError('Erro ao validar cupom.'); }
+    setCouponLoading(false);
+  };
+
+  const removeCoupon = () => { setCouponInfo(null); setCouponCode(''); setCouponInput(''); setCouponError(''); };
+
+  const finalPrice = couponInfo ? couponInfo.final_amount : parseFloat(product.price);
+
   const handleCheckout = async () => {
     if (!name.trim()) { setError('Informe seu nome.'); return; }
     setLoading(true); setError('');
@@ -106,7 +132,7 @@ function BuyModal({ product, onClose, onSuccess }) {
       const res = await fetch('/buy_product.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: product.id, customer_name: name, customer_document: doc }),
+        body: JSON.stringify({ product_id: product.id, customer_name: name, customer_document: doc, coupon_code: couponCode }),
       });
       const data = await res.json();
       if (data.success) { setPixData(data); setStep(2); }
@@ -127,9 +153,53 @@ function BuyModal({ product, onClose, onSuccess }) {
           <div className="p-5 space-y-4">
             <div className="flex gap-3 p-3 bg-white/[0.02] rounded-xl">
               {product.image_url && <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />}
-              <div><p className="font-bold text-sm">{product.name}</p><p className="text-primary font-black">R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}</p></div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm">{product.name}</p>
+                <div className="flex items-center gap-2">
+                  {couponInfo ? (
+                    <>
+                      <span className="text-white/30 line-through text-xs">R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}</span>
+                      <span className="text-primary font-black">R$ {finalPrice.toFixed(2).replace('.', ',')}</span>
+                      <span className="text-xs bg-green-500/15 text-green-400 border border-green-500/20 rounded-full px-2 py-0.5 font-bold">{couponInfo.label}</span>
+                    </>
+                  ) : (
+                    <p className="text-primary font-black">R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}</p>
+                  )}
+                </div>
+              </div>
             </div>
             {error && <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-xl p-3">{error}</p>}
+
+            {/* Coupon field */}
+            {!couponInfo ? (
+              <div>
+                <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Cupom de Desconto</label>
+                <div className="flex gap-2">
+                  <input
+                    value={couponInput}
+                    onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), applyCoupon())}
+                    placeholder="Código do cupom (opcional)"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40 font-mono uppercase"
+                  />
+                  <button type="button" onClick={applyCoupon} disabled={couponLoading || !couponInput.trim()}
+                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white/50 hover:bg-white/10 hover:text-white transition-all disabled:opacity-40 flex-shrink-0">
+                    {couponLoading ? '...' : 'Aplicar'}
+                  </button>
+                </div>
+                {couponError && <p className="text-red-400 text-xs mt-1.5">{couponError}</p>}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                <Check size={14} className="text-green-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black text-green-400">Cupom aplicado: <span className="font-mono">{couponInfo.code}</span></p>
+                  <p className="text-xs text-green-300/60">Economia de R$ {couponInfo.discount_amount.toFixed(2).replace('.', ',')}</p>
+                </div>
+                <button onClick={removeCoupon} className="p-1 text-white/30 hover:text-white transition-colors"><X size={13} /></button>
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Seu Nome *</label>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="Nome completo" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
@@ -139,7 +209,7 @@ function BuyModal({ product, onClose, onSuccess }) {
               <input value={doc} onChange={e => setDoc(e.target.value)} placeholder="000.000.000-00" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
             </div>
             <button onClick={handleCheckout} disabled={loading} className="w-full py-3 bg-primary text-black font-black rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50">
-              {loading ? 'Gerando PIX...' : 'Gerar PIX'}
+              {loading ? 'Gerando PIX...' : `Gerar PIX — R$ ${finalPrice.toFixed(2).replace('.', ',')}`}
             </button>
           </div>
         ) : (

@@ -19,6 +19,7 @@ import {
     Palette,
     ShieldCheck,
     Users,
+    Ticket,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -83,6 +84,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'checkouts', icon: <Link2 size={18} />, label: 'Checkouts', path: '/checkouts' },
         { id: 'checkout-builder', icon: <Palette size={18} />, label: 'Criar Checkout', path: '/checkout-builder' },
         { id: 'produtos', icon: <Package size={18} />, label: 'Produtos', path: '/vendedor/produtos' },
+        { id: 'cupons',   icon: <Ticket size={18} />,  label: 'Cupons',   path: '/vendedor/cupons' },
         { id: 'loja', icon: <Store size={18} />, label: 'Minha Loja', path: '/vendedor/loja' },
     ];
 

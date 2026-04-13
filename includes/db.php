@@ -55,6 +55,35 @@ try {
     try {
         $pdo->exec("ALTER TABLE transactions ADD COLUMN external_id VARCHAR(100) AFTER customer_name");
     } catch (PDOException $e) {}
+
+    // Auto-Migração: Criar tabela de cupons de desconto
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS coupons (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            user_id     INT NOT NULL,
+            code        VARCHAR(50) NOT NULL,
+            type        ENUM('percent','fixed') NOT NULL DEFAULT 'percent',
+            value       DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+            scope       ENUM('store','product') NOT NULL DEFAULT 'store',
+            product_id  INT NULL,
+            min_amount  DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+            max_uses    INT NULL,
+            uses_count  INT NOT NULL DEFAULT 0,
+            expires_at  DATETIME NULL,
+            active      TINYINT(1) NOT NULL DEFAULT 1,
+            created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_coupon_code (code)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
+    // Auto-Migração: Adicionar coupon_id e discount_amount nas orders
+    try {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN coupon_id INT NULL AFTER status");
+    } catch (PDOException $e) {}
+    try {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER coupon_id");
+    } catch (PDOException $e) {}
+
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
