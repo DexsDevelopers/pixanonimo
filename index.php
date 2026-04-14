@@ -4,6 +4,21 @@ require_once 'includes/db.php';
 $isAuth = isLoggedIn();
 $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Rastrear visita ao site (apenas páginas principais, sem APIs)
+if (in_array($requestPath, ['/', '/login', '/register', '/vitrine', '/docs'])) {
+    try {
+        $pdo->prepare("INSERT INTO daily_stats (stat_date, stat_key, stat_value) VALUES (CURDATE(), 'page_views', 1) ON DUPLICATE KEY UPDATE stat_value = stat_value + 1")->execute();
+        // Contar visitantes únicos por IP (1 por dia)
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $checkVisitor = $pdo->prepare("SELECT 1 FROM daily_stats WHERE stat_date = CURDATE() AND stat_key = CONCAT('uv_', ?)");
+        $checkVisitor->execute([$ip]);
+        if (!$checkVisitor->fetch()) {
+            $pdo->prepare("INSERT IGNORE INTO daily_stats (stat_date, stat_key, stat_value) VALUES (CURDATE(), CONCAT('uv_', ?), 1)")->execute([$ip]);
+            $pdo->prepare("INSERT INTO daily_stats (stat_date, stat_key, stat_value) VALUES (CURDATE(), 'unique_visitors', 1) ON DUPLICATE KEY UPDATE stat_value = stat_value + 1")->execute();
+        }
+    } catch (Throwable $e) {}
+}
+
 // Se logado e acessando a raiz, redireciona direto pro dashboard
 if ($isAuth && $requestPath === '/') {
     header('Location: /dashboard');

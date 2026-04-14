@@ -128,8 +128,16 @@ function interpretNaturalLanguage(string $text): ?array {
         return ['action' => 'saques'];
     }
 
+    // ── Resumo do dia ───────────────────────────────────────────────────
+    if (preg_match('/\b(resumo|fechamento)\b.*?\b(dia|hoje|diario)\b/', $tn)) {
+        return ['action' => 'resumodia'];
+    }
+    if (preg_match('/\b(como\s+foi\s+o\s+dia|como\s+foi\s+hoje|balanco\s+do\s+dia)\b/', $tn)) {
+        return ['action' => 'resumodia'];
+    }
+
     // ── Stats geral ───────────────────────────────────────────────────
-    if (preg_match('/\b(como\s+ta|como\s+esta|status|situacao|resumo|overview)\b.*?\b(plataforma|sistema|hoje|geral)?\b/', $tn)) {
+    if (preg_match('/\b(como\s+ta|como\s+esta|status|situacao|overview)\b.*?\b(plataforma|sistema|hoje|geral)?\b/', $tn)) {
         return ['action' => 'stats'];
     }
     if (preg_match('/\b(relatorio|estatistica|dados|numeros)\b.*?\b(geral|plataforma|sistema)?\b/', $tn)) {
@@ -638,7 +646,8 @@ switch ($command) {
             . "<b>📊 Relatórios:</b>\n"
             . "/stats — Estatísticas rápidas\n"
             . "/relatorio — Relatório completo\n"
-            . "/meurelatorio — Suas vendas pessoais\n\n"
+            . "/meurelatorio — Suas vendas pessoais\n"
+            . "/resumodia — Resumo completo do dia\n\n"
             . "<b>💰 Operações:</b>\n"
             . "/pix {valor} — Gerar cobrança PIX\n"
             . "/saques — Saques pendentes\n"
@@ -677,6 +686,13 @@ switch ($command) {
     case 'relatorio':
     case 'relatório':
         handleRelatorioGeral($chatId);
+        break;
+
+    // ── RESUMO DO DIA ────────────────────────────────────────────────
+    case 'resumodia':
+    case 'resumo':
+        define('DAILY_REPORT_INTERNAL', true);
+        require __DIR__ . '/telegram_daily_report.php';
         break;
 
     // ── STATS ────────────────────────────────────────────────────────
@@ -924,6 +940,10 @@ if (!$handled && $text && $text[0] !== '/') {
                 break;
             case 'stats_saques_pagos':
                 handleSaquesPagos($chatId);
+                break;
+            case 'resumodia':
+                define('DAILY_REPORT_INTERNAL', true);
+                require __DIR__ . '/telegram_daily_report.php';
                 break;
             case 'pendentes':
                 // Redirecionar para /pendentes

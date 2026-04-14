@@ -84,6 +84,17 @@ try {
         $pdo->exec("ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER coupon_id");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Tabela para rastrear visitas diárias ao site
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS daily_stats (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            stat_date   DATE NOT NULL,
+            stat_key    VARCHAR(50) NOT NULL,
+            stat_value  INT NOT NULL DEFAULT 0,
+            UNIQUE KEY uq_daily_stat (stat_date, stat_key)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
