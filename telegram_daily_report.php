@@ -14,7 +14,7 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/TelegramService.php';
 
 // Autenticação: aceita secret via GET ou flag interna
-$expectedSecret = defined('TELEGRAM_WEBHOOK_SECRET') ? TELEGRAM_WEBHOOK_SECRET : '';
+$expectedSecret = defined('TELEGRAM_WEBHOOK_SECRET') ? TELEGRAM_WEBHOOK_SECRET : (defined('PIXGO_WEBHOOK_SECRET') ? PIXGO_WEBHOOK_SECRET : '');
 $incomingSecret = $_GET['secret'] ?? '';
 $isInternal     = defined('DAILY_REPORT_INTERNAL') && DAILY_REPORT_INTERNAL === true;
 
