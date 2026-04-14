@@ -368,11 +368,13 @@ function handlePixGeneration(string $chatId, float $amount): void {
         reply($chatId,
             "✅ <b>PIX gerado com sucesso!</b> (simulação)" . div() . "\n\n"
             . "💵 <b>Valor:</b>     " . formatBRL($amount) . "\n"
-            . "🆔 <b>TX:</b>        <code>#{$txId}</code>\n"
-            . "📋 <b>Pix Code:</b>  <code>" . substr($pixCode, 0, 40) . "...</code>\n\n"
-            . "⚠️ <i>Ambiente de simulação — PIX não é real.</i>"
+            . "🆔 <b>TX:</b>        <code>#{$txId}</code>\n\n"
+            . "⚠️ <i>Ambiente de simulação — PIX não é real.</i>\n"
+            . "💡 <i>O código Copia e Cola foi enviado abaixo.</i>"
             . footer()
         );
+        // Enviar código PIX separado (fácil de copiar no mobile)
+        reply($chatId, "<code>{$pixCode}</code>");
         return;
     }
 
@@ -419,8 +421,7 @@ function handlePixGeneration(string $chatId, float $amount): void {
         $msg = "✅ <b>PIX GERADO COM SUCESSO!</b>" . div() . "\n\n"
              . "💵 <b>Valor:</b>  " . formatBRL($amount) . "\n"
              . "🆔 <b>TX:</b>     <code>#{$txId}</code>\n\n"
-             . "📋 <b>Copia e Cola:</b>\n<code>{$pixCode}</code>\n\n"
-             . "💡 <i>Envie o código acima para o pagador ou use o QR Code.</i>"
+             . "� <i>O código Copia e Cola foi enviado na mensagem abaixo. Toque nele para copiar.</i>"
              . footer();
 
         // Enviar QR como imagem se disponível
@@ -443,6 +444,9 @@ function handlePixGeneration(string $chatId, float $amount): void {
         }
 
         reply($chatId, $msg);
+
+        // Enviar o código PIX como mensagem separada (fácil de copiar no mobile)
+        reply($chatId, "<code>{$pixCode}</code>");
     } else {
         $errorMsg = $res['message'] ?? ($res['error'] ?? 'Erro desconhecido');
         reply($chatId,
