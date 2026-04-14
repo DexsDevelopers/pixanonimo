@@ -93,23 +93,23 @@ function interpretNaturalLanguage(string $text): ?array {
     if (preg_match('/\b(meu|minha|minhas?)\b.*?(relatorio|venda|faturamento|receita|lucro|ganho)/', $tn, $m)) {
         return ['action' => 'meurelatorio'];
     }
-    if (preg_match('/\b(quanto|quantas?)\b.*?\b(eu|vendi|ganhei|faturei|recebi)\b/', $tn, $m)) {
+    if (preg_match('/\b(quantos?|quantas?)\b.*?\b(eu|vendi|ganhei|faturei|recebi)\b/', $tn, $m)) {
         return ['action' => 'meurelatorio'];
     }
 
     // ── Vendas da plataforma ──────────────────────────────────────────
-    if (preg_match('/\b(quantas?|quanto)\b.*?\b(plataforma|sistema|total)\b.*?\b(vend|fatur)/', $tn, $m)) {
+    if (preg_match('/\b(quantos?|quantas?)\b.*?\b(plataforma|sistema|total)\b.*?\b(vend|fatur)/', $tn, $m)) {
         return ['action' => 'stats_vendas'];
     }
-    if (preg_match('/\b(quantas?\s+vendas?|quantos?\s+vendas?)/', $tn)) {
+    if (preg_match('/\b(quantos?|quantas?)\s+vendas?/', $tn)) {
         return ['action' => 'stats_vendas'];
     }
-    if (preg_match('/\b(quanto|quantas?)\b.*?\b(vendeu|vendemos|vendido|faturou|faturamento)\b/', $tn)) {
+    if (preg_match('/\b(quantos?|quantas?)\b.*?\b(vendeu|vendemos|vendido|faturou|faturamento|vendas?)\b/', $tn)) {
         return ['action' => 'stats_vendas'];
     }
 
     // ── Saques ────────────────────────────────────────────────────────
-    if (preg_match('/\b(quantos?|tem|ha|existe)\b.*?\b(saque|saques)\b.*?\b(pendente|aguardando|esperando)/', $tn)) {
+    if (preg_match('/\b(quantos?|quantas?|tem|ha|existe)\b.*?\b(saque|saques)\b.*?\b(pendente|aguardando|esperando)/', $tn)) {
         return ['action' => 'stats_saques_pendentes'];
     }
     if (preg_match('/\b(saque|saques)\b.*?\b(pendente|aguardando)/', $tn)) {
@@ -121,7 +121,7 @@ function interpretNaturalLanguage(string $text): ?array {
     if (preg_match('/\b(saques?\s+(ja\s+)?(pago|aprovado|realizado|feito|enviado))/', $tn)) {
         return ['action' => 'stats_saques_pagos'];
     }
-    if (preg_match('/\b(quanto|total)\b.*?\b(dinheiro|grana|valor)\b.*?\b(enviad|pag|transferi)/', $tn)) {
+    if (preg_match('/\b(quantos?|quanto|total)\b.*?\b(dinheiro|grana|valor)\b.*?\b(enviad|pag|transferi)/', $tn)) {
         return ['action' => 'stats_saques_pagos'];
     }
     if (preg_match('/\bsaques?\b/', $tn)) {
