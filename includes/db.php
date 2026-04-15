@@ -95,6 +95,17 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Colunas para vincular conta Telegram do usuário
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN telegram_chat_id VARCHAR(50) NULL");
+    } catch (PDOException $e) {}
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN telegram_link_token VARCHAR(64) NULL");
+    } catch (PDOException $e) {}
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN telegram_link_expires DATETIME NULL");
+    } catch (PDOException $e) {}
+
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }

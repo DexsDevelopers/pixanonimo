@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle, Webhook, Plus, Trash2, Send, Power, CircleDot, Bell, BellRing } from 'lucide-react';
+import { Settings, User, Lock, Code, Shield, Key, Copy, Check, Save, Camera, Loader2, Eye, EyeOff, RefreshCw, ExternalLink, Terminal, Zap, Globe, AlertTriangle, Webhook, Plus, Trash2, Send, Power, CircleDot, Bell, BellRing, MessageCircle, Unlink, QrCode } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -249,6 +249,7 @@ export default function SettingsPage({ userData }) {
 
     const tabs = [
         { id: 'perfil', label: 'Meu Perfil', icon: <User size={16} /> },
+        { id: 'telegram', label: 'Telegram', icon: <MessageCircle size={16} /> },
         { id: 'notificacoes', label: 'Notificações', icon: <Bell size={16} /> },
         { id: 'seguranca', label: 'Segurança', icon: <Lock size={16} /> },
         { id: 'api', label: 'Desenvolvedor / API', icon: <Code size={16} /> },
@@ -750,6 +751,10 @@ export default function SettingsPage({ userData }) {
                             </div>
                         )}
 
+                        {activeSubTab === 'telegram' && (
+                            <TelegramTab />
+                        )}
+
                         {activeSubTab === 'seguranca' && (
                             <SecurityTab />
                         )}
@@ -758,6 +763,254 @@ export default function SettingsPage({ userData }) {
                             <WebhooksTab />
                         )}
                     </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function TelegramTab() {
+    const [connected, setConnected] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [generating, setGenerating] = useState(false);
+    const [linkData, setLinkData] = useState(null);
+    const [copied, setCopied] = useState(false);
+    const [disconnecting, setDisconnecting] = useState(false);
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    const checkStatus = async () => {
+        try {
+            const res = await fetch('/generate_telegram_link.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'status' })
+            });
+            const data = await res.json();
+            if (data.success) setConnected(data.connected);
+        } catch {}
+        setLoading(false);
+    };
+
+    useEffect(() => { checkStatus(); }, []);
+
+    const handleGenerate = async () => {
+        setGenerating(true);
+        try {
+            const res = await fetch('/generate_telegram_link.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'generate' })
+            });
+            const data = await res.json();
+            if (data.success) setLinkData(data);
+        } catch {}
+        setGenerating(false);
+    };
+
+    const handleDisconnect = async () => {
+        if (!confirm('Tem certeza que deseja desconectar o Telegram?')) return;
+        setDisconnecting(true);
+        try {
+            const res = await fetch('/generate_telegram_link.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ action: 'disconnect' })
+            });
+            const data = await res.json();
+            if (data.success) { setConnected(false); setLinkData(null); }
+        } catch {}
+        setDisconnecting(false);
+    };
+
+    const handleCopy = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-20">
+                <Loader2 size={24} className="animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center gap-6">
+                <div className="w-16 h-16 bg-blue-500/10 rounded-[24px] flex items-center justify-center border border-blue-500/20">
+                    <MessageCircle size={28} className="text-blue-400" />
+                </div>
+                <div>
+                    <h3 className="text-2xl font-black">Telegram Bot</h3>
+                    <p className="text-white/40 text-sm">Gerencie sua conta pelo Telegram — PIX, saldo, vendas e saques.</p>
+                </div>
+            </div>
+
+            {/* Status */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className={cn(
+                            "w-10 h-10 rounded-full flex items-center justify-center",
+                            connected ? "bg-primary/10" : "bg-white/5"
+                        )}>
+                            {connected ? <Check size={18} className="text-primary" /> : <Unlink size={18} className="text-white/40" />}
+                        </div>
+                        <div>
+                            <h4 className="font-black text-white text-sm">
+                                {connected ? 'Telegram Conectado' : 'Telegram Desconectado'}
+                            </h4>
+                            <p className="text-[11px] text-white/40">
+                                {connected
+                                    ? 'Sua conta está vinculada ao bot do Telegram'
+                                    : 'Conecte para usar o bot diretamente no Telegram'}
+                            </p>
+                        </div>
+                    </div>
+                    <span className={`w-3 h-3 rounded-full ${connected ? 'bg-primary shadow-[0_0_10px_#00ff88]' : 'bg-white/20'}`} />
+                </div>
+            </div>
+
+            {connected ? (
+                <>
+                    {/* Connected — features & disconnect */}
+                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Comandos disponíveis no bot</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[
+                                { cmd: '/saldo', desc: 'Consultar seu saldo', icon: '💰' },
+                                { cmd: '/pix 50', desc: 'Gerar cobrança PIX', icon: '⚡' },
+                                { cmd: '/vendas', desc: 'Relatório de vendas', icon: '📊' },
+                                { cmd: '/sacar 100', desc: 'Solicitar saque', icon: '🏦' },
+                                { cmd: '/produtos', desc: 'Listar seus produtos', icon: '📦' },
+                                { cmd: '/ajuda', desc: 'Ver todos os comandos', icon: '❓' },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02]">
+                                    <span className="text-lg">{item.icon}</span>
+                                    <div>
+                                        <p className="text-xs font-bold text-white font-mono">{item.cmd}</p>
+                                        <p className="text-[10px] text-white/30">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={handleDisconnect}
+                        disabled={disconnecting}
+                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors"
+                    >
+                        {disconnecting ? <Loader2 size={14} className="animate-spin" /> : <Unlink size={14} />}
+                        {disconnecting ? 'Desconectando...' : 'Desconectar Telegram'}
+                    </button>
+                </>
+            ) : (
+                <>
+                    {/* Not connected — show instructions */}
+                    <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 space-y-4">
+                        <h4 className="font-black text-blue-400 text-sm flex items-center gap-2">
+                            <QrCode size={16} /> Como conectar
+                        </h4>
+                        <div className="space-y-3">
+                            {[
+                                'Clique em "Gerar Código de Vinculação" abaixo',
+                                'Clique no link do bot que aparecerá',
+                                'O bot vai vincular sua conta automaticamente',
+                                'Pronto! Use comandos como /saldo, /pix, /vendas',
+                            ].map((step, i) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 text-xs font-black flex items-center justify-center shrink-0">{i + 1}</span>
+                                    <span className="text-sm text-white/50">{step}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {!linkData ? (
+                        <button
+                            onClick={handleGenerate}
+                            disabled={generating}
+                            className="flex items-center gap-2 bg-blue-500 text-white font-black text-xs uppercase tracking-widest py-3.5 px-8 rounded-2xl hover:brightness-110 transition-all disabled:opacity-50"
+                        >
+                            {generating ? (
+                                <><Loader2 size={16} className="animate-spin" /> Gerando...</>
+                            ) : (
+                                <><MessageCircle size={16} /> Gerar Código de Vinculação</>
+                            )}
+                        </button>
+                    ) : (
+                        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+                            <div className="flex items-center gap-2 text-primary">
+                                <Check size={16} />
+                                <span className="text-sm font-black">Código gerado! Expira em 10 minutos.</span>
+                            </div>
+
+                            {/* Bot link button */}
+                            <a
+                                href={linkData.bot_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 bg-blue-500 text-white font-black text-sm py-4 px-6 rounded-2xl hover:brightness-110 transition-all w-full"
+                            >
+                                <ExternalLink size={16} />
+                                Abrir Bot no Telegram
+                            </a>
+
+                            {/* Manual code */}
+                            <div className="space-y-2">
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Ou copie o código manualmente</span>
+                                <div className="flex gap-2">
+                                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-mono text-sm text-white/60 truncate">
+                                        /start {linkData.token}
+                                    </div>
+                                    <button
+                                        onClick={() => handleCopy(`/start ${linkData.token}`)}
+                                        className={cn(
+                                            "px-4 rounded-xl flex items-center gap-2 text-xs font-bold transition-all shrink-0",
+                                            copied ? "bg-primary text-black" : "bg-white/5 text-white/50 hover:bg-white/10"
+                                        )}
+                                    >
+                                        {copied ? <><Check size={14} /> Copiado</> : <><Copy size={14} /> Copiar</>}
+                                    </button>
+                                </div>
+                                <p className="text-[10px] text-white/25">Envie este comando no chat do bot @{linkData.bot_username}</p>
+                            </div>
+
+                            <button
+                                onClick={() => { setLinkData(null); checkStatus(); }}
+                                className="text-xs font-bold text-white/30 hover:text-white/60 transition-colors"
+                            >
+                                Já vinculei — verificar status
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Features info */}
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-3">
+                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">O que você pode fazer pelo Telegram</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                        { label: 'Gerar PIX', desc: 'Crie cobranças direto do chat', icon: '⚡' },
+                        { label: 'Ver Saldo', desc: 'Consulte saldo e vendas do dia', icon: '💰' },
+                        { label: 'Relatórios', desc: 'Resumo de vendas por período', icon: '📊' },
+                        { label: 'Solicitar Saques', desc: 'Peça saque com confirmação', icon: '🏦' },
+                        { label: 'Linguagem Natural', desc: 'Pergunte em português normal', icon: '💬' },
+                        { label: 'Notificações', desc: 'Receba alertas de vendas', icon: '🔔' },
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02]">
+                            <span className="text-lg">{item.icon}</span>
+                            <div>
+                                <p className="text-xs font-bold text-white">{item.label}</p>
+                                <p className="text-[10px] text-white/30">{item.desc}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

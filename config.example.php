@@ -13,9 +13,14 @@ define('DB_NAME', 'seu_banco');
 define('PIXGO_API_KEY', 'sua_chave_pixgo');
 define('PIXGO_PROJECT_ID', ''); 
 
-// Telegram Bot Configuration
+// Telegram Bot Configuration (Admin)
 define('TELEGRAM_BOT_TOKEN', ''); 
 define('TELEGRAM_CHAT_ID', '');   
+
+// Telegram Bot Configuration (Usuários)
+define('TELEGRAM_USER_BOT_TOKEN', '');    // Token do bot para usuários
+define('TELEGRAM_USER_BOT_SECRET', '');   // Secret para webhook (qualquer string aleatória)
+define('TELEGRAM_USER_BOT_USERNAME', ''); // Username do bot (sem @)
 
 // Gmail SMTP Configuration
 define('MAIL_HOST', 'smtp.gmail.com');
