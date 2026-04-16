@@ -65,6 +65,7 @@ echo "--- Response Body ---\n{$responseBody}\n";
 // Também tenta pegar o erro direto do PHP error log
 echo "\n--- Últimas linhas do error_log (se existir) ---\n";
 $errorLogPaths = [
+    __DIR__ . '/bot_errors.log',
     __DIR__ . '/error_log',
     __DIR__ . '/php_errors.log',
     '/tmp/php_errors.log',

@@ -24,7 +24,18 @@
  */
 
 date_default_timezone_set('America/Sao_Paulo');
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/bot_errors.log');
+
+try {
 require_once __DIR__ . '/includes/db.php';
+} catch (Throwable $e) {
+    file_put_contents(__DIR__ . '/bot_errors.log', date('Y-m-d H:i:s') . " DB ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
+    http_response_code(200);
+    exit;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONFIG
