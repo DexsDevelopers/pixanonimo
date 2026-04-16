@@ -1,6 +1,6 @@
 <?php
 /**
- * Diagnóstico do Bot de Usuários
+ * Simula uma chamada webhook para ver o erro real.
  * Acesse: https://pixghost.site/test_bot.php
  * DELETE APÓS USAR!
  */
@@ -8,96 +8,76 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 echo "<pre style='background:#111;color:#0f0;padding:2rem;font-family:monospace;font-size:14px;'>";
-echo "=== DIAGNÓSTICO BOT TELEGRAM ===\n\n";
+echo "=== SIMULAÇÃO WEBHOOK BOT ===\n\n";
 
-// 1. Config
-echo "1. Config.php...\n";
+// Simula um /start de chat_id fictício
+$fakeUpdate = json_encode([
+    'update_id' => 999999,
+    'message' => [
+        'message_id' => 1,
+        'from' => ['id' => 12345, 'is_bot' => false, 'first_name' => 'Teste'],
+        'chat' => ['id' => 12345, 'first_name' => 'Teste', 'type' => 'private'],
+        'date' => time(),
+        'text' => '/start',
+    ],
+]);
+
+// Faz uma requisição HTTP real ao próprio endpoint
+$secret = '';
 try {
     require_once __DIR__ . '/config.php';
-    echo "   ✅ config.php carregado\n";
-} catch (Throwable $e) {
-    echo "   ❌ ERRO: " . $e->getMessage() . "\n";
+    $secret = defined('TELEGRAM_USER_BOT_SECRET') ? TELEGRAM_USER_BOT_SECRET : '';
+} catch (Throwable $e) {}
+
+$url = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/telegram_user_bot.php';
+
+echo "URL: {$url}\n";
+echo "Secret: " . ($secret ? 'sim' : 'não') . "\n\n";
+
+$headers = ['Content-Type: application/json'];
+if ($secret) {
+    $headers[] = "X-Telegram-Bot-Api-Secret-Token: {$secret}";
 }
 
-// 2. Constantes
-echo "\n2. Constantes Telegram...\n";
-$token = defined('TELEGRAM_USER_BOT_TOKEN') ? TELEGRAM_USER_BOT_TOKEN : '';
-$secret = defined('TELEGRAM_USER_BOT_SECRET') ? TELEGRAM_USER_BOT_SECRET : '';
-$username = defined('TELEGRAM_USER_BOT_USERNAME') ? TELEGRAM_USER_BOT_USERNAME : '';
-echo "   TOKEN: " . ($token ? substr($token, 0, 10) . '...' : '❌ VAZIO') . "\n";
-echo "   SECRET: " . ($secret ? '✅ definido' : '⚠️ vazio') . "\n";
-echo "   USERNAME: " . ($username ?: '⚠️ vazio') . "\n";
+$ch = curl_init($url);
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => $fakeUpdate,
+    CURLOPT_HTTPHEADER     => $headers,
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_HEADER         => true,
+]);
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+$error = curl_error($ch);
+curl_close($ch);
 
-// 3. DB
-echo "\n3. Banco de dados...\n";
-try {
-    require_once __DIR__ . '/includes/db.php';
-    echo "   ✅ Conexão OK\n";
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-    echo "   ✅ Users: " . $stmt->fetchColumn() . " registros\n";
-    
-    // Check telegram columns
-    $cols = $pdo->query("SHOW COLUMNS FROM users LIKE 'telegram_%'")->fetchAll();
-    echo "   Colunas telegram: " . count($cols) . " encontradas\n";
-    foreach ($cols as $c) echo "     - {$c['Field']} ({$c['Type']})\n";
-} catch (Throwable $e) {
-    echo "   ❌ ERRO DB: " . $e->getMessage() . "\n";
-}
+$responseHeaders = substr($response, 0, $headerSize);
+$responseBody = substr($response, $headerSize);
 
-// 4. Syntax check
-echo "\n4. Syntax check telegram_user_bot.php...\n";
-$output = [];
-$code = 0;
-exec('php -l ' . escapeshellarg(__DIR__ . '/telegram_user_bot.php') . ' 2>&1', $output, $code);
-foreach ($output as $line) echo "   {$line}\n";
-echo "   " . ($code === 0 ? '✅ Sem erros de sintaxe' : '❌ ERRO DE SINTAXE!') . "\n";
+echo "HTTP Code: {$httpCode}\n";
+if ($error) echo "cURL Error: {$error}\n";
+echo "\n--- Response Headers ---\n{$responseHeaders}\n";
+echo "--- Response Body ---\n{$responseBody}\n";
 
-// 5. Webhook info
-echo "\n5. Webhook info...\n";
-if ($token) {
-    $ch = curl_init("https://api.telegram.org/bot{$token}/getWebhookInfo");
-    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
-    $res = json_decode(curl_exec($ch) ?: '{}', true);
-    curl_close($ch);
-    if (!empty($res['ok'])) {
-        $info = $res['result'];
-        echo "   URL: " . ($info['url'] ?: '❌ NÃO DEFINIDO') . "\n";
-        echo "   Pending updates: " . ($info['pending_update_count'] ?? 0) . "\n";
-        echo "   Last error: " . ($info['last_error_message'] ?? 'nenhum') . "\n";
-        echo "   Last error date: " . (!empty($info['last_error_date']) ? date('Y-m-d H:i:s', $info['last_error_date']) : 'n/a') . "\n";
-        echo "   Has secret: " . (!empty($info['has_custom_certificate']) ? 'sim' : ($info['url'] ? 'verificar' : 'n/a')) . "\n";
-    } else {
-        echo "   ❌ Falha ao obter info: " . json_encode($res) . "\n";
+// Também tenta pegar o erro direto do PHP error log
+echo "\n--- Últimas linhas do error_log (se existir) ---\n";
+$errorLogPaths = [
+    __DIR__ . '/error_log',
+    __DIR__ . '/php_errors.log',
+    '/tmp/php_errors.log',
+];
+foreach ($errorLogPaths as $logPath) {
+    if (file_exists($logPath)) {
+        echo "Arquivo: {$logPath}\n";
+        $lines = file($logPath);
+        $last = array_slice($lines, -15);
+        foreach ($last as $l) echo $l;
+        break;
     }
-} else {
-    echo "   ⚠️ Token vazio, pulando\n";
 }
 
-// 6. Try include bot file
-echo "\n6. Tentando incluir telegram_user_bot.php (sem executar)...\n";
-try {
-    $botCode = file_get_contents(__DIR__ . '/telegram_user_bot.php');
-    echo "   ✅ Arquivo existe (" . strlen($botCode) . " bytes)\n";
-    
-    // Check for common issues
-    if (strpos($botCode, 'match(') !== false) {
-        echo "   ⚠️ Usa 'match' expression (requer PHP 8.0+)\n";
-        echo "   PHP version: " . PHP_VERSION . "\n";
-        if (version_compare(PHP_VERSION, '8.0.0', '<')) {
-            echo "   ❌ PHP < 8.0! 'match' não é suportado!\n";
-        } else {
-            echo "   ✅ PHP >= 8.0, match suportado\n";
-        }
-    }
-    
-    // Check for nullable return type
-    if (strpos($botCode, '): ?int') !== false || strpos($botCode, '): ?array') !== false) {
-        echo "   ℹ️ Usa nullable types (requer PHP 7.1+)\n";
-    }
-    
-} catch (Throwable $e) {
-    echo "   ❌ ERRO: " . $e->getMessage() . "\n";
-}
-
-echo "\n=== FIM DO DIAGNÓSTICO ===\n";
+echo "\n=== FIM ===\n";
 echo "</pre>";
