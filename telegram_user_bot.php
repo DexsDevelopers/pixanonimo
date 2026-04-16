@@ -131,6 +131,25 @@ function timeAgo(string $datetime): string {
     return (int)($diff / 86400) . 'd atrás';
 }
 
+function maskName(string $fullName): string {
+    $parts = explode(' ', trim($fullName));
+    $first = mb_ucfirst(mb_strtolower($parts[0]));
+    if (mb_strlen($first) <= 2) {
+        $masked = $first;
+    } else {
+        $masked = mb_substr($first, 0, 2) . str_repeat('*', mb_strlen($first) - 3) . mb_substr($first, -1);
+    }
+    if (count($parts) > 1) {
+        $last = end($parts);
+        $masked .= ' ' . mb_strtoupper(mb_substr($last, 0, 1)) . '.';
+    }
+    return $masked;
+}
+
+function mb_ucfirst(string $s): string {
+    return mb_strtoupper(mb_substr($s, 0, 1)) . mb_substr($s, 1);
+}
+
 function motivational(int $salesCount): string {
     if ($salesCount === 0) return "💡 <i>Nenhuma venda hoje ainda — que tal compartilhar seu link?</i>";
     if ($salesCount === 1) return "🎯 <i>Primeira venda do dia! O momentum começou.</i>";
@@ -1011,7 +1030,7 @@ function handleRanking(string $chatId, array $user): void {
     foreach ($ranking as $i => $r) {
         $medal = $medals[$i] ?? ($i + 1) . 'º';
         $isMe = (int)$r['id'] === $userId;
-        $name = $isMe ? "<b>→ {$r['full_name']} (você)</b>" : $r['full_name'];
+        $name = $isMe ? "<b>→ Você</b>" : maskName($r['full_name']);
         $msg .= "{$medal} {$name}\n"
               . "    {$r['sales']} vendas — " . formatBRL((float)$r['volume']) . "\n\n";
         if ($isMe) $myPos = $i + 1;
