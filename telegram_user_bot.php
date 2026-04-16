@@ -206,11 +206,6 @@ function getUserByChatId(string $chatId): ?array {
     return $stmt->fetch() ?: null;
 }
 
-function getFullUrl(string $path): string {
-    $base = defined('APP_URL') ? APP_URL : 'https://pixghost.site';
-    return rtrim($base, '/') . '/' . ltrim($path, '/');
-}
-
 function getActivePixGoKeyForUser(int $userId): string {
     global $pdo;
     $stmt = $pdo->prepare("SELECT api_key FROM pixgo_apis WHERE user_id = ? AND is_active = 1 LIMIT 1");
