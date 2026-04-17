@@ -17,7 +17,7 @@ import {
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
-function ApiTable({ apis, actionLoading, onToggle, onDelete, onSwitchType, emptyLabel }) {
+function ApiTableRows({ apis, actionLoading, onToggle, onDelete, onSwitchType, emptyLabel }) {
     if (apis.length === 0) {
         return (
             <tr>
@@ -78,6 +78,61 @@ function ApiTable({ apis, actionLoading, onToggle, onDelete, onSwitchType, empty
     ));
 }
 
+function ApiCardsMobile({ apis, actionLoading, onToggle, onDelete, onSwitchType, emptyLabel }) {
+    if (apis.length === 0) {
+        return <div className="p-10 text-center text-white/20 font-bold italic text-sm">{emptyLabel}</div>;
+    }
+    return (
+        <div className="space-y-2 p-3">
+            {apis.map((api) => (
+                <div key={api.id} className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4 space-y-3">
+                    {/* Row 1: Name + Status */}
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-[14px] font-bold text-white truncate">{api.name}</h4>
+                            <code className="text-[10px] text-emerald-400/50">pk_...{api.api_key.slice(-6)}</code>
+                        </div>
+                        <span className={cn(
+                            "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase shrink-0 tracking-wide",
+                            api.status === 'active'
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : 'bg-white/5 text-white/30'
+                        )}>
+                            {api.status === 'active' ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </div>
+                    {/* Row 2: Actions */}
+                    <div className="flex items-center gap-1.5">
+                        <button
+                            onClick={() => onToggle(api.id)}
+                            disabled={actionLoading === `toggle_api_status-${api.id}`}
+                            className={cn("flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold active:scale-95 transition-transform", api.status === 'active' ? 'bg-primary/15 text-primary' : 'bg-white/5 text-white/30')}
+                        >
+                            {api.status === 'active' ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
+                            {api.status === 'active' ? 'Desativar' : 'Ativar'}
+                        </button>
+                        <button
+                            onClick={() => onSwitchType(api)}
+                            disabled={actionLoading === `set_api_type-${api.id}`}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-white/5 rounded-xl text-white/40 text-[10px] font-bold active:scale-95 transition-transform disabled:opacity-30"
+                        >
+                            <ArrowLeftRight size={12} />
+                            {api.is_admin_only == 1 ? 'p/ Usuários' : 'p/ Admin'}
+                        </button>
+                        <button
+                            onClick={() => window.confirm('Excluir esta API?') && onDelete(api.id)}
+                            disabled={actionLoading === `delete_api-${api.id}`}
+                            className="py-2 px-3 bg-red-500/10 rounded-xl text-red-400 text-[10px] font-bold active:scale-95 transition-transform"
+                        >
+                            <Trash2 size={12} />
+                        </button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function AdminApisPage() {
     const [apis, setApis] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -134,22 +189,22 @@ export default function AdminApisPage() {
     );
 
     return (
-        <div className="space-y-8 p-6 lg:p-10 max-w-[1300px] mx-auto animate-in fade-in duration-700">
+        <div className="space-y-6 md:space-y-8 p-4 md:p-6 lg:p-10 max-w-[1300px] mx-auto animate-in fade-in duration-700">
             {/* Header */}
             <div>
-                <Link to="/admin" className="flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-4 text-xs font-black uppercase tracking-widest">
+                <Link to="/admin" className="flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-3 md:mb-4 text-xs font-black uppercase tracking-widest">
                     <ArrowLeft size={14} /> Voltar ao Admin
                 </Link>
-                <h1 className="text-4xl font-black tracking-tight mb-1 flex items-center gap-4 text-primary">
-                    <Cpu size={36} /> Gestão de APIs
+                <h1 className="text-2xl md:text-4xl font-black tracking-tight mb-1 flex items-center gap-3 md:gap-4 text-primary">
+                    <Cpu size={24} className="md:hidden" /><Cpu size={36} className="hidden md:block" /> Gestão de APIs
                 </h1>
-                <p className="text-white/40 font-medium">Configure pools separados de chaves PixGo para usuários e para o admin.</p>
+                <p className="text-white/40 font-medium text-sm md:text-base">Configure pools de chaves PixGo para usuários e admin.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 items-start">
                 {/* Form */}
                 <div className="lg:col-span-1">
-                    <div className="glass p-8 rounded-[40px] border-white/5 sticky top-8">
+                    <div className="glass p-5 md:p-8 rounded-[24px] md:rounded-[40px] border-white/5 sticky top-8">
                         <h3 className="text-lg font-black mb-6 flex items-center gap-3">
                             <Plus size={20} className="text-primary" /> Nova Chave
                         </h3>
@@ -230,24 +285,37 @@ export default function AdminApisPage() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* APIs de Usuários */}
-                    <div className="glass rounded-[32px] border-white/5 overflow-hidden">
-                        <div className="p-6 border-b border-white/5 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Users size={16} className="text-primary" />
+                    <div className="glass rounded-[24px] md:rounded-[32px] border-white/5 overflow-hidden">
+                        <div className="p-4 md:p-6 border-b border-white/5 flex items-center gap-3">
+                            <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <Users size={14} className="text-primary md:hidden" />
+                                <Users size={16} className="text-primary hidden md:block" />
                             </div>
-                            <div>
-                                <h3 className="font-black">APIs para Usuários</h3>
-                                <p className="text-xs text-white/30 mt-0.5">Rotacionadas entre todos os usuários da plataforma</p>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-black text-sm md:text-base">APIs para Usuários</h3>
+                                <p className="text-[10px] md:text-xs text-white/30 mt-0.5 truncate">Rotacionadas entre todos os usuários</p>
                             </div>
-                            <span className="ml-auto text-xs font-black bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/20">
-                                {userApis.length} chave{userApis.length !== 1 ? 's' : ''}
+                            <span className="text-[10px] md:text-xs font-black bg-primary/10 text-primary px-2 md:px-3 py-1 rounded-full border border-primary/20 shrink-0">
+                                {userApis.length}
                             </span>
                         </div>
-                        <div className="overflow-x-auto">
+                        {/* Mobile */}
+                        <div className="md:hidden">
+                            <ApiCardsMobile
+                                apis={userApis}
+                                actionLoading={actionLoading}
+                                onToggle={id => handleAction('toggle_api_status', { id })}
+                                onDelete={id => handleAction('delete_api', { id })}
+                                onSwitchType={api => handleAction('set_api_type', { id: api.id, is_admin_only: '1' })}
+                                emptyLabel="Nenhuma API de usuário configurada."
+                            />
+                        </div>
+                        {/* Desktop */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full">
                                 {tableHead}
                                 <tbody className="divide-y divide-white/5">
-                                    <ApiTable
+                                    <ApiTableRows
                                         apis={userApis}
                                         actionLoading={actionLoading}
                                         onToggle={id => handleAction('toggle_api_status', { id })}
@@ -261,30 +329,43 @@ export default function AdminApisPage() {
                     </div>
 
                     {/* APIs de Admin */}
-                    <div className="glass rounded-[32px] border-amber-500/10 overflow-hidden">
-                        <div className="p-6 border-b border-amber-500/10 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                <Crown size={16} className="text-amber-400" />
+                    <div className="glass rounded-[24px] md:rounded-[32px] border-amber-500/10 overflow-hidden">
+                        <div className="p-4 md:p-6 border-b border-amber-500/10 flex items-center gap-3">
+                            <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                                <Crown size={14} className="text-amber-400 md:hidden" />
+                                <Crown size={16} className="text-amber-400 hidden md:block" />
                             </div>
-                            <div>
-                                <h3 className="font-black">APIs Exclusivas do Admin</h3>
-                                <p className="text-xs text-white/30 mt-0.5">Usadas apenas para cobranças geradas pelo admin — nunca expostas a usuários</p>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-black text-sm md:text-base">APIs do Admin</h3>
+                                <p className="text-[10px] md:text-xs text-white/30 mt-0.5 truncate">Apenas cobranças do admin</p>
                             </div>
-                            <span className="ml-auto text-xs font-black bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full border border-amber-500/20">
-                                {adminApis.length} chave{adminApis.length !== 1 ? 's' : ''}
+                            <span className="text-[10px] md:text-xs font-black bg-amber-500/10 text-amber-400 px-2 md:px-3 py-1 rounded-full border border-amber-500/20 shrink-0">
+                                {adminApis.length}
                             </span>
                         </div>
-                        <div className="overflow-x-auto">
+                        {/* Mobile */}
+                        <div className="md:hidden">
+                            <ApiCardsMobile
+                                apis={adminApis}
+                                actionLoading={actionLoading}
+                                onToggle={id => handleAction('toggle_api_status', { id })}
+                                onDelete={id => handleAction('delete_api', { id })}
+                                onSwitchType={api => handleAction('set_api_type', { id: api.id, is_admin_only: '0' })}
+                                emptyLabel="Nenhuma API exclusiva de admin."
+                            />
+                        </div>
+                        {/* Desktop */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full">
                                 {tableHead}
                                 <tbody className="divide-y divide-white/5">
-                                    <ApiTable
+                                    <ApiTableRows
                                         apis={adminApis}
                                         actionLoading={actionLoading}
                                         onToggle={id => handleAction('toggle_api_status', { id })}
                                         onDelete={id => handleAction('delete_api', { id })}
                                         onSwitchType={api => handleAction('set_api_type', { id: api.id, is_admin_only: '0' })}
-                                        emptyLabel="Nenhuma API exclusiva de admin configurada."
+                                        emptyLabel="Nenhuma API exclusiva de admin."
                                     />
                                 </tbody>
                             </table>
