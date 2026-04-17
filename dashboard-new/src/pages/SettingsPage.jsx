@@ -13,6 +13,7 @@ export default function SettingsPage({ userData }) {
     const [avatarUrl, setAvatarUrl] = useState(userData?.avatar_url || null);
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [fullName, setFullName] = useState(userData?.name || userData?.full_name || '');
     const [pixKey, setPixKey] = useState(userData?.pix_key || '');
     const [withdrawMethod, setWithdrawMethod] = useState(userData?.withdraw_method || 'pix');
     const [cryptoAddress, setCryptoAddress] = useState(userData?.crypto_address || '');
@@ -23,6 +24,7 @@ export default function SettingsPage({ userData }) {
 
     useEffect(() => {
         if (userData?.api_token) setApiToken(userData.api_token);
+        if (userData?.name || userData?.full_name) setFullName(userData.name || userData.full_name);
         if (userData?.pix_key) setPixKey(userData.pix_key);
         if (userData?.avatar_url) setAvatarUrl(userData.avatar_url);
         if (userData?.withdraw_method) setWithdrawMethod(userData.withdraw_method);
@@ -124,7 +126,7 @@ export default function SettingsPage({ userData }) {
                     'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 },
                 body: JSON.stringify({
-                    full_name: userData?.name || '',
+                    full_name: fullName,
                     pix_key: pixKey,
                     withdraw_method: withdrawMethod,
                     crypto_address: cryptoAddress,
@@ -330,7 +332,7 @@ export default function SettingsPage({ userData }) {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">Nome Completo</label>
-                                            <input type="text" defaultValue={userData?.name || "Ghost Pix Vendor"} className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
+                                            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 font-bold focus:outline-none focus:border-primary/50 transition-all" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-white/30 uppercase tracking-widest ml-4">E-mail Principal</label>
