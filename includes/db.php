@@ -114,6 +114,36 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Sistema de anúncios
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS announcements (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            title       VARCHAR(150) NOT NULL,
+            message     TEXT NULL,
+            media_url   VARCHAR(500) NULL COMMENT 'URL da imagem ou vídeo',
+            media_type  ENUM('none','image','video') NOT NULL DEFAULT 'none',
+            link_url    VARCHAR(500) NULL,
+            link_label  VARCHAR(100) NULL DEFAULT 'Acessar',
+            is_active   TINYINT(1) NOT NULL DEFAULT 1,
+            priority    INT NOT NULL DEFAULT 0 COMMENT 'Maior = aparece primeiro',
+            starts_at   DATETIME NULL,
+            expires_at  DATETIME NULL,
+            created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_ann_active (is_active, starts_at, expires_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS announcement_dismissals (
+            id              INT AUTO_INCREMENT PRIMARY KEY,
+            announcement_id INT NOT NULL,
+            user_id         INT NOT NULL,
+            dismissed_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_dismiss (announcement_id, user_id),
+            INDEX idx_ad_user (user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
     // Auto-Migração: Colunas para vincular conta Telegram do usuário
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN telegram_chat_id VARCHAR(50) NULL");

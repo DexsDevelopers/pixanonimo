@@ -42,7 +42,9 @@ import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
 import AdminProdutosPage from './pages/AdminProdutosPage';
 import AdminUsersPage from './pages/AdminUsersPage';
+import AdminAnunciosPage from './pages/AdminAnunciosPage';
 import EntregaPage from './pages/EntregaPage';
+import AnnouncementModal from './components/AnnouncementModal';
 
 // Proteção de Rota Admin
 function AdminRoute({ children, userData }) {
@@ -77,6 +79,7 @@ function DashboardLayout({ children, activeTab, setActiveTab, isSidebarOpen, set
         onClose={() => setIsSidebarOpen(false)}
       />
 
+      <AnnouncementModal />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <AnnouncementBar />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -364,6 +367,16 @@ export default function App() {
             <AdminRoute userData={userData}>
               <DashboardLayout {...commonProps} activeTab="admin-produtos">
                 <AdminProdutosPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/anuncios" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-anuncios">
+                <AdminAnunciosPage />
               </DashboardLayout>
             </AdminRoute>
           </PrivateRoute>
