@@ -295,8 +295,37 @@ export default function AdminPage() {
                         </div>
                         <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{adminData.all_transactions.length} registros</span>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full min-w-[700px]">
+                    {/* Mobile Cards */}
+                    <div className="md:hidden divide-y divide-white/5">
+                        {adminData.all_transactions.map(tx => (
+                            <div key={tx.id} className="p-4 flex items-center justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-sm font-bold text-white truncate">{tx.customer_name}</span>
+                                        <span className={cn(
+                                            'px-2 py-0.5 rounded-full text-[9px] font-black uppercase shrink-0',
+                                            tx.badge === 'approved' ? 'bg-green-500/10 text-green-400' :
+                                            tx.badge === 'expired'  ? 'bg-red-500/10 text-red-400' :
+                                            tx.badge === 'rejected' ? 'bg-red-500/10 text-red-400' :
+                                            'bg-orange-500/10 text-orange-400'
+                                        )}>{tx.status}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[11px] text-white/30">
+                                        <span>#{tx.id}</span>
+                                        <span>•</span>
+                                        <span>{tx.date}</span>
+                                        <span>•</span>
+                                        <span className="text-white/50">{tx.seller_name}</span>
+                                    </div>
+                                </div>
+                                <span className="text-sm font-black text-white shrink-0">R$ {tx.amount_brl}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full">
                             <thead>
                                 <tr className="text-left border-b border-white/5">
                                     <th className="p-5 pl-8 text-[10px] font-black text-white/20 uppercase tracking-widest">ID / Data</th>

@@ -190,8 +190,56 @@ export default function AdminTransactionsPage() {
 
             {/* Transactions Table */}
             <div className="glass rounded-[32px] border-white/5 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[800px]">
+                {/* Mobile Cards */}
+                <div className="md:hidden">
+                    {loading && !data ? (
+                        <div className="p-12 text-center">
+                            <RefreshCw className="animate-spin text-primary mx-auto mb-3" size={28} />
+                            <p className="text-white/30 text-sm font-medium">Carregando transações...</p>
+                        </div>
+                    ) : data?.transactions?.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <Receipt className="text-white/10 mx-auto mb-3" size={40} />
+                            <p className="text-white/30 text-sm font-medium">Nenhuma transação encontrada.</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-white/5">
+                            {data?.transactions?.map(tx => (
+                                <div key={tx.id} className="p-4 space-y-2">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <span className="text-sm font-bold text-white truncate block">{tx.user_name}</span>
+                                            <span className="text-[11px] text-white/30">{tx.user_email}</span>
+                                        </div>
+                                        <span className={cn(
+                                            "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase shrink-0 border",
+                                            badgeStyles[tx.badge] || badgeStyles.pending
+                                        )}>{tx.status}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-[11px] text-white/40">
+                                            <span>#{tx.id}</span>
+                                            <span className="mx-1.5">•</span>
+                                            <span>{tx.date}</span>
+                                            {tx.customer_name && <>
+                                                <span className="mx-1.5">•</span>
+                                                <span className="text-white/50">{tx.customer_name}</span>
+                                            </>}
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <span className="text-sm font-black text-white">R$ {tx.amount_brl}</span>
+                                            <span className="text-[10px] text-white/30 ml-2">líq. R$ {tx.amount_net_brl}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
                         <thead>
                             <tr className="text-left border-b border-white/5">
                                 <th className="p-5 pl-8 text-[10px] font-black text-white/20 uppercase tracking-widest">ID</th>

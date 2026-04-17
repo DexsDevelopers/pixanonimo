@@ -61,90 +61,161 @@ export default function TransactionsTable({ transactions = [], loading = false, 
     }
 
     return (
-        <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-separate border-spacing-y-3">
-                <thead>
-                    <tr className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-black">
-                        <th className="px-6 py-2">Cliente / ID</th>
-                        {showSeller && <th className="px-6 py-2">Vendedor</th>}
-                        <th className="px-6 py-2">Valor Total</th>
-                        <th className="px-6 py-2 text-center">Status / Expiração</th>
-                        <th className="px-6 py-2 text-right">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {transactions.map((tx) => (
-                        <tr key={tx.id} className="group transition-all duration-500">
-                            <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] rounded-l-[24px] border-y border-l border-white/5">
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-white font-bold text-sm tracking-tight">{tx.customer_name || 'Sem nome'}</span>
-                                    <span className="text-white/20 text-[10px] font-medium uppercase tracking-wider">#{tx.id} • {tx.date}</span>
-                                </div>
-                            </td>
-                            {showSeller && (
-                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
-                                    <span className="text-white/70 font-semibold text-xs bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name || '—'}</span>
-                                </td>
-                            )}
-                            <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
+        <>
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-2">
+                {transactions.map((tx) => (
+                    <div key={tx.id} className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                                <span className="text-white font-bold text-sm block truncate">{tx.customer_name || 'Sem nome'}</span>
+                                <span className="text-white/20 text-[10px] font-medium uppercase tracking-wider">#{tx.id} • {tx.date}</span>
+                            </div>
+                            <span className={cn(
+                                "px-3 py-1 rounded-full text-[9px] font-black uppercase shrink-0",
+                                tx.badge === 'approved' || tx.badge === 'paid' ? 'bg-primary/10 text-primary border border-primary/20' :
+                                    tx.badge === 'expired' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                                        'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                            )}>
+                                {tx.status}
+                            </span>
+                        </div>
+                        {showSeller && tx.seller_name && (
+                            <span className="text-white/70 font-semibold text-xs bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name}</span>
+                        )}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
                                 <span className="text-white font-black text-base">R$ {tx.amount_brl}</span>
-                            </td>
-                            <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5 text-center">
-                                <div className="flex flex-col items-center gap-2">
-                                    <span className={cn(
-                                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em]",
-                                        tx.badge === 'approved' || tx.badge === 'paid' ? 'bg-primary/10 text-primary border border-primary/20' :
-                                            tx.badge === 'expired' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
-                                                'bg-orange-500/10 text-orange-500 border border-orange-500/20'
-                                    )}>
-                                        {tx.status}
-                                    </span>
-                                    {tx.badge === 'pending' && (
-                                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/30">
-                                            <Clock size={10} className="text-orange-500/50" />
-                                            <CountdownTimer secondsOld={tx.seconds_old} />
-                                        </div>
-                                    )}
-                                </div>
-                            </td>
-                            <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-r border-white/5 rounded-r-[24px] text-right">
-                                <div className="flex items-center justify-end gap-2.5">
-                                    {tx.badge === 'pending' && (
-                                        <button
-                                            onClick={() => onViewQr && onViewQr({
-                                                id: tx.pix_id || tx.id,
-                                                amount: tx.amount_brl ? tx.amount_brl.replace(/\./g, '').replace(',', '.') : 0,
-                                                code: tx.pix_code || '',
-                                                image: tx.qr_image || '',
-                                                secondsOld: tx.seconds_old || 0,
-                                                createdAt: Date.now() - ((tx.seconds_old || 0) * 1000)
-                                            })}
-                                            className="p-2.5 rounded-full bg-white/5 text-primary hover:bg-primary hover:text-black transition-all duration-300 border border-white/5 hover:border-primary active:scale-95"
-                                            title="Ver QR Code"
-                                        >
-                                            <QrCode size={18} />
-                                        </button>
-                                    )}
+                                {tx.badge === 'pending' && (
+                                    <div className="flex items-center gap-1 text-[11px] font-bold text-white/30">
+                                        <Clock size={10} className="text-orange-500/50" />
+                                        <CountdownTimer secondsOld={tx.seconds_old} />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {tx.badge === 'pending' && (
                                     <button
-                                        onClick={() => handleCopy(tx.pix_code, tx.id)}
-                                        className="p-2.5 rounded-full bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all duration-300 border border-white/5 active:scale-95"
-                                        title="Copiar Código"
+                                        onClick={() => onViewQr && onViewQr({
+                                            id: tx.pix_id || tx.id,
+                                            amount: tx.amount_brl ? tx.amount_brl.replace(/\./g, '').replace(',', '.') : 0,
+                                            code: tx.pix_code || '',
+                                            image: tx.qr_image || '',
+                                            secondsOld: tx.seconds_old || 0,
+                                            createdAt: Date.now() - ((tx.seconds_old || 0) * 1000)
+                                        })}
+                                        className="p-2 rounded-full bg-white/5 text-primary border border-white/5"
+                                        title="Ver QR Code"
                                     >
-                                        {copiedId === tx.id ? <Check size={18} className="text-primary" /> : <Copy size={18} />}
+                                        <QrCode size={16} />
                                     </button>
-                                    <button
-                                        onClick={() => onDelete && onDelete(tx.id)}
-                                        className="p-2.5 rounded-full bg-red-500/5 text-red-500/40 hover:bg-red-500 hover:text-white transition-all duration-300 border border-white/5 hover:border-red-500 active:scale-95"
-                                        title="Excluir Transação"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </td>
+                                )}
+                                <button
+                                    onClick={() => handleCopy(tx.pix_code, tx.id)}
+                                    className="p-2 rounded-full bg-white/5 text-white/40 border border-white/5"
+                                    title="Copiar Código"
+                                >
+                                    {copiedId === tx.id ? <Check size={16} className="text-primary" /> : <Copy size={16} />}
+                                </button>
+                                <button
+                                    onClick={() => onDelete && onDelete(tx.id)}
+                                    className="p-2 rounded-full bg-red-500/5 text-red-500/40 border border-white/5"
+                                    title="Excluir"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto custom-scrollbar">
+                <table className="w-full text-left border-separate border-spacing-y-3">
+                    <thead>
+                        <tr className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-black">
+                            <th className="px-6 py-2">Cliente / ID</th>
+                            {showSeller && <th className="px-6 py-2">Vendedor</th>}
+                            <th className="px-6 py-2">Valor Total</th>
+                            <th className="px-6 py-2 text-center">Status / Expiração</th>
+                            <th className="px-6 py-2 text-right">Ações</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {transactions.map((tx) => (
+                            <tr key={tx.id} className="group transition-all duration-500">
+                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] rounded-l-[24px] border-y border-l border-white/5">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-white font-bold text-sm tracking-tight">{tx.customer_name || 'Sem nome'}</span>
+                                        <span className="text-white/20 text-[10px] font-medium uppercase tracking-wider">#{tx.id} • {tx.date}</span>
+                                    </div>
+                                </td>
+                                {showSeller && (
+                                    <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
+                                        <span className="text-white/70 font-semibold text-xs bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name || '—'}</span>
+                                    </td>
+                                )}
+                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5">
+                                    <span className="text-white font-black text-base">R$ {tx.amount_brl}</span>
+                                </td>
+                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-white/5 text-center">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className={cn(
+                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em]",
+                                            tx.badge === 'approved' || tx.badge === 'paid' ? 'bg-primary/10 text-primary border border-primary/20' :
+                                                tx.badge === 'expired' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                                                    'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                                        )}>
+                                            {tx.status}
+                                        </span>
+                                        {tx.badge === 'pending' && (
+                                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/30">
+                                                <Clock size={10} className="text-orange-500/50" />
+                                                <CountdownTimer secondsOld={tx.seconds_old} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-5 bg-white/[0.01] group-hover:bg-white/[0.03] border-y border-r border-white/5 rounded-r-[24px] text-right">
+                                    <div className="flex items-center justify-end gap-2.5">
+                                        {tx.badge === 'pending' && (
+                                            <button
+                                                onClick={() => onViewQr && onViewQr({
+                                                    id: tx.pix_id || tx.id,
+                                                    amount: tx.amount_brl ? tx.amount_brl.replace(/\./g, '').replace(',', '.') : 0,
+                                                    code: tx.pix_code || '',
+                                                    image: tx.qr_image || '',
+                                                    secondsOld: tx.seconds_old || 0,
+                                                    createdAt: Date.now() - ((tx.seconds_old || 0) * 1000)
+                                                })}
+                                                className="p-2.5 rounded-full bg-white/5 text-primary hover:bg-primary hover:text-black transition-all duration-300 border border-white/5 hover:border-primary active:scale-95"
+                                                title="Ver QR Code"
+                                            >
+                                                <QrCode size={18} />
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => handleCopy(tx.pix_code, tx.id)}
+                                            className="p-2.5 rounded-full bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all duration-300 border border-white/5 active:scale-95"
+                                            title="Copiar Código"
+                                        >
+                                            {copiedId === tx.id ? <Check size={18} className="text-primary" /> : <Copy size={18} />}
+                                        </button>
+                                        <button
+                                            onClick={() => onDelete && onDelete(tx.id)}
+                                            className="p-2.5 rounded-full bg-red-500/5 text-red-500/40 hover:bg-red-500 hover:text-white transition-all duration-300 border border-white/5 hover:border-red-500 active:scale-95"
+                                            title="Excluir Transação"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </>
     );
 }
