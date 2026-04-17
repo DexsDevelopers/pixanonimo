@@ -226,6 +226,13 @@ function getUserByChatId(string $chatId): ?array {
     return $stmt->fetch() ?: null;
 }
 
+function getFreshBalance(int $userId): float {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT balance FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    return (float)$stmt->fetchColumn();
+}
+
 function getActivePixGoKeyForUser(int $userId): string {
     global $pdo;
     $stmt = $pdo->prepare("SELECT api_key FROM pixgo_apis WHERE user_id = ? AND is_active = 1 LIMIT 1");
@@ -302,7 +309,7 @@ if (isset($input['callback_query'])) {
         uEditMessage($cbChatId, $cbMsgId,
             "👻 <b>Ghost Pix — Menu Principal</b>" . div() . "\n\n"
             . greeting() . ", <b>{$user['full_name']}</b>!\n\n"
-            . "💰 Saldo: <b>" . formatBRL((float)$user['balance']) . "</b>\n"
+            . "💰 Saldo: <b>" . formatBRL(getFreshBalance((int)$user['id'])) . "</b>\n"
             . "📊 Vendas hoje: <b>{$today['cnt']}</b> — " . formatBRL((float)$today['vol']) . "\n\n"
             . "Escolha uma opção:",
             mainMenuKeyboard()
@@ -372,7 +379,7 @@ if (isset($input['callback_query'])) {
         $pendingWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
         $pendingWd->execute([$user['id']]);
         $pendingTotal = (float)$pendingWd->fetchColumn();
-        $available = (float)$user['balance'] - $pendingTotal;
+        $available = getFreshBalance((int)$user['id']) - $pendingTotal;
         uEditMessage($cbChatId, $cbMsgId,
             "🏦 <b>Solicitar Saque</b>" . div() . "\n\n"
             . "✅ Disponível: <b>" . formatBRL($available) . "</b>\n"
@@ -520,7 +527,7 @@ if ($command === 'start') {
         uReply($chatId,
             "👋 <b>" . greeting() . ", {$user['full_name']}!</b>" . div() . "\n\n"
             . "✅ Sua conta está conectada\n\n"
-            . "💰 Saldo: <b>" . formatBRL((float)$user['balance']) . "</b>\n"
+            . "💰 Saldo: <b>" . formatBRL(getFreshBalance((int)$user['id'])) . "</b>\n"
             . "📊 Vendas hoje: <b>{$today['cnt']}</b> — " . formatBRL((float)$today['vol']) . "\n\n"
             . "Escolha uma opção ou use /ajuda:",
             mainMenuKeyboard()
@@ -680,11 +687,11 @@ function handleSaldo(string $chatId, array $user): void {
     sendTyping($chatId);
     $userId = (int)$user['id'];
 
+    $balance = getFreshBalance($userId);
+
     $pendingWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
     $pendingWd->execute([$userId]);
     $pendingTotal = (float)$pendingWd->fetchColumn();
-
-    $balance = (float)$user['balance'];
     $available = $balance - $pendingTotal;
 
     $today = getUserTodayStats($userId);
@@ -877,14 +884,15 @@ function handleSacar(string $chatId, array $user, float $amount): void {
         return;
     }
 
+    $freshBal = getFreshBalance($userId);
     $pendingWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
     $pendingWd->execute([$userId]);
     $pendingTotal = (float)$pendingWd->fetchColumn();
-    $available = (float)$user['balance'] - $pendingTotal;
+    $available = $freshBal - $pendingTotal;
 
     if ($amount > $available) {
         $msg = "❌ <b>Saldo insuficiente</b>" . div() . "\n\n"
-             . "💵 Saldo: " . formatBRL((float)$user['balance']) . "\n";
+             . "💵 Saldo: " . formatBRL($freshBal) . "\n";
         if ($pendingTotal > 0) $msg .= "⏳ Saques pendentes: " . formatBRL($pendingTotal) . "\n";
         $msg .= "✅ Disponível: <b>" . formatBRL($available) . "</b>" . footer();
         uReply($chatId, $msg, afterActionKeyboard());
@@ -1194,7 +1202,7 @@ switch ($command) {
         uReply($chatId,
             "👻 <b>Ghost Pix — Menu Principal</b>" . div() . "\n\n"
             . greeting() . ", <b>{$userName}</b>!\n\n"
-            . "💰 Saldo: <b>" . formatBRL((float)$user['balance']) . "</b>\n"
+            . "💰 Saldo: <b>" . formatBRL(getFreshBalance($userId)) . "</b>\n"
             . "📊 Vendas hoje: <b>{$today['cnt']}</b> — " . formatBRL((float)$today['vol']) . "\n\n"
             . "Escolha uma opção:",
             mainMenuKeyboard()
@@ -1268,7 +1276,7 @@ switch ($command) {
         } else {
             $pendingWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
             $pendingWd->execute([$userId]);
-            $available = (float)$user['balance'] - (float)$pendingWd->fetchColumn();
+            $available = getFreshBalance($userId) - (float)$pendingWd->fetchColumn();
             uReply($chatId,
                 "🏦 <b>Solicitar Saque</b>" . div() . "\n\n"
                 . "✅ Disponível: <b>" . formatBRL($available) . "</b>\n"
@@ -1345,7 +1353,7 @@ if (!$handled) {
             case 'sacar_help':
                 $pendingWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = ? AND status = 'pending'");
                 $pendingWd->execute([$userId]);
-                $available = (float)$user['balance'] - (float)$pendingWd->fetchColumn();
+                $available = getFreshBalance($userId) - (float)$pendingWd->fetchColumn();
                 uReply($chatId,
                     "🏦 <b>Solicitar Saque</b>\n\n"
                     . "✅ Disponível: <b>" . formatBRL($available) . "</b>\n"
@@ -1374,7 +1382,7 @@ if (!$handled) {
                 uReply($chatId,
                     "👻 <b>Ghost Pix — Menu Principal</b>" . div() . "\n\n"
                     . greeting() . ", <b>{$userName}</b>!\n\n"
-                    . "💰 Saldo: <b>" . formatBRL((float)$user['balance']) . "</b>\n"
+                    . "💰 Saldo: <b>" . formatBRL(getFreshBalance($userId)) . "</b>\n"
                     . "📊 Vendas hoje: <b>{$today['cnt']}</b> — " . formatBRL((float)$today['vol']) . "\n\n"
                     . "Escolha uma opção:",
                     mainMenuKeyboard()
@@ -1399,7 +1407,7 @@ if (!$handled) {
             case 'saudacao':
                 sendTyping($chatId);
                 $today = getUserTodayStats($userId);
-                $balance = formatBRL((float)$user['balance']);
+                $balance = formatBRL(getFreshBalance($userId));
                 $goal = getUserDailyGoal($userId);
                 $msg = "👋 <b>" . greeting() . ", {$userName}!</b>\n\n"
                      . "💰 Saldo: <b>{$balance}</b>\n"
