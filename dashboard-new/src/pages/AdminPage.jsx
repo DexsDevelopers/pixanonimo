@@ -283,42 +283,42 @@ export default function AdminPage() {
             {/* ── Vendas Recentes da Plataforma ── */}
             {adminData?.all_transactions?.length > 0 && (
                 <div className="glass rounded-[40px] border-white/5 overflow-hidden">
-                    <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                                <Activity size={22} />
+                    <div className="p-5 md:p-8 border-b border-white/5 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 md:gap-4">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0">
+                                <Activity size={18} className="md:hidden" />
+                                <Activity size={22} className="hidden md:block" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold">Vendas Recentes da Plataforma</h3>
-                                <p className="text-xs text-white/30 font-medium mt-0.5">Últimas 40 transações de todos os usuários</p>
+                                <h3 className="text-base md:text-xl font-bold">Vendas Recentes</h3>
+                                <p className="text-[10px] md:text-xs text-white/30 font-medium mt-0.5">Últimas 40 transações</p>
                             </div>
                         </div>
-                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{adminData.all_transactions.length} registros</span>
+                        <span className="text-[9px] md:text-[10px] font-black text-white/20 uppercase tracking-widest shrink-0">{adminData.all_transactions.length} reg.</span>
                     </div>
                     {/* Mobile Cards */}
-                    <div className="md:hidden divide-y divide-white/5">
+                    <div className="md:hidden space-y-2 p-3">
                         {adminData.all_transactions.map(tx => (
-                            <div key={tx.id} className="p-4 flex items-center justify-between gap-3">
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-sm font-bold text-white truncate">{tx.customer_name}</span>
-                                        <span className={cn(
-                                            'px-2 py-0.5 rounded-full text-[9px] font-black uppercase shrink-0',
-                                            tx.badge === 'approved' ? 'bg-green-500/10 text-green-400' :
-                                            tx.badge === 'expired'  ? 'bg-red-500/10 text-red-400' :
-                                            tx.badge === 'rejected' ? 'bg-red-500/10 text-red-400' :
-                                            'bg-orange-500/10 text-orange-400'
-                                        )}>{tx.status}</span>
+                            <div key={tx.id} className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4">
+                                {/* Row 1: Customer + Status */}
+                                <div className="flex items-start justify-between gap-3 mb-2">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-[14px] font-bold text-white truncate">{tx.customer_name}</h4>
+                                        <p className="text-[11px] text-white/25 font-medium mt-0.5">{tx.seller_name}</p>
                                     </div>
-                                    <div className="flex items-center gap-2 text-[11px] text-white/30">
-                                        <span>#{tx.id}</span>
-                                        <span>•</span>
-                                        <span>{tx.date}</span>
-                                        <span>•</span>
-                                        <span className="text-white/50">{tx.seller_name}</span>
-                                    </div>
+                                    <span className={cn(
+                                        'px-2.5 py-1 rounded-lg text-[9px] font-black uppercase shrink-0 tracking-wide',
+                                        tx.badge === 'approved' ? 'bg-emerald-500/15 text-emerald-400' :
+                                        tx.badge === 'expired'  ? 'bg-red-500/15 text-red-400' :
+                                        tx.badge === 'rejected' ? 'bg-red-500/15 text-red-400' :
+                                        'bg-orange-500/15 text-orange-400'
+                                    )}>{tx.status}</span>
                                 </div>
-                                <span className="text-sm font-black text-white shrink-0">R$ {tx.amount_brl}</span>
+                                {/* Row 2: Amount + Meta */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[11px] text-white/30">#{tx.id} • {tx.date}</span>
+                                    <span className="text-sm font-black text-white">R$ {tx.amount_brl}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
