@@ -100,22 +100,42 @@ try {
         case 'complete_withdraw':
             $wId = (int)$data['withdraw_id'];
             $hash = $data['tx_hash'] ?? '';
-            $stmt = $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?");
-            if ($stmt->execute([$hash, $wId])) {
-                $stmtW = $pdo->prepare("SELECT w.user_id, w.amount, w.pix_key, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ?");
+            $pdo->beginTransaction();
+            try {
+                // Lock + verificar status para evitar double-processing
+                $stmtW = $pdo->prepare("SELECT w.user_id, w.amount, w.pix_key, w.status, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ? FOR UPDATE");
                 $stmtW->execute([$wId]);
                 $w = $stmtW->fetch();
-                if ($w) {
-                    // Debitar saldo somente agora (na aprovação)
-                    $pdo->prepare("UPDATE users SET balance = balance - ? WHERE id = ?")->execute([$w['amount'], $w['user_id']]);
-
-                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
-                        ->execute([$w['user_id'], "Seu saque de R$ " . number_format($w['amount'], 2, ',', '.') . " foi processado."]);
-                    
-                    $u = getUser($w['user_id']);
-                    if ($u) MailService::notifyWithdrawalPaid($u['email'], $u['full_name'], $w['amount']);
-                    try { TelegramService::notifyWithdrawalApproved($w['full_name'], (float)$w['amount'], $w['pix_key'] ?? '', $hash); } catch (Throwable $e) {}
+                if (!$w || $w['status'] !== 'pending') {
+                    $pdo->rollBack();
+                    echo json_encode(['error' => 'Saque não encontrado ou já processado']);
+                    break;
                 }
+                // Debitar saldo atomicamente
+                $result = adjustBalance(
+                    (int)$w['user_id'],
+                    -abs((float)$w['amount']),
+                    'withdraw_debit',
+                    'wd_' . $wId,
+                    'Saque #' . $wId . ' aprovado — ' . ($hash ?: 'sem hash')
+                );
+                if (!$result['success']) {
+                    $pdo->rollBack();
+                    echo json_encode(['error' => 'Falha ao debitar: ' . $result['error']]);
+                    break;
+                }
+                $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?")->execute([$hash, $wId]);
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
+                    ->execute([$w['user_id'], "Seu saque de R$ " . number_format($w['amount'], 2, ',', '.') . " foi processado."]);
+                $pdo->commit();
+                $u = getUser($w['user_id']);
+                if ($u) MailService::notifyWithdrawalPaid($u['email'], $u['full_name'], $w['amount']);
+                try { TelegramService::notifyWithdrawalApproved($w['full_name'], (float)$w['amount'], $w['pix_key'] ?? '', $hash); } catch (Throwable $e) {}
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                write_log('ERROR', 'complete_withdraw FAILED', ['wd_id' => $wId, 'error' => $e->getMessage()]);
+                echo json_encode(['error' => 'Erro: ' . $e->getMessage()]);
+                break;
             }
             echo json_encode(['success' => true]);
             break;

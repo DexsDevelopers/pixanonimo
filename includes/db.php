@@ -95,6 +95,25 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Tabela de auditoria de saldo
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS balance_log (
+            id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+            user_id         INT NOT NULL,
+            amount          DECIMAL(12,2) NOT NULL COMMENT 'Valor da operação (+ ou -)',
+            balance_before  DECIMAL(12,2) NOT NULL,
+            balance_after   DECIMAL(12,2) NOT NULL,
+            origin          VARCHAR(50) NOT NULL COMMENT 'sale, withdraw_debit, withdraw_refund, affiliate, admin_profit, admin_adjust, bot_withdraw',
+            reference_id    VARCHAR(100) NULL COMMENT 'ID da transação/saque/etc',
+            description     VARCHAR(255) NULL,
+            ip_address      VARCHAR(45) NULL,
+            created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_bl_user (user_id),
+            INDEX idx_bl_origin (origin),
+            INDEX idx_bl_created (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
     // Auto-Migração: Colunas para vincular conta Telegram do usuário
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN telegram_chat_id VARCHAR(50) NULL");
@@ -180,6 +199,95 @@ function getUser($userId) {
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     return $stmt->fetch();
+}
+
+/**
+ * Ajusta o saldo de um usuário de forma ATÔMICA com auditoria completa.
+ *
+ * @param int    $userId      ID do usuário
+ * @param float  $amount      Valor da operação (positivo para crédito, negativo para débito)
+ * @param string $origin      Origem: sale, withdraw_debit, withdraw_refund, affiliate, admin_profit, admin_adjust, bot_withdraw
+ * @param string $referenceId ID de referência (transaction_id, withdrawal_id, etc.)
+ * @param string $description Descrição legível da operação
+ * @param bool   $allowNegative Permitir saldo negativo? (default: false)
+ * @return array ['success' => bool, 'balance_before' => float, 'balance_after' => float, 'error' => string|null]
+ */
+function adjustBalance(int $userId, float $amount, string $origin, string $referenceId = '', string $description = '', bool $allowNegative = false): array {
+    global $pdo;
+
+    if ($amount == 0) {
+        return ['success' => false, 'error' => 'Valor zero não permitido'];
+    }
+
+    $ownTransaction = !$pdo->inTransaction();
+    if ($ownTransaction) $pdo->beginTransaction();
+
+    try {
+        // SELECT FOR UPDATE = row-level lock, previne race conditions
+        $stmt = $pdo->prepare("SELECT balance FROM users WHERE id = ? FOR UPDATE");
+        $stmt->execute([$userId]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            if ($ownTransaction) $pdo->rollBack();
+            return ['success' => false, 'error' => 'Usuário não encontrado'];
+        }
+
+        $balanceBefore = round((float)$row['balance'], 2);
+        $balanceAfter  = round($balanceBefore + $amount, 2);
+
+        // Bloqueia saldo negativo (exceto se explicitamente permitido)
+        if (!$allowNegative && $balanceAfter < 0) {
+            if ($ownTransaction) $pdo->rollBack();
+            return [
+                'success' => false,
+                'balance_before' => $balanceBefore,
+                'error' => "Saldo insuficiente: {$balanceBefore} + {$amount} = {$balanceAfter}"
+            ];
+        }
+
+        // Atualizar saldo
+        $pdo->prepare("UPDATE users SET balance = ? WHERE id = ?")
+            ->execute([$balanceAfter, $userId]);
+
+        // Registrar no log de auditoria
+        $pdo->prepare("INSERT INTO balance_log (user_id, amount, balance_before, balance_after, origin, reference_id, description, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+            ->execute([
+                $userId,
+                round($amount, 2),
+                $balanceBefore,
+                $balanceAfter,
+                $origin,
+                $referenceId ?: null,
+                $description ?: null,
+                $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+            ]);
+
+        if ($ownTransaction) $pdo->commit();
+
+        write_log('INFO', 'Balance Adjusted', [
+            'user_id' => $userId,
+            'amount' => $amount,
+            'before' => $balanceBefore,
+            'after' => $balanceAfter,
+            'origin' => $origin,
+            'ref' => $referenceId,
+        ]);
+
+        return [
+            'success' => true,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $balanceAfter,
+            'error' => null,
+        ];
+    } catch (Throwable $e) {
+        if ($ownTransaction && $pdo->inTransaction()) $pdo->rollBack();
+        write_log('ERROR', 'adjustBalance FAILED', [
+            'user_id' => $userId, 'amount' => $amount, 'origin' => $origin,
+            'error' => $e->getMessage(),
+        ]);
+        return ['success' => false, 'error' => $e->getMessage()];
+    }
 }
 
 /**

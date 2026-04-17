@@ -66,8 +66,13 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
             }
 
             // 2. Adicionar valor ao saldo do usuário (valor líquido calculado no api.php)
-            $balanceUpd = $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
-            $balanceUpd->execute([$transaction['amount_net_brl'], $transaction['user_id']]);
+            adjustBalance(
+                (int)$transaction['user_id'],
+                (float)$transaction['amount_net_brl'],
+                'sale',
+                'tx_' . $transaction['id'],
+                'Venda confirmada PIX #' . $transaction['id'] . ' — R$ ' . number_format($transaction['amount_brl'], 2, ',', '.')
+            );
 
             // 3. Calcular e Credit lucro do Admin e Afiliado
             // Lucro plataforma = Valor Bruto - Valor Líquido - Taxa PixGo (2% + R$1 se < R$50)
@@ -90,8 +95,13 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                     $affiliateCommission = $platformGrossProfit * ($affRate / 100);
                     
                     // Creditar ao afiliado
-                    $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$affiliateCommission, $userAff['affiliate_id']]);
-                    write_log('INFO', 'Comissão de Afiliado Creditada', ['amount' => $affiliateCommission, 'affiliate_id' => $userAff['affiliate_id']]);
+                    adjustBalance(
+                        (int)$userAff['affiliate_id'],
+                        $affiliateCommission,
+                        'affiliate',
+                        'tx_' . $transaction['id'],
+                        'Comissão afiliado — venda #' . $transaction['id']
+                    );
                 }
 
                 $adminProfit = $platformGrossProfit - $affiliateCommission;
@@ -101,8 +111,13 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                     $adminStmt = $pdo->query("SELECT id FROM users WHERE is_admin = 1 LIMIT 1");
                     $admin = $adminStmt->fetch();
                     if ($admin) {
-                        $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$adminProfit, $admin['id']]);
-                        write_log('INFO', 'Lucro Admin Creditado', ['profit' => $adminProfit, 'admin_id' => $admin['id']]);
+                        adjustBalance(
+                            (int)$admin['id'],
+                            $adminProfit,
+                            'admin_profit',
+                            'tx_' . $transaction['id'],
+                            'Lucro plataforma — venda #' . $transaction['id']
+                        );
                     }
                 }
             }

@@ -103,8 +103,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['update_balance'])) {
         $userId = (int)$_POST['user_id'];
         $newBalance = (float)$_POST['balance'];
-        $stmt = $pdo->prepare("UPDATE users SET balance = ? WHERE id = ?");
-        $stmt->execute([$newBalance, $userId]);
+        // Calcular diferença e usar adjustBalance para registro atômico
+        $currentUser = getUser($userId);
+        if ($currentUser) {
+            $diff = $newBalance - (float)$currentUser['balance'];
+            if ($diff != 0) {
+                adjustBalance(
+                    $userId,
+                    $diff,
+                    'admin_adjust',
+                    'admin_manual',
+                    'Ajuste manual admin: R$ ' . number_format((float)$currentUser['balance'], 2, ',', '.') . ' → R$ ' . number_format($newBalance, 2, ',', '.'),
+                    true // permitir negativo se admin quiser
+                );
+            }
+        }
         header("Location: index.php?success=1");
         exit;
     }
@@ -155,56 +168,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $action = $_POST['action'];
 
         if ($action == 'complete_withdraw') {
-            $wId = $_POST['withdraw_id'];
+            $wId = (int)$_POST['withdraw_id'];
             $hash = $_POST['tx_hash'] ?? '';
-            $stmt = $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?");
-            $stmt->execute([$hash, $wId]);
-            
-            // Notificação automática
-            $stmtUser = $pdo->prepare("SELECT user_id, amount FROM withdrawals WHERE id = ?");
-            $stmtUser->execute([$wId]);
-            $wInfo = $stmtUser->fetch();
-            if ($wInfo) {
-                $val = number_format($wInfo['amount'], 2, ',', '.');
-                try {
-                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
-                        ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
-
-                    // Enviar e-mail de saque pago
-                    $userData = getUser($wInfo['user_id']);
-                    if ($userData && !empty($userData['email'])) {
-                        MailService::notifyWithdrawalPaid($userData['email'], $userData['full_name'], $wInfo['amount']);
-                    }
-                } catch (PDOException $e) {
-                    write_log('error', 'Falha ao inserir notificação automática (Saque Pago): ' . $e->getMessage());
+            $pdo->beginTransaction();
+            try {
+                $stmtW = $pdo->prepare("SELECT w.user_id, w.amount, w.pix_key, w.status FROM withdrawals w WHERE w.id = ? FOR UPDATE");
+                $stmtW->execute([$wId]);
+                $wInfo = $stmtW->fetch();
+                if (!$wInfo || $wInfo['status'] !== 'pending') {
+                    $pdo->rollBack();
+                    header("Location: index.php?error=ja_processado");
+                    exit;
                 }
+                adjustBalance(
+                    (int)$wInfo['user_id'],
+                    -abs((float)$wInfo['amount']),
+                    'withdraw_debit',
+                    'wd_' . $wId,
+                    'Saque #' . $wId . ' aprovado (admin legacy) — ' . ($hash ?: 'sem hash')
+                );
+                $pdo->prepare("UPDATE withdrawals SET status = 'completed', tx_hash = ? WHERE id = ?")->execute([$hash, $wId]);
+                $val = number_format($wInfo['amount'], 2, ',', '.');
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
+                    ->execute([$wInfo['user_id'], "Seu saque no valor de R$ {$val} foi processado e enviado para sua chave Pix."]);
+                $pdo->commit();
+                $userData = getUser($wInfo['user_id']);
+                if ($userData && !empty($userData['email'])) {
+                    try { MailService::notifyWithdrawalPaid($userData['email'], $userData['full_name'], $wInfo['amount']); } catch (Throwable $e) {}
+                }
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                write_log('ERROR', 'complete_withdraw legacy FAILED', ['wd_id' => $wId, 'error' => $e->getMessage()]);
             }
-
             header("Location: index.php?success=1");
             exit;
         }
 
         if ($action == 'reject_withdraw') {
-            $wId = $_POST['withdraw_id'];
-            // Devolver saldo ao usuário
-            $stmt = $pdo->prepare("SELECT user_id, amount FROM withdrawals WHERE id = ?");
-            $stmt->execute([$wId]);
-            $w = $stmt->fetch();
-            
-            if ($w) {
-                $pdo->beginTransaction();
-                $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$w['amount'], $w['user_id']]);
-                $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wId]);
-                
-                $val = number_format($w['amount'], 2, ',', '.');
-                try {
-                    $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
-                        ->execute([$w['user_id'], "Seu saque de R$ {$val} foi rejeitado e o saldo retornou para sua conta. Verifique sua chave Pix."]);
-                } catch (PDOException $e) {
-                    write_log('error', 'Falha ao inserir notificação automática (Saque Rejeitado): ' . $e->getMessage());
+            $wId = (int)$_POST['withdraw_id'];
+            $pdo->beginTransaction();
+            try {
+                $stmtW = $pdo->prepare("SELECT w.user_id, w.amount, w.status FROM withdrawals w WHERE w.id = ? FOR UPDATE");
+                $stmtW->execute([$wId]);
+                $w = $stmtW->fetch();
+                if (!$w || $w['status'] !== 'pending') {
+                    $pdo->rollBack();
+                    header("Location: index.php?error=ja_processado");
+                    exit;
                 }
-                
+                // Saldo NÃO precisa ser devolvido — nunca foi debitado (débito só na aprovação)
+                $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wId]);
+                $val = number_format($w['amount'], 2, ',', '.');
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
+                    ->execute([$w['user_id'], "Seu saque de R$ {$val} foi rejeitado. Verifique sua chave Pix."]);
                 $pdo->commit();
+                write_log('INFO', 'Saque rejeitado (admin legacy)', ['wd_id' => $wId, 'user_id' => $w['user_id'], 'amount' => $w['amount']]);
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                write_log('ERROR', 'reject_withdraw legacy FAILED', ['wd_id' => $wId, 'error' => $e->getMessage()]);
             }
             header("Location: index.php?success=1");
             exit;

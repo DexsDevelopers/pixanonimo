@@ -538,37 +538,69 @@ if (isset($update['callback_query'])) {
         $action = $m[1];
         $wdId   = (int) $m[2];
 
-        $stmt = $pdo->prepare("SELECT w.*, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ?");
-        $stmt->execute([$wdId]);
-        $wd = $stmt->fetch();
+        $pdo->beginTransaction();
+        try {
+            // Lock row to prevent double-processing
+            $stmt = $pdo->prepare("SELECT w.*, u.full_name FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE w.id = ? FOR UPDATE");
+            $stmt->execute([$wdId]);
+            $wd = $stmt->fetch();
 
-        if (!$wd || $wd['status'] !== 'pending') {
-            TelegramService::answerCallback($cbId, '⚠️ Saque não encontrado ou já processado.', true);
-            http_response_code(200); exit;
-        }
+            if (!$wd || $wd['status'] !== 'pending') {
+                $pdo->rollBack();
+                TelegramService::answerCallback($cbId, '⚠️ Saque não encontrado ou já processado.', true);
+                http_response_code(200); exit;
+            }
 
-        if ($action === 'approve') {
-            $pdo->prepare("UPDATE withdrawals SET status = 'paid' WHERE id = ?")->execute([$wdId]);
-            TelegramService::answerCallback($cbId, '✅ Saque marcado como pago!');
-            TelegramService::editMessageText(
-                "✅ <b>SAQUE APROVADO</b>" . div() . "\n\n"
-                . "👤 <b>Usuário:</b> {$wd['full_name']}\n"
-                . "💵 <b>Valor:</b>   " . formatBRL((float)$wd['amount']) . "\n"
-                . "🔑 <b>Pix:</b>     <code>{$wd['pix_key']}</code>\n\n"
-                . "✅ <i>Aprovado via Telegram Bot</i>" . footer(),
-                $msgId, $chatId
-            );
-        } else {
-            $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wdId]);
-            $pdo->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([(float)$wd['amount'], $wd['user_id']]);
-            TelegramService::answerCallback($cbId, '❌ Saque rejeitado e saldo devolvido.');
-            TelegramService::editMessageText(
-                "❌ <b>SAQUE REJEITADO</b>" . div() . "\n\n"
-                . "👤 <b>Usuário:</b> {$wd['full_name']}\n"
-                . "💵 <b>Valor:</b>   " . formatBRL((float)$wd['amount']) . "\n\n"
-                . "♻️ <i>Saldo devolvido ao usuário.</i>" . footer(),
-                $msgId, $chatId
-            );
+            if ($action === 'approve') {
+                // Debitar saldo atomicamente
+                $result = adjustBalance(
+                    (int)$wd['user_id'],
+                    -abs((float)$wd['amount']),
+                    'withdraw_debit',
+                    'wd_' . $wdId,
+                    'Saque #' . $wdId . ' aprovado via Telegram Bot'
+                );
+                if (!$result['success']) {
+                    $pdo->rollBack();
+                    TelegramService::answerCallback($cbId, '❌ Saldo insuficiente: ' . $result['error'], true);
+                    http_response_code(200); exit;
+                }
+                $pdo->prepare("UPDATE withdrawals SET status = 'completed' WHERE id = ?")->execute([$wdId]);
+                $pdo->commit();
+
+                TelegramService::answerCallback($cbId, '✅ Saque aprovado e saldo debitado!');
+                TelegramService::editMessageText(
+                    "✅ <b>SAQUE APROVADO</b>" . div() . "\n\n"
+                    . "👤 <b>Usuário:</b> {$wd['full_name']}\n"
+                    . "💵 <b>Valor:</b>   " . formatBRL((float)$wd['amount']) . "\n"
+                    . "🔑 <b>Pix:</b>     <code>{$wd['pix_key']}</code>\n"
+                    . "💰 <b>Saldo:</b>   " . formatBRL($result['balance_before']) . " → " . formatBRL($result['balance_after']) . "\n\n"
+                    . "✅ <i>Aprovado via Telegram Bot</i>" . footer(),
+                    $msgId, $chatId
+                );
+                // Notificação ao usuário
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Enviado! 💸', ?, 'success')")
+                    ->execute([$wd['user_id'], "Seu saque de R$ " . number_format($wd['amount'], 2, ',', '.') . " foi processado."]);
+            } else {
+                // Saldo NÃO é devolvido — nunca foi debitado (débito só na aprovação)
+                $pdo->prepare("UPDATE withdrawals SET status = 'rejected' WHERE id = ?")->execute([$wdId]);
+                $pdo->commit();
+
+                TelegramService::answerCallback($cbId, '❌ Saque rejeitado.');
+                TelegramService::editMessageText(
+                    "❌ <b>SAQUE REJEITADO</b>" . div() . "\n\n"
+                    . "👤 <b>Usuário:</b> {$wd['full_name']}\n"
+                    . "💵 <b>Valor:</b>   " . formatBRL((float)$wd['amount']) . "\n\n"
+                    . "🔒 <i>Saldo permanece inalterado (nunca foi debitado).</i>" . footer(),
+                    $msgId, $chatId
+                );
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'Saque Rejeitado ❌', ?, 'warning')")
+                    ->execute([$wd['user_id'], "Seu saque de R$ " . number_format($wd['amount'], 2, ',', '.') . " foi rejeitado."]);
+            }
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            write_log('ERROR', 'telegram_bot wd_action FAILED', ['wd_id' => $wdId, 'action' => $action, 'error' => $e->getMessage()]);
+            TelegramService::answerCallback($cbId, '❌ Erro: ' . $e->getMessage(), true);
         }
 
         http_response_code(200); exit;
