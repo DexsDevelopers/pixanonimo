@@ -76,7 +76,7 @@ if ($user['is_demo'] == 1) {
     $stmtMonth->execute([$userId]);
     $stats['month_volume'] = number_format($stmtMonth->fetch()['vol'] ?? 0, 2, ',', '.');
 
-    $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'" . $periodSQL);
+    $stmtTotal = $pdo->prepare("SELECT SUM(amount_brl) as vol FROM transactions WHERE user_id = ? AND status = 'paid'");
     $stmtTotal->execute([$userId]);
     $stats['total_paid'] = number_format($stmtTotal->fetch()['vol'] ?? 0, 2, ',', '.');
 
