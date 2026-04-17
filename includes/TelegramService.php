@@ -272,7 +272,18 @@ class TelegramService
         return self::send($msg);
     }
 
-    // ─── ALERTA DE ERRO / SISTEMA ────────────────────────────────────
+    // ─── ATIVIDADE NO BOT DE USUÁRIOS ────────────────────────────────────
+    public static function notifyBotActivity(string $icon, string $title, string $details): bool
+    {
+        $msg =
+            "{$icon} <b>{$title}</b>\n" . self::divider() . "\n\n"
+          . $details . "\n\n"
+          . "📱 <i>Via Bot de Usuários</i>"
+          . self::footer();
+        return self::send($msg);
+    }
+
+    // ─── ALERTA DE ERRO / SISTEMA ────────────────────────────────────────
     public static function notifySystemAlert(string $title, string $detail): bool
     {
         $msg =

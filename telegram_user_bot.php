@@ -31,6 +31,7 @@ ini_set('error_log', __DIR__ . '/bot_errors.log');
 
 try {
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/TelegramService.php';
 } catch (Throwable $e) {
     file_put_contents(__DIR__ . '/bot_errors.log', date('Y-m-d H:i:s') . " DB ERROR: " . $e->getMessage() . "\n", FILE_APPEND);
     http_response_code(200);
@@ -481,6 +482,15 @@ if ($command === 'start') {
             $pdo->prepare("UPDATE users SET telegram_chat_id = ?, telegram_link_token = NULL, telegram_link_expires = NULL WHERE id = ?")
                 ->execute([$chatId, $linkUser['id']]);
 
+            // Notificar admin
+            try {
+                TelegramService::notifyBotActivity('🔗', 'CONTA VINCULADA AO TELEGRAM',
+                    "👤 <b>Usuário:</b> {$linkUser['full_name']}\n"
+                    . "📧 <b>E-mail:</b> <code>{$linkUser['email']}</code>\n"
+                    . "💬 <b>Chat ID:</b> <code>{$chatId}</code>"
+                );
+            } catch (Throwable $e) {}
+
             uReply($chatId,
                 "✅ <b>Conta vinculada com sucesso!</b>" . div() . "\n\n"
                 . "👤 <b>{$linkUser['full_name']}</b>\n"
@@ -516,6 +526,18 @@ if ($command === 'start') {
             mainMenuKeyboard()
         );
     } else {
+        // Notificar admin sobre novo visitante no bot
+        $tgUsername = $message['from']['username'] ?? '';
+        $tgName = trim(($message['from']['first_name'] ?? '') . ' ' . ($message['from']['last_name'] ?? ''));
+        try {
+            TelegramService::notifyBotActivity('👁️', 'NOVO VISITANTE NO BOT',
+                "👤 <b>Nome Telegram:</b> {$tgName}\n"
+                . ($tgUsername ? "🔗 <b>Username:</b> @{$tgUsername}\n" : "")
+                . "💬 <b>Chat ID:</b> <code>{$chatId}</code>\n\n"
+                . "ℹ️ <i>Conta Ghost Pix não vinculada.</i>"
+            );
+        } catch (Throwable $e) {}
+
         uReply($chatId,
             "👻 <b>Ghost Pix Bot</b>" . div() . "\n\n"
             . "Seu assistente de vendas no Telegram!\n"
@@ -823,6 +845,16 @@ function handlePix(string $chatId, array $user, float $amount): void {
         if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $successMsg, afterActionKeyboard());
         if ($qrImage) uSendPhoto($chatId, $qrImage, "📱 QR Code — " . formatBRL($amount));
         uReply($chatId, "<code>{$pixCode}</code>");
+
+        // Notificar admin
+        try {
+            TelegramService::notifyBotActivity('⚡', 'PIX GERADO VIA BOT',
+                "👤 <b>Vendedor:</b> {$user['full_name']}\n"
+                . "💵 <b>Valor:</b> " . formatBRL($amount) . "\n"
+                . "💎 <b>Líquido:</b> " . formatBRL($netAmount) . "\n"
+                . "🆔 <b>TX:</b> <code>#{$txId}</code>"
+            );
+        } catch (Throwable $e) {}
     } else {
         $errorMsg = $res['message'] ?? ($res['error'] ?? 'Erro de comunicação');
         if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, "❌ <b>Falha ao gerar PIX</b>" . div() . "\n\n<code>{$errorMsg}</code>\n\n💡 <i>Tente novamente em alguns instantes.</i>" . footer(), afterActionKeyboard());
@@ -898,7 +930,6 @@ function processWithdrawal(string $chatId, array $user, float $amount): void {
         $pdo->prepare("INSERT INTO withdrawals (user_id, amount, pix_key, status) VALUES (?, ?, ?, 'pending')")
             ->execute([$userId, $netAmount, $freshUser['pix_key']]);
         try {
-            require_once __DIR__ . '/includes/TelegramService.php';
             TelegramService::notifyWithdrawal($user['full_name'], $amount, $freshUser['pix_key']);
         } catch (Throwable $e) {}
         uReply($chatId,
@@ -1135,6 +1166,15 @@ function doDisconnect(string $chatId, array $user): void {
     global $pdo;
     $pdo->prepare("UPDATE users SET telegram_chat_id = NULL WHERE id = ?")
         ->execute([$user['id']]);
+
+    // Notificar admin
+    try {
+        TelegramService::notifyBotActivity('🔓', 'CONTA DESVINCULADA DO TELEGRAM',
+            "👤 <b>Usuário:</b> {$user['full_name']}\n"
+            . "📧 <b>E-mail:</b> <code>{$user['email']}</code>"
+        );
+    } catch (Throwable $e) {}
+
     uReply($chatId,
         "✅ <b>Conta desvinculada</b>\n\n"
         . "Para reconectar, gere um novo código em:\n"
