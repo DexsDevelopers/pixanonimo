@@ -429,96 +429,106 @@ export default function AdminProdutosPage() {
                     {products.map(p => (
                         <div
                             key={p.id}
-                            className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 hover:border-white/10 transition-all"
+                            className="bg-white/[0.03] border border-white/5 rounded-2xl hover:border-white/10 transition-all overflow-hidden"
                         >
-                            <div className="flex items-center gap-4">
-                                {/* Image */}
-                                {p.image_url ? (
-                                    <img src={p.image_url} alt={p.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-white/5" onError={e => e.target.style.display='none'} />
-                                ) : (
-                                    <div className="w-16 h-16 bg-white/[0.03] rounded-xl flex items-center justify-center flex-shrink-0 border border-white/5">
-                                        <Package size={22} className="text-white/15" />
+                            {/* Mobile Layout */}
+                            <div className="md:hidden">
+                                <div className="p-4 space-y-3">
+                                    {/* Header: Image + Name + Status */}
+                                    <div className="flex items-start gap-3">
+                                        {p.image_url ? (
+                                            <img src={p.image_url} alt={p.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-white/5" onError={e => e.target.style.display='none'} />
+                                        ) : (
+                                            <div className="w-12 h-12 bg-white/[0.03] rounded-xl flex items-center justify-center flex-shrink-0 border border-white/5">
+                                                <Package size={18} className="text-white/15" />
+                                            </div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2 mb-0.5">
+                                                <h4 className="text-[14px] font-bold text-white truncate flex-1">{p.name}</h4>
+                                                <StatusBadge status={p.status} />
+                                            </div>
+                                            <p className="text-[11px] text-white/30"><User size={10} className="inline mr-1" />{p.seller_name}</p>
+                                        </div>
                                     </div>
-                                )}
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-start gap-3 mb-1">
-                                        <p className="font-bold text-sm flex-1 truncate">{p.name}</p>
-                                        <StatusBadge status={p.status} />
+                                    {/* Meta Row */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-sm font-black text-primary">R$ {parseFloat(p.price).toFixed(2).replace('.', ',')}</span>
+                                        <span className="text-[10px] text-white/25">•</span>
+                                        <span className="text-[11px] text-white/40">{p.category}</span>
+                                        {p.vitrine ? <>
+                                            <span className="text-[10px] text-white/25">•</span>
+                                            <span className="text-[11px] text-primary/60 flex items-center gap-0.5"><Sparkles size={10} /> Vitrine</span>
+                                        </> : null}
                                     </div>
-                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                        <span className="flex items-center gap-1.5 text-xs text-white/40">
-                                            <User size={11} /> {p.seller_name}
-                                            <span className="text-white/20">·</span>
-                                            <span className="text-white/30">{p.seller_email}</span>
-                                        </span>
-                                        <span className="flex items-center gap-1 text-xs text-white/40">
-                                            <Tag size={11} /> {p.category}
-                                        </span>
-                                        <span className="flex items-center gap-1 text-xs text-primary font-bold">
-                                            <DollarSign size={11} /> R$ {parseFloat(p.price).toFixed(2).replace('.', ',')}
-                                        </span>
-                                        {p.vitrine ? (
-                                            <span className="flex items-center gap-1 text-xs text-primary/60">
-                                                <Sparkles size={10} /> Vitrine
-                                            </span>
-                                        ) : null}
+
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-1.5">
+                                        <button onClick={() => setDetail(p)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-white/5 rounded-xl text-white/50 text-[10px] font-bold active:scale-95 transition-transform">
+                                            <Eye size={12} /> Ver
+                                        </button>
+                                        {(p.status === 'pending' || p.vitrine == 0) && (
+                                            <button onClick={() => handleApprove(p.id)} disabled={actionLoading === p.id} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-primary/15 rounded-xl text-primary text-[10px] font-bold active:scale-95 transition-transform disabled:opacity-40">
+                                                {actionLoading === p.id ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />} {p.status === 'pending' ? 'Aprovar' : 'Vitrine'}
+                                            </button>
+                                        )}
+                                        {p.status === 'pending' && (
+                                            <button onClick={() => setRejectModal(p)} disabled={actionLoading === p.id} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500/10 rounded-xl text-red-400 text-[10px] font-bold active:scale-95 transition-transform disabled:opacity-40">
+                                                <X size={12} /> Reprovar
+                                            </button>
+                                        )}
+                                        {p.vitrine == 1 && (
+                                            <button onClick={() => setRejectModal(p)} disabled={actionLoading === p.id} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-amber-500/10 rounded-xl text-amber-400 text-[10px] font-bold active:scale-95 transition-transform disabled:opacity-40">
+                                                <X size={12} /> Remover
+                                            </button>
+                                        )}
                                     </div>
-                                    {p.description && (
-                                        <p className="text-xs text-white/30 mt-1.5 line-clamp-1">{p.description}</p>
-                                    )}
                                 </div>
+                            </div>
 
-                                {/* Actions — all statuses */}
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                    <button
-                                        onClick={() => setDetail(p)}
-                                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all text-xs font-semibold flex items-center gap-1.5"
-                                    >
-                                        <Eye size={13} /> Ver
-                                    </button>
-                                    {/* Aprovar/Colocar na Vitrine */}
-                                    {(p.status === 'pending' || p.vitrine == 0) && (
-                                        <button
-                                            onClick={() => handleApprove(p.id)}
-                                            disabled={actionLoading === p.id}
-                                            className="px-3 py-2 bg-primary/10 border border-primary/20 rounded-xl text-primary hover:bg-primary/20 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                        >
-                                            {actionLoading === p.id ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
-                                            {p.status === 'pending' ? 'Aprovar' : 'Vitrine'}
-                                        </button>
+                            {/* Desktop Layout */}
+                            <div className="hidden md:block p-4">
+                                <div className="flex items-center gap-4">
+                                    {p.image_url ? (
+                                        <img src={p.image_url} alt={p.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-white/5" onError={e => e.target.style.display='none'} />
+                                    ) : (
+                                        <div className="w-16 h-16 bg-white/[0.03] rounded-xl flex items-center justify-center flex-shrink-0 border border-white/5">
+                                            <Package size={22} className="text-white/15" />
+                                        </div>
                                     )}
-                                    {/* Remover da Vitrine (amarelo) */}
-                                    {p.vitrine == 1 && (
-                                        <button
-                                            onClick={() => setRejectModal(p)}
-                                            disabled={actionLoading === p.id}
-                                            className="px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl text-amber-400 hover:bg-amber-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                        >
-                                            <X size={13} /> Remover
-                                        </button>
-                                    )}
-                                    {/* Reprovar definitivo (vermelho) - só pendentes */}
-                                    {p.status === 'pending' && (
-                                        <button
-                                            onClick={() => setRejectModal(p)}
-                                            disabled={actionLoading === p.id}
-                                            className="px-3 py-2 bg-red-500/5 border border-red-500/20 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                        >
-                                            <X size={13} /> Reprovar
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={async () => {
-                                            if (!window.confirm('Apagar "' + p.name + '" permanentemente?')) return;
-                                            await handleDelete(p.id);
-                                        }}
-                                        disabled={actionLoading === p.id}
-                                        className="px-3 py-2 bg-red-950/20 border border-red-900/30 rounded-xl text-red-500 hover:bg-red-950/40 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
-                                    >
-                                        <Trash2 size={13} /> Apagar
-                                    </button>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start gap-3 mb-1">
+                                            <p className="font-bold text-sm flex-1 truncate">{p.name}</p>
+                                            <StatusBadge status={p.status} />
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                            <span className="flex items-center gap-1.5 text-xs text-white/40">
+                                                <User size={11} /> {p.seller_name}
+                                                <span className="text-white/20">·</span>
+                                                <span className="text-white/30">{p.seller_email}</span>
+                                            </span>
+                                            <span className="flex items-center gap-1 text-xs text-white/40"><Tag size={11} /> {p.category}</span>
+                                            <span className="flex items-center gap-1 text-xs text-primary font-bold"><DollarSign size={11} /> R$ {parseFloat(p.price).toFixed(2).replace('.', ',')}</span>
+                                            {p.vitrine ? <span className="flex items-center gap-1 text-xs text-primary/60"><Sparkles size={10} /> Vitrine</span> : null}
+                                        </div>
+                                        {p.description && <p className="text-xs text-white/30 mt-1.5 line-clamp-1">{p.description}</p>}
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        <button onClick={() => setDetail(p)} className="px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all text-xs font-semibold flex items-center gap-1.5"><Eye size={13} /> Ver</button>
+                                        {(p.status === 'pending' || p.vitrine == 0) && (
+                                            <button onClick={() => handleApprove(p.id)} disabled={actionLoading === p.id} className="px-3 py-2 bg-primary/10 border border-primary/20 rounded-xl text-primary hover:bg-primary/20 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40">
+                                                {actionLoading === p.id ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />} {p.status === 'pending' ? 'Aprovar' : 'Vitrine'}
+                                            </button>
+                                        )}
+                                        {p.vitrine == 1 && (
+                                            <button onClick={() => setRejectModal(p)} disabled={actionLoading === p.id} className="px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl text-amber-400 hover:bg-amber-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"><X size={13} /> Remover</button>
+                                        )}
+                                        {p.status === 'pending' && (
+                                            <button onClick={() => setRejectModal(p)} disabled={actionLoading === p.id} className="px-3 py-2 bg-red-500/5 border border-red-500/20 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"><X size={13} /> Reprovar</button>
+                                        )}
+                                        <button onClick={async () => { if (!window.confirm('Apagar "' + p.name + '" permanentemente?')) return; await handleDelete(p.id); }} disabled={actionLoading === p.id} className="px-3 py-2 bg-red-950/20 border border-red-900/30 rounded-xl text-red-500 hover:bg-red-950/40 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"><Trash2 size={13} /> Apagar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
