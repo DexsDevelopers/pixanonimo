@@ -32,10 +32,19 @@ try {
         echo json_encode(['success' => false, 'error' => 'Pedido não encontrado']); exit;
     }
 
+    // Get chat token if exists
+    $chatToken = null;
+    try {
+        $chatStmt = $pdo->prepare("SELECT chat_token FROM chat_rooms WHERE order_id = ? LIMIT 1");
+        $chatStmt->execute([$order['id']]);
+        $chatToken = $chatStmt->fetchColumn() ?: null;
+    } catch (Throwable $e) {}
+
     echo json_encode([
-        'success' => true,
-        'order'   => $order,
-        'paid'    => in_array($order['status'], ['paid', 'delivered']),
+        'success'    => true,
+        'order'      => $order,
+        'paid'       => in_array($order['status'], ['paid', 'delivered']),
+        'chat_token' => $chatToken,
     ]);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'error' => 'Erro interno']);

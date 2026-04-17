@@ -51,6 +51,7 @@ export default function EntregaPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [polling, setPolling] = useState(false);
+    const [chatToken, setChatToken] = useState(null);
 
     const fetchOrder = async () => {
         try {
@@ -59,6 +60,7 @@ export default function EntregaPage() {
             if (data.success) {
                 setOrder(data.order);
                 setPaid(data.paid);
+                if (data.chat_token) setChatToken(data.chat_token);
                 setError('');
             } else {
                 setError(data.error || 'Pedido não encontrado.');
@@ -189,11 +191,19 @@ export default function EntregaPage() {
                             )}
 
                             {/* Footer note */}
-                            <p className="text-xs text-white/20 text-center">
+                            <p className="text-[11px] text-white/20 leading-relaxed">
                                 Guarde esta página — é a sua prova de entrega.<br />
                                 Em caso de problemas, contate o vendedor.
                             </p>
                         </div>
+                        {chatToken && (
+                            <a
+                                href={`/chat/${chatToken}`}
+                                className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 font-bold text-sm hover:bg-emerald-500/15 transition-all mt-4"
+                            >
+                                <MessageCircle size={16} /> Chat com o Vendedor
+                            </a>
+                        )}
                     </div>
                 ) : (
                     /* Waiting for payment */

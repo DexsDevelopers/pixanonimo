@@ -161,6 +161,15 @@ if (isset($data['event']) && ($data['event'] === 'payment.completed' || $data['e
                             ->execute([$order['seller_id'], '🛒 Novo Pedido!', 'Você vendeu 1x produto #' . $order['product_id'] . ' por R$ ' . number_format($order['amount'], 2, ',', '.') . '.']);
                     } catch (Throwable $e) {}
 
+                    // Auto-create chat room for buyer-seller communication
+                    try {
+                        $chatToken = bin2hex(random_bytes(16));
+                        $pdo->prepare("INSERT INTO chat_rooms (order_id, product_id, seller_id, buyer_name, buyer_email, chat_token, last_message_at) VALUES (?, ?, ?, ?, ?, ?, NOW())")
+                            ->execute([$order['id'], $order['product_id'], $order['seller_id'], $transaction['customer_name'] ?? $order['buyer_name'], null, $chatToken]);
+                    } catch (Throwable $chatErr) {
+                        write_log('WARNING', 'Chat room creation failed', ['order_id' => $order['id'], 'error' => $chatErr->getMessage()]);
+                    }
+
                     write_log('INFO', 'Auto-Delivery Processado', ['order_id' => $order['id'], 'has_stock_item' => (bool)$item]);
                 }
             } catch (Throwable $e) {

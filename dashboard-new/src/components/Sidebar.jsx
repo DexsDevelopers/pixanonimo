@@ -21,6 +21,7 @@ import {
     Users,
     Ticket,
     Megaphone,
+    MessageCircle,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -87,6 +88,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'produtos', icon: <Package size={18} />, label: 'Produtos', path: '/vendedor/produtos' },
         { id: 'cupons',   icon: <Ticket size={18} />,  label: 'Cupons',   path: '/vendedor/cupons' },
         { id: 'loja', icon: <Store size={18} />, label: 'Minha Loja', path: '/vendedor/loja' },
+        { id: 'chat', icon: <MessageCircle size={18} />, label: 'Chat', path: '/chat' },
     ];
 
     const vitrineItems = [
@@ -104,6 +106,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'admin-produtos', icon: <Package size={18} />, label: 'Moderar Produtos', path: '/admin/produtos', accent: true },
         { id: 'apis', icon: <Settings size={18} />, label: 'Gestão de APIs', path: '/admin/apis', accent: true },
         { id: 'admin-anuncios', icon: <Megaphone size={18} />, label: 'Anúncios', path: '/admin/anuncios', accent: true },
+        { id: 'admin-chats', icon: <MessageCircle size={18} />, label: 'Chats', path: '/admin/chats', accent: true },
     ];
 
     const linkProps = { location, onTabChange, onClose };

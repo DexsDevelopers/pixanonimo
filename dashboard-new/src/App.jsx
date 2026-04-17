@@ -44,6 +44,9 @@ import AdminProdutosPage from './pages/AdminProdutosPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminAnunciosPage from './pages/AdminAnunciosPage';
 import EntregaPage from './pages/EntregaPage';
+import ChatPage from './pages/ChatPage';
+import AdminChatsPage from './pages/AdminChatsPage';
+import BuyerChatPage from './pages/BuyerChatPage';
 import AnnouncementModal from './components/AnnouncementModal';
 
 // Proteção de Rota Admin
@@ -427,6 +430,26 @@ export default function App() {
             </DashboardLayout>
           </PrivateRoute>
         } />
+
+        <Route path="/chat" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="chat">
+              <ChatPage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/chats" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-chats">
+                <AdminChatsPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
+
+        <Route path="/chat/:token" element={<BuyerChatPage />} />
 
         <Route path="/p/:slug" element={<CheckoutPage />} />
         <Route path="*" element={<Navigate to="/" />} />

@@ -144,6 +144,40 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Sistema de Chat Online
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS chat_rooms (
+            id              INT AUTO_INCREMENT PRIMARY KEY,
+            order_id        INT NULL,
+            product_id      INT NULL,
+            seller_id       INT NOT NULL,
+            buyer_name      VARCHAR(150) NOT NULL,
+            buyer_email     VARCHAR(255) NULL,
+            chat_token      VARCHAR(64) NOT NULL UNIQUE COMMENT 'Token público para o comprador acessar',
+            status          ENUM('open','closed') NOT NULL DEFAULT 'open',
+            last_message_at DATETIME NULL,
+            created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_cr_seller (seller_id),
+            INDEX idx_cr_order (order_id),
+            INDEX idx_cr_token (chat_token),
+            INDEX idx_cr_status (status, last_message_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS chat_messages (
+            id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+            room_id     INT NOT NULL,
+            sender_type ENUM('buyer','seller','admin') NOT NULL,
+            sender_name VARCHAR(150) NOT NULL,
+            message     TEXT NOT NULL,
+            read_at     DATETIME NULL,
+            created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_cm_room (room_id, created_at),
+            INDEX idx_cm_unread (room_id, sender_type, read_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (PDOException $e) {}
+
     // Auto-Migração: Colunas para vincular conta Telegram do usuário
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN telegram_chat_id VARCHAR(50) NULL");
