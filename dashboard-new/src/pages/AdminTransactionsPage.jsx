@@ -203,33 +203,37 @@ export default function AdminTransactionsPage() {
                             <p className="text-white/30 text-sm font-medium">Nenhuma transação encontrada.</p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-white/5">
+                        <div className="space-y-2 p-3">
                             {data?.transactions?.map(tx => (
-                                <div key={tx.id} className="p-4 space-y-2">
-                                    <div className="flex items-center justify-between gap-3">
+                                <div key={tx.id} className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-4 space-y-3">
+                                    {/* Row 1: Seller + Status */}
+                                    <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
-                                            <span className="text-sm font-bold text-white truncate block">{tx.user_name}</span>
-                                            <span className="text-[11px] text-white/30">{tx.user_email}</span>
+                                            <h4 className="text-[15px] font-bold text-white truncate">{tx.user_name}</h4>
+                                            <p className="text-[11px] text-white/25 font-medium truncate">{tx.user_email}</p>
                                         </div>
                                         <span className={cn(
-                                            "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase shrink-0 border",
+                                            "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase shrink-0 tracking-wide",
                                             badgeStyles[tx.badge] || badgeStyles.pending
                                         )}>{tx.status}</span>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-[11px] text-white/40">
-                                            <span>#{tx.id}</span>
-                                            <span className="mx-1.5">•</span>
-                                            <span>{tx.date}</span>
-                                            {tx.customer_name && <>
-                                                <span className="mx-1.5">•</span>
-                                                <span className="text-white/50">{tx.customer_name}</span>
-                                            </>}
-                                        </div>
-                                        <div className="text-right shrink-0">
+
+                                    {/* Row 2: Values */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-black/30 rounded-xl px-3 py-2 flex-1 text-center">
+                                            <span className="text-[9px] text-white/25 font-bold uppercase block mb-0.5">Bruto</span>
                                             <span className="text-sm font-black text-white">R$ {tx.amount_brl}</span>
-                                            <span className="text-[10px] text-white/30 ml-2">líq. R$ {tx.amount_net_brl}</span>
                                         </div>
+                                        <div className="bg-black/30 rounded-xl px-3 py-2 flex-1 text-center">
+                                            <span className="text-[9px] text-white/25 font-bold uppercase block mb-0.5">Líquido</span>
+                                            <span className="text-sm font-black text-white/50">R$ {tx.amount_net_brl}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Row 3: Meta info */}
+                                    <div className="flex items-center justify-between text-[11px] text-white/30">
+                                        <span>#{tx.id} • {tx.date}</span>
+                                        {tx.customer_name && <span className="text-white/40 font-medium truncate ml-2">{tx.customer_name}</span>}
                                     </div>
                                 </div>
                             ))}
