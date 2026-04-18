@@ -971,6 +971,8 @@ function handleCard(string $chatId, array $user, float $amount): void {
         $payload = [
             'amount'      => $amountCents,
             'postbackUrl' => $postbackUrl,
+            'companyName' => 'PIXGHOST',
+            'softDescriptor' => 'PIXGHOST',
             'items'       => [[
                 'title'     => 'Cobrança via Telegram',
                 'unitPrice' => $amountCents,

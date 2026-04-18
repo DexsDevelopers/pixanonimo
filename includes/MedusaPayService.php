@@ -96,6 +96,8 @@ class MedusaPayService
         $payload = [
             'amount'      => $amountCents,
             'postbackUrl' => $postbackUrl,
+            'companyName' => 'PIXGHOST',
+            'softDescriptor' => 'PIXGHOST',
             'items'       => [[
                 'title'     => $productName,
                 'unitPrice' => $amountCents,
