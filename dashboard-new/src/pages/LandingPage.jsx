@@ -124,9 +124,11 @@ export default function LandingPage() {
 
             {/* Hero Section */}
             <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden">
-                {/* Background Decor */}
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-7xl aspect-square bg-primary/5 rounded-full blur-[200px] -z-10 pointer-events-none animate-pulse" />
-                <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
+                {/* Hero Background Image */}
+                <div className="absolute inset-0 -z-10 pointer-events-none">
+                    <img src="/assets/hero-bg.png" alt="" className="w-full h-full object-cover object-top opacity-30" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#050505]/60 to-[#050505]" />
+                </div>
 
                 <div className="max-w-6xl mx-auto text-center space-y-12">
                     <motion.div
