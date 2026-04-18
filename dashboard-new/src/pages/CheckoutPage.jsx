@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ShoppingBag, Lock, ShieldCheck, CheckCircle, Loader2,
     ArrowRight, Clock, Star, Users, Zap, BadgeCheck, Gift,
-    ChevronRight, Eye
+    ChevronRight, Eye, CreditCard, QrCode
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import PixModal from '../components/PixModal';
@@ -72,6 +72,7 @@ export default function CheckoutPage() {
     const [customerDoc, setCustomerDoc] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [activePix, setActivePix]     = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('pix');
     const formRef = useRef(null);
 
     const { m, s, expired } = useCountdown(15 * 60);
@@ -94,20 +95,38 @@ export default function CheckoutPage() {
         if (!customerName.trim()) return;
         setIsProcessing(true);
         try {
-            const res = await fetch('/process_checkout.php', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({
-                    checkout_id:       data.checkout.id,
-                    customer_name:     customerName,
-                    customer_document: customerDoc.replace(/\D/g, '')
-                })
-            });
-            const d = await res.json();
-            if (d.success) {
-                setActivePix({ id: d.pix_id, amount: d.amount, code: d.pix_code || '', image: d.qr_image || '' });
+            if (paymentMethod === 'card') {
+                const res = await fetch('/process_checkout_card.php', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({
+                        checkout_id:       data.checkout.id,
+                        customer_name:     customerName,
+                        customer_document: customerDoc.replace(/\D/g, '')
+                    })
+                });
+                const d = await res.json();
+                if (d.success && d.checkout_url) {
+                    window.location.href = d.checkout_url;
+                } else {
+                    alert(d.message || 'Erro ao gerar link de cartão');
+                }
             } else {
-                alert(d.message || 'Erro ao gerar PIX');
+                const res = await fetch('/process_checkout.php', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({
+                        checkout_id:       data.checkout.id,
+                        customer_name:     customerName,
+                        customer_document: customerDoc.replace(/\D/g, '')
+                    })
+                });
+                const d = await res.json();
+                if (d.success) {
+                    setActivePix({ id: d.pix_id, amount: d.amount, code: d.pix_code || '', image: d.qr_image || '' });
+                } else {
+                    alert(d.message || 'Erro ao gerar PIX');
+                }
             }
         } catch { alert('Erro de conexão'); }
         finally  { setIsProcessing(false); }
@@ -278,13 +297,48 @@ export default function CheckoutPage() {
                     {/* ── RIGHT: PAYMENT FORM ── */}
                     <div className="bg-white/[0.03] border border-white/8 rounded-[28px] p-6 flex flex-col">
 
+                        {/* Payment method selector */}
+                        <div className="flex gap-2 mb-5">
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethod('pix')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border font-black text-sm transition-all ${
+                                    paymentMethod === 'pix'
+                                        ? 'border-[--c] text-[--c]'
+                                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                }`}
+                                style={paymentMethod === 'pix' ? { '--c': primary, background: `${primary}18` } : {}}
+                            >
+                                <QrCode size={15} /> PIX
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethod('card')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border font-black text-sm transition-all ${
+                                    paymentMethod === 'card'
+                                        ? 'bg-blue-500/15 border-blue-500/40 text-blue-400'
+                                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                }`}
+                            >
+                                <CreditCard size={15} /> Cartão
+                            </button>
+                        </div>
+
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-green-500/10">
-                                <Zap size={18} className="text-green-400" />
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                                paymentMethod === 'card' ? 'bg-blue-500/10' : 'bg-green-500/10'
+                            }`}>
+                                {paymentMethod === 'card'
+                                    ? <CreditCard size={18} className="text-blue-400" />
+                                    : <Zap size={18} className="text-green-400" />}
                             </div>
                             <div>
-                                <h2 className="font-black text-base leading-tight">Pagamento via PIX</h2>
-                                <p className="text-[11px] text-white/30 font-medium">Aprovação instantânea • 100% seguro</p>
+                                <h2 className="font-black text-base leading-tight">
+                                    {paymentMethod === 'card' ? 'Pagamento via Cartão' : 'Pagamento via PIX'}
+                                </h2>
+                                <p className="text-[11px] text-white/30 font-medium">
+                                    {paymentMethod === 'card' ? 'Até 12x • 100% seguro' : 'Aprovação instantânea • 100% seguro'}
+                                </p>
                             </div>
                         </div>
 
@@ -324,22 +378,24 @@ export default function CheckoutPage() {
                                 <TrustBadge icon={<CheckCircle size={16} />} label="Aprovação"     sub="Instantânea"   color={primary} />
                             </div>
 
-                            {/* PIX CTA */}
+                            {/* CTA Button */}
                             <motion.button
                                 whileTap={{ scale: 0.97 }}
                                 type="submit"
                                 disabled={isProcessing}
-                                style={{ background: primary }}
-                                className="w-full py-5 rounded-2xl text-black font-black text-base flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 transition-opacity mt-auto"
+                                style={paymentMethod === 'pix' ? { background: primary } : {}}
+                                className={`w-full py-5 rounded-2xl font-black text-base flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 transition-all mt-auto ${
+                                    paymentMethod === 'card'
+                                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                                        : 'text-black'
+                                }`}
                             >
                                 {isProcessing ? (
-                                    <><Loader2 className="animate-spin" size={20} /> Gerando PIX...</>
+                                    <><Loader2 className="animate-spin" size={20} /> {paymentMethod === 'card' ? 'Gerando link...' : 'Gerando PIX...'}</>
+                                ) : paymentMethod === 'card' ? (
+                                    <><CreditCard size={20} />Pagar R$ {fmtBRL(data.total)} com Cartão<ArrowRight size={18} /></>
                                 ) : (
-                                    <>
-                                        <Zap size={20} />
-                                        Pagar R$ {fmtBRL(data.total)} com PIX
-                                        <ArrowRight size={18} />
-                                    </>
+                                    <><Zap size={20} />Pagar R$ {fmtBRL(data.total)} com PIX<ArrowRight size={18} /></>
                                 )}
                             </motion.button>
 
@@ -375,12 +431,16 @@ export default function CheckoutPage() {
                         <button
                             onClick={() => formRef.current?.requestSubmit()}
                             disabled={isProcessing || !customerName.trim()}
-                            style={{ background: primary }}
-                            className="w-full py-4 rounded-2xl text-black font-black text-base flex items-center justify-center gap-2 shadow-2xl disabled:opacity-40 transition-all"
+                            style={paymentMethod === 'pix' ? { background: primary } : {}}
+                            className={`w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-2xl disabled:opacity-40 transition-all ${
+                                paymentMethod === 'card' ? 'bg-blue-500 text-white' : 'text-black'
+                            }`}
                         >
-                            {isProcessing ? <Loader2 className="animate-spin" size={20} /> : <>
-                                <Zap size={18} /> Pagar R$ {fmtBRL(data.total)} com PIX
-                            </>}
+                            {isProcessing ? <Loader2 className="animate-spin" size={20} /> : paymentMethod === 'card' ? (
+                                <><CreditCard size={18} /> Pagar R$ {fmtBRL(data.total)} com Cartão</>
+                            ) : (
+                                <><Zap size={18} /> Pagar R$ {fmtBRL(data.total)} com PIX</>
+                            )}
                         </button>
                         <p className="text-center text-[10px] text-white/20 font-bold mt-2">
                             🔒 Pagamento 100% seguro
