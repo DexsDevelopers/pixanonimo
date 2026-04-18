@@ -31,6 +31,11 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'update_card_fees':
+            // Legacy fallback for cached builds
+            echo json_encode(['success' => true]);
+            break;
+
         case 'create_demo_user':
             $email = filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL);
             $password = password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT);
