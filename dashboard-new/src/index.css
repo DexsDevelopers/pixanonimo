@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00ff88;
-  --color-secondary: #00e5ff;
+  --color-primary: #A855F7;
+  --color-secondary: #7C3AED;
   --color-background: #08080a;
 }
 
@@ -28,8 +28,8 @@ body {
 }
 
 @utility lp-btn-primary {
-  background: #ffffff;
-  color: #000000;
+  background: linear-gradient(135deg, #A855F7, #7C3AED);
+  color: #ffffff;
   border-radius: 9999px;
   font-weight: 700;
   padding: 0.75rem 1.5rem;
@@ -37,7 +37,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #ffffff;
+  border: 1px solid rgba(168, 85, 247, 0.4);
 }
 
 @utility lp-btn-outline {

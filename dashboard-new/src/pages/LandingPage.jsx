@@ -21,7 +21,7 @@ function FeatureCard({ icon: Icon, title, desc, delay = 0 }) {
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
                 <Icon size={120} />
             </div>
-            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 border border-primary/20 shadow-[0_0_20px_rgba(74,222,128,0.1)]">
+            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-8 border border-primary/20 shadow-[0_0_20px_rgba(168,85,247,0.15)]">
                 <Icon size={28} />
             </div>
             <h3 className="text-2xl font-black mb-4 tracking-tight group-hover:text-primary transition-colors">{title}</h3>
@@ -83,7 +83,7 @@ export default function LandingPage() {
     }, []);
 
     return (
-        <div className="bg-[#050505] min-h-screen text-white font-['Outfit'] overflow-x-hidden selection:bg-primary selection:text-black">
+        <div className="bg-[#050505] min-h-screen text-white font-['Outfit'] overflow-x-hidden selection:bg-primary selection:text-white">
 
             {/* WhatsApp Announcement */}
             <div className="sticky top-0 bg-[#08080a]/80 backdrop-blur-2xl border-b border-white/5 py-3 px-6 text-center z-[60]">
@@ -105,9 +105,7 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
                 <div className="flex items-center gap-3 relative">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
-                        <span className="text-primary font-black text-sm sm:text-base">G</span>
-                    </div>
+                    <img src="/logo_premium.png" alt="Ghost Pix" className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.25)]" />
                     <span className="font-black text-lg sm:text-xl tracking-tighter text-white">GHOST<span className="text-primary italic">PIX</span></span>
                 </div>
 
@@ -120,7 +118,7 @@ export default function LandingPage() {
 
                 <div className="flex items-center gap-3 sm:gap-6 relative">
                     <Link to="/login" className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 hover:text-white transition-colors px-1 sm:px-2 hidden sm:block">Entrar</Link>
-                    <Link to="/register" className="bg-white text-black text-[9px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] px-4 sm:px-8 py-2 sm:py-3.5 rounded-xl sm:rounded-2xl hover:bg-primary hover:text-black transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)] whitespace-nowrap">Conta</Link>
+                    <Link to="/register" className="bg-white text-black text-[9px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] px-4 sm:px-8 py-2 sm:py-3.5 rounded-xl sm:rounded-2xl hover:bg-primary hover:text-white transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)] whitespace-nowrap">Conta</Link>
                 </div>
             </nav>
 
@@ -128,14 +126,14 @@ export default function LandingPage() {
             <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-7xl aspect-square bg-primary/5 rounded-full blur-[200px] -z-10 pointer-events-none animate-pulse" />
-                <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
+                <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
 
                 <div className="max-w-6xl mx-auto text-center space-y-12">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6 }}
-                        className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 rounded-[20px] bg-primary/[0.06] border border-primary/20 backdrop-blur-md shadow-[0_0_40px_rgba(74,222,128,0.08)]"
+                        className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 rounded-[20px] bg-primary/[0.06] border border-primary/20 backdrop-blur-md shadow-[0_0_40px_rgba(168,85,247,0.12)]"
                     >
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 bg-primary/15 rounded-full flex items-center justify-center border border-primary/30">
@@ -163,7 +161,7 @@ export default function LandingPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-4xl sm:text-7xl lg:text-[130px] font-[1000] leading-[0.9] tracking-[-0.06em] uppercase"
                         >
-                            Privacidade<br /><span className="text-primary italic animate-pulse">é Poder.</span>
+                            Privacidade<br /><span className="bg-gradient-to-r from-purple-400 to-violet-500 bg-clip-text text-transparent italic animate-pulse">é Poder.</span>
                         </motion.h1>
                         <motion.p
                             initial={{ opacity: 0 }}
@@ -181,7 +179,7 @@ export default function LandingPage() {
                         transition={{ delay: 0.5 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-8"
                     >
-                        <Link to="/register" className="w-full sm:w-auto bg-primary text-black h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] flex items-center justify-center text-sm sm:text-lg font-black hover:scale-105 transition-all shadow-[0_20px_50px_rgba(74,222,128,0.2)] active:scale-95 group whitespace-nowrap">
+                        <Link to="/register" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-violet-600 text-white h-14 sm:h-20 px-8 sm:px-12 rounded-[24px] flex items-center justify-center text-sm sm:text-lg font-black hover:scale-105 transition-all shadow-[0_20px_50px_rgba(168,85,247,0.3)] active:scale-95 group whitespace-nowrap">
                             COMEÇAR AGORA
                             <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={20} />
                         </Link>
@@ -288,12 +286,12 @@ export default function LandingPage() {
                             </div>
                             <div className="space-y-2">
                                 <p className="text-white/20">// Initialize your integration</p>
-                                <p><span className="text-primary">const</span> ghost <span className="text-white/40">=</span> <span className="text-blue-400">new</span> <span className="text-emerald-400">GhostPix</span>({'{'} key: <span className="text-orange-400">'pk_live_...'</span> {'}'});</p>
+                                <p><span className="text-primary">const</span> ghost <span className="text-white/40">=</span> <span className="text-blue-400">new</span> <span className="text-purple-400">GhostPix</span>({'{'} key: <span className="text-orange-400">'pk_live_...'</span> {'}'});</p>
                                 <p>&nbsp;</p>
                                 <p className="text-white/20">// Generate an anonymous Pix</p>
                                 <p><span className="text-primary">await</span> ghost.<span className="text-blue-400">createTransaction</span>({'{'}</p>
                                 <p className="pl-4">amount: <span className="text-orange-400">97.00</span>,</p>
-                                <p className="pl-4">customer: <span className="text-emerald-400">'John Doe'</span></p>
+                                <p className="pl-4">customer: <span className="text-purple-300">'John Doe'</span></p>
                                 <p>{'}'});</p>
                                 <p>&nbsp;</p>
                                 <p className="text-white/20">// Done. Payment generated instantly.</p>
@@ -319,7 +317,7 @@ export default function LandingPage() {
             <section id="faq" className="py-32 px-6 bg-[#050505]">
                 <div className="max-w-4xl mx-auto space-y-20 text-center md:text-left">
                     <div className="space-y-4 text-center">
-                        <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">Respostas para <br /><span className="text-primary italic">suas dúvidas.</span></h2>
+                        <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">Respostas para <br /><span className="bg-gradient-to-r from-purple-400 to-violet-500 bg-clip-text text-transparent italic">suas dúvidas.</span></h2>
                         <p className="text-white/20 font-bold uppercase tracking-widest text-xs">Suporte humanizado disponível 24/7</p>
                     </div>
                     <div className="bg-[#08080a] border border-white/5 rounded-[48px] p-8 md:p-16">
@@ -350,7 +348,7 @@ export default function LandingPage() {
                     <div className="space-y-12">
                         <h2 className="text-3xl sm:text-5xl md:text-8xl font-black leading-[0.95] tracking-[-0.04em] uppercase">O futuro dos <span className="text-primary">pagamentos</span> é hoje.</h2>
                         <div className="pt-6">
-                            <Link to="/register" className="lp-btn-primary h-14 sm:h-20 md:h-24 px-10 sm:px-16 md:px-20 rounded-[20px] sm:rounded-[32px] text-sm sm:text-xl md:text-2xl font-black inline-flex shadow-[0_30px_70px_-10px_rgba(74,222,128,0.4)] hover:brightness-110 transition-all border-none whitespace-nowrap">
+                            <Link to="/register" className="lp-btn-primary h-14 sm:h-20 md:h-24 px-10 sm:px-16 md:px-20 rounded-[20px] sm:rounded-[32px] text-sm sm:text-xl md:text-2xl font-black inline-flex shadow-[0_30px_70px_-10px_rgba(168,85,247,0.4)] hover:brightness-110 transition-all border-none whitespace-nowrap">
                                 CRIAR CONTA AGORA
                             </Link>
                         </div>
@@ -365,15 +363,13 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
                         <div className="space-y-8 col-span-1 lg:col-span-1">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(74,222,128,0.1)]">
-                                    <span className="text-primary font-black">G</span>
-                                </div>
+                                <img src="/logo_premium.png" alt="Ghost Pix" className="w-10 h-10 rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.15)]" />
                                 <span className="font-black text-xl tracking-tighter">GHOST PIX</span>
                             </div>
                             <p className="text-white/40 font-medium leading-relaxed max-w-xs">A infraestrutura financeira definitiva para quem busca privacidade, velocidade e escala.</p>
                             <div className="flex gap-4">
-                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-primary hover:text-black transition-all"><MessageCircle size={18} /></a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-primary hover:text-black transition-all"><ExternalLink size={18} /></a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all"><MessageCircle size={18} /></a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all"><ExternalLink size={18} /></a>
                             </div>
                         </div>
 
