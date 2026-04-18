@@ -818,53 +818,69 @@ function handlePix(string $chatId, array $user, float $amount): void {
     }
 
     // Real PixGo
-    $data = ['amount' => $amount, 'description' => 'PIX via Telegram', 'webhook_url' => getFullUrl('webhook.php'), 'external_id' => $externalId];
-    $ch = curl_init('https://pixgo.org/api/v1/payment/create');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($data),
-        CURLOPT_HTTPHEADER => ['X-API-Key: ' . $currentPixGoKey, 'Content-Type: application/json', 'Accept: application/json'],
-        CURLOPT_TIMEOUT => 30, CURLOPT_SSL_VERIFYPEER => true,
-    ]);
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $res = json_decode($response ?: '{}', true);
+    try {
+        $data = ['amount' => $amount, 'description' => 'PIX via Telegram', 'webhook_url' => getFullUrl('webhook.php'), 'external_id' => $externalId];
+        $ch = curl_init('https://pixgo.org/api/v1/payment/create');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => ['X-API-Key: ' . $currentPixGoKey, 'Content-Type: application/json', 'Accept: application/json'],
+            CURLOPT_TIMEOUT => 15, CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $response = curl_exec($ch);
+        $curlErr = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-    if (($httpCode === 200 || $httpCode === 201) && !empty($res['success'])) {
-        $pixData = $res['data'] ?? [];
-        $pixId = $pixData['payment_id'] ?? '';
-        $qrImage = $pixData['qr_image_url'] ?? '';
-        $pixCode = $pixData['qr_code'] ?? '';
-        $pixgoFee = $amount * 0.02 + ($amount < 50 ? 1.00 : 0);
-        $platformFee = $amount * ($user['commission_rate'] / 100);
-        $netAmount = $amount - $pixgoFee - $platformFee;
-        saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, null, 'PIX via Telegram', $externalId, 'pix');
-        $txId = (int)$pdo->lastInsertId();
+        if ($response === false || $response === '') {
+            $failMsg = "❌ <b>Falha ao gerar PIX</b>" . div() . "\n\n<code>Gateway indisponível" . ($curlErr ? ": {$curlErr}" : '') . "</code>\n\n💡 <i>Tente novamente em alguns instantes.</i>" . footer();
+            if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $failMsg, afterActionKeyboard());
+            else uReply($chatId, $failMsg, afterActionKeyboard());
+            return;
+        }
 
-        $successMsg = "✅ <b>PIX GERADO COM SUCESSO!</b>" . div() . "\n\n"
-            . "💵 <b>Valor:</b> " . formatBRL($amount) . "\n"
-            . "💎 <b>Líquido:</b> " . formatBRL($netAmount) . "\n"
-            . "🆔 <b>TX:</b> <code>#{$txId}</code>\n"
-            . "⏱ <b>Expira em:</b> 30 minutos\n\n"
-            . "💡 <i>Código copia e cola enviado abaixo. Toque para copiar.</i>" . footer();
+        $res = json_decode($response, true) ?: [];
 
-        if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $successMsg, afterActionKeyboard());
-        if ($qrImage) uSendPhoto($chatId, $qrImage, "📱 QR Code — " . formatBRL($amount));
-        uReply($chatId, "<code>{$pixCode}</code>");
+        if (($httpCode === 200 || $httpCode === 201) && !empty($res['success'])) {
+            $pixData = $res['data'] ?? [];
+            $pixId = $pixData['payment_id'] ?? '';
+            $qrImage = $pixData['qr_image_url'] ?? '';
+            $pixCode = $pixData['qr_code'] ?? '';
+            $pixgoFee = $amount * 0.02 + ($amount < 50 ? 1.00 : 0);
+            $platformFee = $amount * ($user['commission_rate'] / 100);
+            $netAmount = $amount - $pixgoFee - $platformFee;
+            saveTransaction($userId, $amount, $netAmount, $pixId, $pixCode, $qrImage, null, 'PIX via Telegram', $externalId, 'pix');
+            $txId = (int)$pdo->lastInsertId();
 
-        // Notificar admin
-        try {
-            TelegramService::notifyBotActivity('⚡', 'PIX GERADO VIA BOT',
-                "👤 <b>Vendedor:</b> {$user['full_name']}\n"
+            $successMsg = "✅ <b>PIX GERADO COM SUCESSO!</b>" . div() . "\n\n"
                 . "💵 <b>Valor:</b> " . formatBRL($amount) . "\n"
                 . "💎 <b>Líquido:</b> " . formatBRL($netAmount) . "\n"
-                . "🆔 <b>TX:</b> <code>#{$txId}</code>"
-            );
-        } catch (Throwable $e) {}
-    } else {
-        $errorMsg = $res['message'] ?? ($res['error'] ?? 'Erro de comunicação');
-        if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, "❌ <b>Falha ao gerar PIX</b>" . div() . "\n\n<code>{$errorMsg}</code>\n\n💡 <i>Tente novamente em alguns instantes.</i>" . footer(), afterActionKeyboard());
+                . "🆔 <b>TX:</b> <code>#{$txId}</code>\n"
+                . "⏱ <b>Expira em:</b> 30 minutos\n\n"
+                . "💡 <i>Código copia e cola enviado abaixo. Toque para copiar.</i>" . footer();
+
+            if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $successMsg, afterActionKeyboard());
+            if ($qrImage) uSendPhoto($chatId, $qrImage, "📱 QR Code — " . formatBRL($amount));
+            uReply($chatId, "<code>{$pixCode}</code>");
+
+            try {
+                TelegramService::notifyBotActivity('⚡', 'PIX GERADO VIA BOT',
+                    "👤 <b>Vendedor:</b> {$user['full_name']}\n"
+                    . "💵 <b>Valor:</b> " . formatBRL($amount) . "\n"
+                    . "💎 <b>Líquido:</b> " . formatBRL($netAmount) . "\n"
+                    . "🆔 <b>TX:</b> <code>#{$txId}</code>"
+                );
+            } catch (Throwable $e) {}
+        } else {
+            $errorMsg = $res['message'] ?? ($res['error'] ?? "Erro HTTP {$httpCode}");
+            $failMsg = "❌ <b>Falha ao gerar PIX</b>" . div() . "\n\n<code>" . htmlspecialchars($errorMsg) . "</code>\n\n💡 <i>Tente novamente em alguns instantes.</i>" . footer();
+            if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $failMsg, afterActionKeyboard());
+            else uReply($chatId, $failMsg, afterActionKeyboard());
+        }
+    } catch (Throwable $ex) {
+        $failMsg = "❌ <b>Erro interno ao gerar PIX</b>" . div() . "\n\n<code>" . htmlspecialchars($ex->getMessage()) . "</code>\n\n💡 <i>Tente novamente.</i>" . footer();
+        if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $failMsg, afterActionKeyboard());
+        else uReply($chatId, $failMsg, afterActionKeyboard());
     }
 }
 
