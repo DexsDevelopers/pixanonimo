@@ -77,7 +77,7 @@ const AnnouncementModal = () => {
                 </span>
               </div>
               <button
-                onClick={handleDismissAll}
+                onClick={handleDismiss}
                 className="p-1.5 rounded-full hover:bg-white/5 transition text-white/30 hover:text-white/70"
               >
                 <X size={16} />
