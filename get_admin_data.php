@@ -13,6 +13,15 @@ $currentAffRate = (float)($affRateStmt->fetchColumn() ?: '10');
 $defTaxStmt = $pdo->query("SELECT `value` FROM settings WHERE `key` = 'default_user_tax'");
 $currentDefTax = (float)($defTaxStmt->fetchColumn() ?: '4.0');
 
+// Card fees
+$cardFees = [];
+$cardFeeKeys = ['card_fee_percent','card_fee_fixed','card_fee_2x','card_fee_3x','card_fee_4x','card_fee_5x','card_fee_6x','card_fee_7x','card_fee_8x','card_fee_9x','card_fee_10x','card_fee_11x','card_fee_12x'];
+$cfStmt = $pdo->query("SELECT `key`, `value` FROM settings WHERE `key` LIKE 'card_fee_%'");
+$cfRows = $cfStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+foreach ($cardFeeKeys as $k) {
+    $cardFees[$k] = (float)($cfRows[$k] ?? 0);
+}
+
 $stmtProfit = $pdo->query("SELECT SUM((amount_brl - amount_net_brl) - (amount_brl * 0.02)) as total FROM transactions WHERE status = 'paid'");
 $totalProfit = (float)($stmtProfit->fetchColumn() ?: 0);
 
@@ -164,5 +173,6 @@ echo json_encode([
     'users'            => $users,
     'withdrawals'      => $withdrawals,
     'all_transactions' => $allTransactions,
-    'apis'             => $apis
+    'apis'             => $apis,
+    'card_fees'        => $cardFees
 ]);

@@ -194,6 +194,26 @@ try {
         $pdo->exec("INSERT IGNORE INTO settings (`key`, `value`) VALUES ('medusapay_secret_key', '')");
     } catch (PDOException $e) {}
 
+    // Card fee defaults (MedusaPay)
+    $cardDefaults = [
+        'card_fee_percent'  => '8.99',
+        'card_fee_fixed'    => '5.99',
+        'card_fee_2x'       => '20.00',
+        'card_fee_3x'       => '23.00',
+        'card_fee_4x'       => '28.00',
+        'card_fee_5x'       => '33.00',
+        'card_fee_6x'       => '38.00',
+        'card_fee_7x'       => '44.00',
+        'card_fee_8x'       => '47.00',
+        'card_fee_9x'       => '52.00',
+        'card_fee_10x'      => '55.00',
+        'card_fee_11x'      => '57.00',
+        'card_fee_12x'      => '61.00',
+    ];
+    foreach ($cardDefaults as $k => $v) {
+        try { $pdo->exec("INSERT IGNORE INTO settings (`key`, `value`) VALUES ('$k', '$v')"); } catch (PDOException $e) {}
+    }
+
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
