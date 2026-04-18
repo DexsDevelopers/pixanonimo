@@ -1013,11 +1013,30 @@ function handleCard(string $chatId, array $user, float $amount): void {
             throw new Exception('MedusaPay: ' . $errMsg);
         }
 
+        // Busca recursiva por qualquer campo que seja uma URL http(s)
         $checkoutUrl = '';
-        foreach (['url', 'checkoutUrl', 'redirectUrl', 'checkout_url', 'paymentUrl'] as $k) {
-            if (!empty($res[$k])) { $checkoutUrl = (string)$res[$k]; break; }
+        $urlKeys = ['url', 'checkoutUrl', 'redirectUrl', 'checkout_url', 'paymentUrl', 'payment_url', 'link', 'shortUrl'];
+        $searchUrl = function(array $arr) use (&$searchUrl, $urlKeys): string {
+            foreach ($urlKeys as $k) {
+                if (!empty($arr[$k]) && is_string($arr[$k]) && str_starts_with($arr[$k], 'http')) {
+                    return $arr[$k];
+                }
+            }
+            foreach ($arr as $v) {
+                if (is_array($v)) {
+                    $found = $searchUrl($v);
+                    if ($found !== '') return $found;
+                }
+                if (is_string($v) && str_starts_with($v, 'https://') && str_contains($v, 'checkout')) {
+                    return $v;
+                }
+            }
+            return '';
+        };
+        $checkoutUrl = $searchUrl($res);
+        if ($checkoutUrl === '') {
+            throw new Exception("URL não encontrada. Resposta: " . mb_substr(json_encode($res, JSON_UNESCAPED_UNICODE), 0, 300));
         }
-        if ($checkoutUrl === '') throw new Exception('MedusaPay não retornou URL de pagamento.');
 
         $successMsg = "✅ <b>LINK DE CARTÃO GERADO!</b>" . div() . "\n\n"
             . "💳 <b>Valor:</b> " . formatBRL($amount) . "\n"

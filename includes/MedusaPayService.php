@@ -127,13 +127,29 @@ class MedusaPayService
             if (!empty($data[$k])) { $reference = (string)$data[$k]; break; }
         }
 
-        $checkoutUrl = '';
-        foreach (['url', 'checkoutUrl', 'redirectUrl', 'checkout_url', 'paymentUrl'] as $k) {
-            if (!empty($data[$k])) { $checkoutUrl = (string)$data[$k]; break; }
-        }
+        $urlKeys = ['url', 'checkoutUrl', 'redirectUrl', 'checkout_url', 'paymentUrl', 'payment_url', 'link', 'shortUrl'];
+        $searchUrl = function(array $arr) use (&$searchUrl, $urlKeys): string {
+            foreach ($urlKeys as $k) {
+                if (!empty($arr[$k]) && is_string($arr[$k]) && strncmp($arr[$k], 'http', 4) === 0) {
+                    return $arr[$k];
+                }
+            }
+            foreach ($arr as $v) {
+                if (is_array($v)) {
+                    $found = $searchUrl($v);
+                    if ($found !== '') return $found;
+                }
+                if (is_string($v) && strncmp($v, 'https://', 8) === 0 && (str_contains($v, 'checkout') || str_contains($v, 'payment'))) {
+                    return $v;
+                }
+            }
+            return '';
+        };
+        $checkoutUrl = $searchUrl($data);
 
         if ($checkoutUrl === '') {
-            return ['ok' => false, 'checkout_url' => '', 'reference' => $reference, 'error' => 'MedusaPay não retornou URL de checkout.'];
+            $rawPreview = mb_substr(json_encode($data, JSON_UNESCAPED_UNICODE), 0, 400);
+            return ['ok' => false, 'checkout_url' => '', 'reference' => $reference, 'error' => 'URL não encontrada. Resposta: ' . $rawPreview];
         }
 
         return ['ok' => true, 'checkout_url' => $checkoutUrl, 'reference' => $reference, 'error' => ''];
