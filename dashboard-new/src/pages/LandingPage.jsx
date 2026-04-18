@@ -123,11 +123,11 @@ export default function LandingPage() {
             </nav>
 
             {/* Hero Section */}
-            <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden">
+            <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden min-h-screen">
                 {/* Hero Background Image */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
-                    <img src="/assets/hero-bg.png" alt="" className="w-full h-full object-cover object-top opacity-40" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/80 via-[#050505]/50 to-[#050505]" />
+                    <img src="/assets/hero-bg.png" alt="" className="w-full h-full object-contain object-top opacity-25" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/60 via-transparent to-[#050505]" />
                 </div>
 
                 <div className="max-w-6xl mx-auto text-center space-y-12 relative z-10">
