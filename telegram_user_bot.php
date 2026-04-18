@@ -45,7 +45,7 @@ $BOT_TOKEN = defined('TELEGRAM_USER_BOT_TOKEN') ? TELEGRAM_USER_BOT_TOKEN : '';
 if (!$BOT_TOKEN) { http_response_code(200); exit('OK'); }
 
 $expectedSecret = defined('TELEGRAM_USER_BOT_SECRET') ? TELEGRAM_USER_BOT_SECRET : '';
-if ($expectedSecret) {
+if ($expectedSecret && !empty($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'])) {
     $headerSecret = $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'] ?? '';
     if ($headerSecret !== $expectedSecret) { http_response_code(403); exit; }
 }
