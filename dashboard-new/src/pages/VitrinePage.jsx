@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sparkles, Star, ShoppingCart, RefreshCw, Search, Filter, Package, TrendingUp, Award, ChevronDown, X, ExternalLink, Check, Copy, Link } from 'lucide-react';
+import { Sparkles, Star, ShoppingCart, RefreshCw, Search, Filter, Package, TrendingUp, Award, ChevronDown, X, ExternalLink, Check, Copy, Link, CreditCard, QrCode } from 'lucide-react';
 
 const CATEGORIES = ['Todos', 'Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
 const SORTS = [
@@ -87,6 +87,7 @@ function BuyModal({ product, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState(null);
   const [error, setError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('pix');
   const [couponCode, setCouponCode] = useState('');
   const [couponInput, setCouponInput] = useState('');
   const [couponInfo, setCouponInfo] = useState(null);
@@ -129,14 +130,29 @@ function BuyModal({ product, onClose, onSuccess }) {
     if (!name.trim()) { setError('Informe seu nome.'); return; }
     setLoading(true); setError('');
     try {
-      const res = await fetch('/buy_product.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: product.id, customer_name: name, customer_document: doc, coupon_code: couponCode }),
-      });
-      const data = await res.json();
-      if (data.success) { setPixData(data); setStep(2); }
-      else setError(data.message || 'Erro ao gerar pagamento.');
+      if (paymentMethod === 'card') {
+        const res = await fetch('/buy_product_card.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: product.id, customer_name: name, customer_document: doc, coupon_code: couponCode }),
+        });
+        const data = await res.json();
+        if (data.success && data.checkout_url) {
+          window.open(data.checkout_url, '_blank');
+          onClose();
+        } else {
+          setError(data.message || 'Erro ao gerar link de cartão.');
+        }
+      } else {
+        const res = await fetch('/buy_product.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: product.id, customer_name: name, customer_document: doc, coupon_code: couponCode }),
+        });
+        const data = await res.json();
+        if (data.success) { setPixData(data); setStep(2); }
+        else setError(data.message || 'Erro ao gerar pagamento.');
+      }
     } catch { setError('Erro de conexão.'); }
     setLoading(false);
   };
@@ -145,7 +161,7 @@ function BuyModal({ product, onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-md">
         <div className="flex items-center justify-between p-5 border-b border-white/5">
-          <h2 className="font-black">{step === 1 ? 'Finalizar Compra' : 'Pagar com PIX'}</h2>
+          <h2 className="font-black">{step === 1 ? 'Finalizar Compra' : paymentMethod === 'card' ? 'Pagar com Cartão' : 'Pagar com PIX'}</h2>
           <button onClick={onClose} className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5 transition-all"><X size={16} /></button>
         </div>
 
@@ -169,6 +185,35 @@ function BuyModal({ product, onClose, onSuccess }) {
               </div>
             </div>
             {error && <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-xl p-3">{error}</p>}
+
+            {/* Payment method selector */}
+            <div>
+              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">Forma de Pagamento</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('pix')}
+                  className={`flex items-center justify-center gap-2 py-3 rounded-xl border font-bold text-sm transition-all ${
+                    paymentMethod === 'pix'
+                      ? 'bg-primary/15 border-primary/40 text-primary'
+                      : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <QrCode size={15} /> PIX
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('card')}
+                  className={`flex items-center justify-center gap-2 py-3 rounded-xl border font-bold text-sm transition-all ${
+                    paymentMethod === 'card'
+                      ? 'bg-blue-500/15 border-blue-500/40 text-blue-400'
+                      : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <CreditCard size={15} /> Cartão
+                </button>
+              </div>
+            </div>
 
             {/* Coupon field */}
             {!couponInfo ? (
@@ -208,8 +253,17 @@ function BuyModal({ product, onClose, onSuccess }) {
               <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">CPF (opcional)</label>
               <input value={doc} onChange={e => setDoc(e.target.value)} placeholder="000.000.000-00" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/40" />
             </div>
-            <button onClick={handleCheckout} disabled={loading} className="w-full py-3 bg-primary text-black font-black rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50">
-              {loading ? 'Gerando PIX...' : `Gerar PIX — R$ ${finalPrice.toFixed(2).replace('.', ',')}`}
+            <button onClick={handleCheckout} disabled={loading} className={`w-full py-3 font-black rounded-xl transition-all disabled:opacity-50 ${
+              paymentMethod === 'card'
+                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-primary text-black hover:bg-primary/90'
+            }`}>
+              {loading
+                ? (paymentMethod === 'card' ? 'Gerando link...' : 'Gerando PIX...')
+                : paymentMethod === 'card'
+                  ? `Pagar com Cartão — R$ ${finalPrice.toFixed(2).replace('.', ',')}`
+                  : `Gerar PIX — R$ ${finalPrice.toFixed(2).replace('.', ',')}`
+              }
             </button>
           </div>
         ) : (

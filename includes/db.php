@@ -189,6 +189,11 @@ try {
         $pdo->exec("ALTER TABLE users ADD COLUMN telegram_link_expires DATETIME NULL");
     } catch (PDOException $e) {}
 
+    // MedusaPay secret key
+    try {
+        $pdo->exec("INSERT IGNORE INTO settings (`key`, `value`) VALUES ('medusapay_secret_key', '')");
+    } catch (PDOException $e) {}
+
 } catch (PDOException $e) {
     die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
