@@ -66,7 +66,7 @@ const AnnouncementModal = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 30 }}
             transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-            className="relative w-full max-w-lg bg-gradient-to-b from-[#141420] to-[#0c0c14] rounded-2xl overflow-hidden border border-white/[0.06] shadow-2xl"
+            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-b from-[#141420] to-[#0c0c14] rounded-2xl border border-white/[0.06] shadow-2xl"
           >
             {/* Header badge */}
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
@@ -90,7 +90,7 @@ const AnnouncementModal = () => {
                 <img
                   src={ann.media_url}
                   alt={ann.title}
-                  className="w-full rounded-xl object-cover max-h-64"
+                  className="w-full rounded-xl object-contain max-h-[70vh]"
                   loading="eager"
                 />
               </div>
