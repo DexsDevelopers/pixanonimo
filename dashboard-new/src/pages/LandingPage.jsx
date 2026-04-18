@@ -125,12 +125,12 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section className="pt-44 sm:pt-64 pb-20 sm:pb-32 px-6 relative overflow-hidden">
                 {/* Hero Background Image */}
-                <div className="absolute inset-0 -z-10 pointer-events-none">
-                    <img src="/assets/hero-bg.png" alt="" className="w-full h-full object-cover object-top opacity-30" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#050505]/60 to-[#050505]" />
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    <img src="/assets/hero-bg.png" alt="" className="w-full h-full object-cover object-top opacity-40" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/80 via-[#050505]/50 to-[#050505]" />
                 </div>
 
-                <div className="max-w-6xl mx-auto text-center space-y-12">
+                <div className="max-w-6xl mx-auto text-center space-y-12 relative z-10">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
