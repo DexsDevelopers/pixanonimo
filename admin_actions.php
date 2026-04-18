@@ -25,14 +25,9 @@ try {
             echo json_encode(['success' => true]);
             break;
 
-        case 'update_card_fees':
-            $allowedKeys = ['card_fee_percent','card_fee_fixed','card_fee_2x','card_fee_3x','card_fee_4x','card_fee_5x','card_fee_6x','card_fee_7x','card_fee_8x','card_fee_9x','card_fee_10x','card_fee_11x','card_fee_12x'];
-            foreach ($allowedKeys as $k) {
-                if (isset($data[$k])) {
-                    $v = number_format((float)$data[$k], 2, '.', '');
-                    $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?")->execute([$k, $v, $v]);
-                }
-            }
+        case 'update_card_extra_fee':
+            $fee = number_format((float)($data['card_extra_fee'] ?? 0), 2, '.', '');
+            $pdo->prepare("INSERT INTO settings (`key`, `value`) VALUES ('card_extra_fee', ?) ON DUPLICATE KEY UPDATE `value` = ?")->execute([$fee, $fee]);
             echo json_encode(['success' => true]);
             break;
 

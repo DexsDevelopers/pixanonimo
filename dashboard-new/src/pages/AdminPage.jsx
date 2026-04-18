@@ -68,13 +68,11 @@ export default function AdminPage() {
         default_tax: 0
     });
 
-    const defaultCardFees = {
-        card_fee_percent: 8.99, card_fee_fixed: 5.99,
-        card_fee_2x: 20, card_fee_3x: 23, card_fee_4x: 28, card_fee_5x: 33,
-        card_fee_6x: 38, card_fee_7x: 44, card_fee_8x: 47, card_fee_9x: 52,
-        card_fee_10x: 55, card_fee_11x: 57, card_fee_12x: 61
+    const medusaFees = {
+        base: { percent: 8.99, fixed: 5.99 },
+        installments: { 2: 20, 3: 23, 4: 28, 5: 33, 6: 38, 7: 44, 8: 47, 9: 52, 10: 55, 11: 57, 12: 61 }
     };
-    const [cardFees, setCardFees] = useState(defaultCardFees);
+    const [cardExtraFee, setCardExtraFee] = useState(0);
     const [cardFeesSaving, setCardFeesSaving] = useState(false);
 
     const [showDemoModal, setShowDemoModal]     = useState(false);
@@ -90,7 +88,7 @@ export default function AdminPage() {
                     affiliate_rate: data.stats.affiliate_rate,
                     default_tax: data.stats.default_tax
                 });
-                if (data.card_fees) setCardFees(prev => ({ ...prev, ...data.card_fees }));
+                if (data.card_extra_fee !== undefined) setCardExtraFee(data.card_extra_fee);
             } else {
                 setError(data.error || 'Erro ao carregar dados admin');
             }
@@ -232,71 +230,67 @@ export default function AdminPage() {
                         </div>
                         <div>
                             <h2 className="font-black text-base">Taxas Cartão de Crédito</h2>
-                            <p className="text-[11px] text-white/30 font-medium">MedusaPay • Taxas padrão por parcela</p>
+                            <p className="text-[11px] text-white/30 font-medium">MedusaPay (fixas) + Taxa extra da plataforma</p>
                         </div>
-                    </div>
-                    <button
-                        onClick={async () => {
-                            setCardFeesSaving(true);
-                            try {
-                                const fd = new FormData();
-                                fd.append('action', 'update_card_fees');
-                                Object.entries(cardFees).forEach(([k, v]) => fd.append(k, v));
-                                const r = await fetch('../admin_actions.php', { method: 'POST', body: fd });
-                                const d = await r.json();
-                                if (!d.success) alert(d.error || 'Erro');
-                            } catch { alert('Erro de conexão'); }
-                            finally { setCardFeesSaving(false); }
-                        }}
-                        disabled={cardFeesSaving}
-                        className="bg-blue-500 text-white px-5 py-2.5 rounded-xl font-black text-sm flex items-center gap-2 hover:bg-blue-600 transition-all active:scale-95 disabled:opacity-50"
-                    >
-                        <Save size={16} /> {cardFeesSaving ? 'Salvando...' : 'Salvar Taxas'}
-                    </button>
-                </div>
-
-                {/* Base fee */}
-                <div className="flex flex-wrap gap-4 mb-5 pb-5 border-b border-white/5">
-                    <div className="flex-1 min-w-[140px]">
-                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1.5">Taxa Base (%)</label>
-                        <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                            <input type="number" step="0.01" value={cardFees.card_fee_percent}
-                                onChange={e => setCardFees({ ...cardFees, card_fee_percent: parseFloat(e.target.value) || 0 })}
-                                className="bg-transparent border-none text-white font-bold text-sm w-16 focus:outline-none" />
-                            <span className="text-white/40 text-sm">%</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 min-w-[140px]">
-                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1.5">Taxa Fixa (R$)</label>
-                        <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                            <span className="text-white/40 text-sm">R$</span>
-                            <input type="number" step="0.01" value={cardFees.card_fee_fixed}
-                                onChange={e => setCardFees({ ...cardFees, card_fee_fixed: parseFloat(e.target.value) || 0 })}
-                                className="bg-transparent border-none text-white font-bold text-sm w-16 focus:outline-none" />
-                        </div>
-                    </div>
-                    <div className="flex items-end pb-2 text-xs text-white/25 font-bold">
-                        = {cardFees.card_fee_percent}% + R$ {Number(cardFees.card_fee_fixed).toFixed(2).replace('.', ',')} por transação
                     </div>
                 </div>
 
-                {/* Installment fees grid */}
-                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-3">Taxas por Parcela</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    {[2,3,4,5,6,7,8,9,10,11,12].map(n => {
-                        const key = `card_fee_${n}x`;
-                        return (
-                            <div key={n} className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                                <p className="text-[10px] font-black text-white/40 mb-1">{n}x</p>
-                                <div className="flex items-center justify-center gap-1">
-                                    <input type="number" step="0.01" value={cardFees[key]}
-                                        onChange={e => setCardFees({ ...cardFees, [key]: parseFloat(e.target.value) || 0 })}
-                                        className="bg-transparent border-none text-white font-black text-lg w-14 text-center focus:outline-none" />
-                                    <span className="text-white/40 text-sm">%</span>
-                                </div>
+                {/* Taxa extra da plataforma - EDITÁVEL */}
+                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 mb-5">
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div>
+                            <label className="text-[10px] font-black text-primary uppercase tracking-widest block mb-1.5">Taxa Extra da Plataforma</label>
+                            <p className="text-[11px] text-white/30">Cobrada acima das taxas MedusaPay em cada venda por cartão</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-auto">
+                            <div className="flex items-center gap-1 bg-white/5 border border-primary/30 rounded-xl px-4 py-2.5">
+                                <input type="number" step="0.1" value={cardExtraFee}
+                                    onChange={e => setCardExtraFee(parseFloat(e.target.value) || 0)}
+                                    className="bg-transparent border-none text-primary font-black text-xl w-16 focus:outline-none" />
+                                <span className="text-primary/60 text-sm font-bold">%</span>
                             </div>
-                        );
-                    })}
+                            <button
+                                onClick={async () => {
+                                    setCardFeesSaving(true);
+                                    try {
+                                        const fd = new FormData();
+                                        fd.append('action', 'update_card_extra_fee');
+                                        fd.append('card_extra_fee', cardExtraFee);
+                                        const r = await fetch('../admin_actions.php', { method: 'POST', body: fd });
+                                        const d = await r.json();
+                                        if (!d.success) alert(d.error || 'Erro');
+                                    } catch { alert('Erro de conexão'); }
+                                    finally { setCardFeesSaving(false); }
+                                }}
+                                disabled={cardFeesSaving}
+                                className="bg-primary text-black px-4 py-2.5 rounded-xl font-black text-sm flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                <Save size={16} /> {cardFeesSaving ? '...' : 'Salvar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Taxas MedusaPay - SOMENTE LEITURA */}
+                <div className="opacity-60">
+                    <div className="flex items-center gap-2 mb-3">
+                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Taxas MedusaPay (fixas)</label>
+                        <span className="text-[9px] bg-white/5 text-white/25 px-2 py-0.5 rounded-full font-bold">somente leitura</span>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-4">
+                        <div className="bg-white/5 border border-white/5 rounded-xl px-4 py-2">
+                            <span className="text-[10px] text-white/30 font-bold block">À vista</span>
+                            <span className="text-white/60 font-bold text-sm">{medusaFees.base.percent}% + R$ {medusaFees.base.fixed.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2">
+                        {Object.entries(medusaFees.installments).map(([n, rate]) => (
+                            <div key={n} className="bg-white/5 border border-white/5 rounded-xl p-2 text-center">
+                                <p className="text-[9px] font-black text-white/30">{n}x</p>
+                                <p className="text-white/50 font-black text-sm">{rate}%</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
