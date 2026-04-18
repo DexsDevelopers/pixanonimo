@@ -187,9 +187,27 @@ function randomTip(): string {
 function mainMenuKeyboard(): array {
     return [
         [['text' => '💰 Saldo', 'callback_data' => 'act_saldo'], ['text' => '📊 Vendas', 'callback_data' => 'act_vendas']],
-        [['text' => '⚡ Gerar PIX', 'callback_data' => 'act_pix_menu'], ['text' => '🏦 Sacar', 'callback_data' => 'act_sacar_menu']],
-        [['text' => '📦 Produtos', 'callback_data' => 'act_produtos'], ['text' => '📜 Histórico', 'callback_data' => 'act_historico']],
-        [['text' => '🏆 Ranking', 'callback_data' => 'act_ranking'], ['text' => '💡 Dica', 'callback_data' => 'act_dica']],
+        [['text' => '⚡ Gerar PIX', 'callback_data' => 'act_pix_menu'], ['text' => '💳 Gerar Cartão', 'callback_data' => 'act_card_menu']],
+        [['text' => '🏦 Sacar', 'callback_data' => 'act_sacar_menu'], ['text' => '📦 Produtos', 'callback_data' => 'act_produtos']],
+        [['text' => '📜 Histórico', 'callback_data' => 'act_historico'], ['text' => '🏆 Ranking', 'callback_data' => 'act_ranking']],
+        [['text' => '💡 Dica', 'callback_data' => 'act_dica']],
+    ];
+}
+
+function cardAmountKeyboard(): array {
+    return [
+        [
+            ['text' => 'R$ 10', 'callback_data' => 'card_10'],
+            ['text' => 'R$ 25', 'callback_data' => 'card_25'],
+            ['text' => 'R$ 50', 'callback_data' => 'card_50'],
+        ],
+        [
+            ['text' => 'R$ 100', 'callback_data' => 'card_100'],
+            ['text' => 'R$ 200', 'callback_data' => 'card_200'],
+            ['text' => 'R$ 500', 'callback_data' => 'card_500'],
+        ],
+        [['text' => '🔢 Outro valor', 'callback_data' => 'card_custom']],
+        [['text' => '« Voltar ao menu', 'callback_data' => 'act_menu']],
     ];
 }
 
@@ -347,6 +365,30 @@ if (isset($input['callback_query'])) {
     if ($cbData === 'act_dica') {
         answerCallback($cbId);
         uReply($cbChatId, "💡 <b>Dica do Ghost Pix</b>" . div() . "\n\n" . randomTip() . "\n\n<i>Use /dica para mais dicas!</i>" . footer(), afterActionKeyboard());
+        http_response_code(200); exit;
+    }
+
+    // ── Card Menu ────────────────────────────────────────────────────
+    if ($cbData === 'act_card_menu') {
+        answerCallback($cbId);
+        uEditMessage($cbChatId, $cbMsgId,
+            "💳 <b>Gerar Cobrança via Cartão</b>" . div() . "\n\n"
+            . "Escolha um valor rápido ou digite:\n"
+            . "<code>/cartao 75</code> para valor personalizado.\n\n"
+            . "<i>O comprador receberá um link seguro para pagar com cartão de crédito em até 12x.</i>",
+            cardAmountKeyboard()
+        );
+        http_response_code(200); exit;
+    }
+    if (preg_match('/^card_(\d+)$/', $cbData, $m)) {
+        $amount = (float)$m[1];
+        answerCallback($cbId, "💳 Gerando link de R$ {$m[1]}...");
+        handleCard($cbChatId, $user, $amount);
+        http_response_code(200); exit;
+    }
+    if ($cbData === 'card_custom') {
+        answerCallback($cbId);
+        uReply($cbChatId, "🔢 <b>Valor personalizado</b>\n\nDigite o valor desejado:\n<code>/cartao 75</code>\n\nOu simplesmente: <i>\"gera link de 75\"</i>" . footer());
         http_response_code(200); exit;
     }
 
@@ -601,6 +643,18 @@ function interpretUserNLP(string $text): ?array {
     if (preg_match('/(\d+[.,]?\d*)\s*(?:reais|real|conto|pila)/', $tn, $m)) {
         $v = (float)str_replace(',', '.', $m[1]);
         if ($v >= 10) return ['action' => 'pix', 'amount' => $v];
+    }
+
+    // ── Cartão (com valor) ──────────────────────────────────────────
+    if (preg_match('/(?:gera|gerar|criar|cria|faz|fazer|quero|preciso|emite|emitir)\s+(?:um\s+)?(?:link|cobran[cç]a)\s+(?:de\s+cart[aã]o|no\s+cart[aã]o|cart[aã]o|credito|cartao)\s+(?:de\s+)?(?:r\$?\s*)?(\d+[.,]?\d*)/', $tn, $m)) {
+        return ['action' => 'card', 'amount' => (float)str_replace(',', '.', $m[1])];
+    }
+    if (preg_match('/(?:gera|gerar|quero|preciso)\s+(?:um\s+)?(?:cart[aã]o|link\s+de\s+cart[aã]o|cobran[cç]a\s+no\s+cart[aã]o)\s+(?:de\s+)?(?:r\$?\s*)?(\d+[.,]?\d*)/', $tn, $m)) {
+        return ['action' => 'card', 'amount' => (float)str_replace(',', '.', $m[1])];
+    }
+    if (preg_match('/cart[aã]o\s+(?:de\s+)?(?:r\$?\s*)?(\d+[.,]?\d*)/', $tn, $m)) {
+        $v = (float)str_replace(',', '.', $m[1]);
+        if ($v >= 5) return ['action' => 'card', 'amount' => $v];
     }
 
     // ── Saldo ────────────────────────────────────────────────────────
@@ -879,6 +933,109 @@ function handlePix(string $chatId, array $user, float $amount): void {
         }
     } catch (Throwable $ex) {
         $failMsg = "❌ <b>Erro interno ao gerar PIX</b>" . div() . "\n\n<code>" . htmlspecialchars($ex->getMessage()) . "</code>\n\n💡 <i>Tente novamente.</i>" . footer();
+        if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $failMsg, afterActionKeyboard());
+        else uReply($chatId, $failMsg, afterActionKeyboard());
+    }
+}
+
+// ── GERAR LINK CARTÃO (MedusaPay) ──────────────────────────────────────
+function handleCard(string $chatId, array $user, float $amount): void {
+    global $pdo;
+    $userId = (int)$user['id'];
+
+    if ($amount < 5) {
+        uReply($chatId, "⚠️ <b>Valor mínimo para cartão: R$ 5,00</b>" . footer(), afterActionKeyboard());
+        return;
+    }
+    if ($amount > 50000) {
+        uReply($chatId, "⚠️ Valor máximo: <b>R$ 50.000,00</b>." . footer(), afterActionKeyboard());
+        return;
+    }
+    if ($user['status'] !== 'approved') {
+        uReply($chatId, "🔒 Sua conta ainda não foi aprovada." . footer(), afterActionKeyboard());
+        return;
+    }
+
+    sendTyping($chatId);
+    $loadingMsgId = uReply($chatId, "⏳ Gerando link de cartão de <b>" . formatBRL($amount) . "</b>...\n\n<i>Aguarde um instante...</i>");
+
+    try {
+        // Buscar MedusaPay secret key
+        $stmt = $pdo->prepare("SELECT `value` FROM settings WHERE `key` = 'medusapay_secret_key' LIMIT 1");
+        $stmt->execute();
+        $secret = trim((string)($stmt->fetchColumn() ?: ''));
+        if ($secret === '') throw new Exception('MedusaPay não configurado. Fale com o administrador.');
+
+        $amountCents = (int)round($amount * 100);
+        $postbackUrl = getFullUrl('medusa_webhook.php') . '?tx_user=' . $userId;
+        $payload = [
+            'amount'      => $amountCents,
+            'postbackUrl' => $postbackUrl,
+            'items'       => [[
+                'title'     => 'Cobrança via Telegram',
+                'unitPrice' => $amountCents,
+                'quantity'  => 1,
+                'tangible'  => false,
+            ]],
+            'settings' => [
+                'defaultPaymentMethod' => 'credit_card',
+                'requestAddress'       => false,
+                'requestPhone'         => false,
+                'requestDocument'      => true,
+                'traceable'            => false,
+                'card'   => ['enabled' => true, 'maxInstallments' => 12, 'freeInstallments' => 1],
+                'pix'    => ['enabled' => false, 'expiresInDays' => 1],
+                'boleto' => ['enabled' => false, 'expiresInDays' => 1],
+            ],
+        ];
+
+        $auth = 'Basic ' . base64_encode($secret . ':x');
+        $body = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $ch = curl_init('https://api.v2.medusapay.com.br/v1/checkouts');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $body,
+            CURLOPT_HTTPHEADER     => ['Authorization: ' . $auth, 'Content-Type: application/json', 'Accept: application/json'],
+            CURLOPT_TIMEOUT        => 20,
+            CURLOPT_CONNECTTIMEOUT => 10,
+        ]);
+        $response  = curl_exec($ch);
+        $curlErr   = curl_error($ch);
+        $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $response === '') throw new Exception('Erro de conexão com MedusaPay' . ($curlErr ? ": {$curlErr}" : ''));
+
+        $res = json_decode($response, true) ?: [];
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $errMsg = $res['message'] ?? $res['error'] ?? "HTTP {$httpCode}";
+            throw new Exception('MedusaPay: ' . $errMsg);
+        }
+
+        $checkoutUrl = '';
+        foreach (['url', 'checkoutUrl', 'redirectUrl', 'checkout_url', 'paymentUrl'] as $k) {
+            if (!empty($res[$k])) { $checkoutUrl = (string)$res[$k]; break; }
+        }
+        if ($checkoutUrl === '') throw new Exception('MedusaPay não retornou URL de pagamento.');
+
+        $successMsg = "✅ <b>LINK DE CARTÃO GERADO!</b>" . div() . "\n\n"
+            . "💳 <b>Valor:</b> " . formatBRL($amount) . "\n"
+            . "🔗 <b>Link de pagamento:</b>\n" . $checkoutUrl . "\n\n"
+            . "💡 <i>Envie este link ao seu cliente. Ele pode pagar em até 12x no cartão.</i>" . footer();
+
+        if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $successMsg, afterActionKeyboard());
+
+        try {
+            TelegramService::notifyBotActivity('💳', 'CARTÃO GERADO VIA BOT',
+                "👤 <b>Vendedor:</b> {$user['full_name']}\n"
+                . "💵 <b>Valor:</b> " . formatBRL($amount) . "\n"
+                . "🔗 " . $checkoutUrl
+            );
+        } catch (Throwable $e) {}
+
+    } catch (Throwable $ex) {
+        $failMsg = "❌ <b>Falha ao gerar link de cartão</b>" . div() . "\n\n<code>" . htmlspecialchars($ex->getMessage()) . "</code>\n\n💡 <i>Tente novamente.</i>" . footer();
         if ($loadingMsgId) uEditMessage($chatId, $loadingMsgId, $failMsg, afterActionKeyboard());
         else uReply($chatId, $failMsg, afterActionKeyboard());
     }
@@ -1284,6 +1441,22 @@ switch ($command) {
         }
         break;
 
+    case 'cartao':
+    case 'cartão':
+    case 'card':
+    case 'credito':
+    case 'crédito':
+        $amount = (float)str_replace(',', '.', $arg);
+        if ($amount > 0) {
+            handleCard($chatId, $user, $amount);
+        } else {
+            uReply($chatId,
+                "💳 <b>Gerar Link de Cartão</b>" . div() . "\n\nEscolha um valor:",
+                cardAmountKeyboard()
+            );
+        }
+        break;
+
     case 'sacar':
     case 'saque':
         $amount = (float)str_replace(',', '.', $arg);
@@ -1353,6 +1526,9 @@ if (!$handled) {
         switch ($nlp['action']) {
             case 'pix':
                 handlePix($chatId, $user, $nlp['amount'] ?? 0);
+                break;
+            case 'card':
+                handleCard($chatId, $user, $nlp['amount'] ?? 0);
                 break;
             case 'saldo':
                 handleSaldo($chatId, $user);
