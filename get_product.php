@@ -62,28 +62,19 @@ try {
     // Check if current user has purchased this product (for review eligibility)
     $canReview = false;
     if (isset($_SESSION['user_id'])) {
-        $orderCheck = $pdo->prepare("
-            SELECT COUNT(*) FROM orders
-            WHERE product_id = ? AND buyer_name IS NOT NULL AND status = 'paid'
-            AND (seller_id != ? OR buyer_document = (SELECT email FROM users WHERE id = ?))
-        ");
-        // Simplified: check if user bought it by matching user_id in orders or session
+        // User must have a paid order for this product
         $buyCheck = $pdo->prepare("
-            SELECT COUNT(*) FROM orders o
-            JOIN transactions t ON t.id = o.transaction_id
-            WHERE o.product_id = ? AND o.status = 'paid' AND t.user_id = ?
+            SELECT COUNT(*) FROM orders
+            WHERE product_id = ? AND buyer_user_id = ? AND status IN ('paid', 'delivered')
         ");
-        // Actually, orders don't have a buyer_user_id directly. Let's check by user_id in session
-        // For now, any logged-in user who is NOT the seller can review
-        $canReview = ($_SESSION['user_id'] != $product['seller_id']);
+        $buyCheck->execute([$id, $_SESSION['user_id']]);
+        $hasPurchased = $buyCheck->fetchColumn() > 0;
 
-        // Check if already reviewed
-        if ($canReview) {
+        if ($hasPurchased) {
+            // Check if already reviewed
             $alreadyReviewed = $pdo->prepare("SELECT COUNT(*) FROM product_reviews WHERE product_id = ? AND user_id = ?");
             $alreadyReviewed->execute([$id, $_SESSION['user_id']]);
-            if ($alreadyReviewed->fetchColumn() > 0) {
-                $canReview = false;
-            }
+            $canReview = $alreadyReviewed->fetchColumn() == 0;
         }
     }
 

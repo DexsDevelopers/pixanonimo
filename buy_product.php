@@ -85,8 +85,9 @@ try {
         $txId = (int)$pdo->lastInsertId();
 
         // Create order
-        $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
-            ->execute([$productId, $sellerId, $customerName, $customerDoc, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
+        $buyerUserId = $_SESSION['user_id'] ?? null;
+        $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, buyer_user_id, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
+            ->execute([$productId, $sellerId, $customerName, $customerDoc, $buyerUserId, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
         if ($couponId) { $pdo->prepare("UPDATE coupons SET uses_count = uses_count + 1 WHERE id = ?")->execute([$couponId]); }
 
         try { TelegramService::notifyNewCharge($amount, $product['seller_name'], $txId); } catch (Throwable $e) {}
@@ -137,8 +138,9 @@ try {
         $txId = (int)$pdo->lastInsertId();
 
         // Create order with delivery token
-        $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
-            ->execute([$productId, $sellerId, $customerName, $customerDoc, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
+        $buyerUserId = $_SESSION['user_id'] ?? null;
+        $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, buyer_user_id, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
+            ->execute([$productId, $sellerId, $customerName, $customerDoc, $buyerUserId, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
         if ($couponId) { $pdo->prepare("UPDATE coupons SET uses_count = uses_count + 1 WHERE id = ?")->execute([$couponId]); }
 
         try { TelegramService::notifyNewCharge($amount, $product['seller_name'], $txId); } catch (Throwable $e) {}

@@ -79,8 +79,9 @@ try {
     $txId = (int)$pdo->lastInsertId();
 
     // Create order
-    $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
-        ->execute([$productId, $sellerId, $customerName, $customerDoc, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
+    $buyerUserId = $_SESSION['user_id'] ?? null;
+    $pdo->prepare("INSERT INTO orders (product_id, seller_id, buyer_name, buyer_document, buyer_user_id, amount, transaction_id, status, delivery_token, coupon_id, discount_amount) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)")
+        ->execute([$productId, $sellerId, $customerName, $customerDoc, $buyerUserId, $amount, $txId, $deliveryToken, $couponId, $discountAmount]);
     $orderId = (int)$pdo->lastInsertId();
 
     if ($couponId) {

@@ -44,6 +44,14 @@ try {
         exit;
     }
 
+    // Must have purchased the product
+    $buyCheck = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE product_id = ? AND buyer_user_id = ? AND status IN ('paid', 'delivered')");
+    $buyCheck->execute([$productId, $_SESSION['user_id']]);
+    if ($buyCheck->fetchColumn() == 0) {
+        echo json_encode(['success' => false, 'error' => 'Você precisa comprar este produto antes de avaliar']);
+        exit;
+    }
+
     // Check if already reviewed
     $checkStmt = $pdo->prepare("SELECT id FROM product_reviews WHERE product_id = ? AND user_id = ?");
     $checkStmt->execute([$productId, $_SESSION['user_id']]);

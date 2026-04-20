@@ -84,6 +84,11 @@ try {
         $pdo->exec("ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER coupon_id");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Adicionar buyer_user_id nas orders (para vincular compras a usuários logados)
+    try {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN buyer_user_id INT NULL AFTER buyer_document");
+    } catch (PDOException $e) {}
+
     // Auto-Migração: Tabela para rastrear visitas diárias ao site
     try {
         $pdo->exec("CREATE TABLE IF NOT EXISTS daily_stats (
