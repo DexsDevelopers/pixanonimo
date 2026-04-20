@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
+import { Wallet, ArrowUpRight, ShieldCheck, History, Loader2, CheckCircle, XCircle, Clock, RefreshCw, CreditCard, AlertTriangle } from 'lucide-react';
 
 const BADGE = {
     approved: 'bg-primary/10 text-primary border-primary/20',
@@ -81,6 +81,22 @@ export default function WithdrawalsPage({ balance, availableForWithdraw, pending
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
+                    {/* Aviso Cartão de Crédito */}
+                    <div className="bg-amber-500/[0.06] border border-amber-500/20 rounded-[28px] p-5 flex gap-4 items-start">
+                        <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                            <CreditCard size={20} className="text-amber-400" />
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-black text-amber-400 flex items-center gap-2">
+                                <AlertTriangle size={14} />
+                                Vendas por Cartão de Crédito — Atenção
+                            </h4>
+                            <p className="text-xs text-white/50 leading-relaxed font-medium">
+                                Vendas realizadas via <strong className="text-white/70">cartão de crédito</strong> possuem prazo de liberação de <strong className="text-white/70">D+3 (3 dias úteis)</strong> e apresentam <strong className="text-red-400">alto risco de reembolso (chargeback)</strong> caso o cliente conteste a cobrança junto ao banco. Recomendamos aguardar o prazo antes de sacar valores provenientes de vendas por cartão.
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="glass p-8 rounded-[40px] space-y-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -z-10" />
 

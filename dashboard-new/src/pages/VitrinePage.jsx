@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { Sparkles, Star, ShoppingCart, RefreshCw, Search, Filter, Package, TrendingUp, Award, ChevronDown, X, ExternalLink, Check, Copy, Link, CreditCard, QrCode } from 'lucide-react';
 
 const CATEGORIES = ['Todos', 'Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
 const SORTS = [
+  { value: 'popular', label: 'Mais Vendidos' },
   { value: 'recent', label: 'Mais Recentes' },
-  { value: 'popular', label: 'Mais Populares' },
   { value: 'rating', label: 'Melhor Avaliados' },
   { value: 'price_asc', label: 'Menor Preço' },
   { value: 'price_desc', label: 'Maior Preço' },
@@ -29,52 +30,54 @@ function ProductCard({ product, onBuy, onResell }) {
 
   return (
     <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-all duration-300 group flex flex-col">
-      <div className="relative overflow-hidden">
-        {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.parentElement.classList.add('hidden'); }} />
-        ) : (
-          <div className="w-full h-44 bg-white/[0.02] flex items-center justify-center">
-            <Package size={36} className="text-white/10" />
-          </div>
-        )}
-        <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
-          <span className="text-[10px] font-black px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white/60 uppercase tracking-wide">{product.category}</span>
-          {product.type === 'digital' && <span className="text-[10px] font-black px-2 py-1 rounded-full bg-primary/20 backdrop-blur-sm text-primary uppercase tracking-wide">Digital</span>}
-        </div>
-      </div>
-
-      <div className="p-4 flex flex-col flex-1">
-        <div className="flex-1">
-          <p className="font-bold text-sm mb-1 line-clamp-2 leading-snug">{product.name}</p>
-          <p className="text-xs text-white/40 mb-2 truncate">por <span className="text-white/60">{product.seller_name}</span></p>
-          {product.description && <p className="text-xs text-white/30 line-clamp-2 mb-3">{product.description}</p>}
-          <StarRating rating={product.avg_rating || 0} count={product.review_count || 0} />
-        </div>
-
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-xl font-black text-primary">R$ {price}</p>
-            {product.orders_count > 0 && (
-              <span className="text-[10px] text-white/30 flex items-center gap-1"><ShoppingCart size={10} />{product.orders_count} vendas</span>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => onBuy(product)}
-              className="flex-1 py-2.5 bg-primary text-black font-black text-xs rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5"
-            >
-              <ShoppingCart size={13} /> Comprar
-            </button>
-            <button
-              onClick={() => onResell(product)}
-              title="Revender este produto"
-              className="px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
-            >
-              <RefreshCw size={13} />
-            </button>
+      <RouterLink to={`/vitrine/produto/${product.id}`} className="block">
+        <div className="relative overflow-hidden">
+          {product.image_url ? (
+            <img src={product.image_url} alt={product.name} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500" onError={e => { e.target.parentElement.classList.add('hidden'); }} />
+          ) : (
+            <div className="w-full h-44 bg-white/[0.02] flex items-center justify-center">
+              <Package size={36} className="text-white/10" />
+            </div>
+          )}
+          <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
+            <span className="text-[10px] font-black px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white/60 uppercase tracking-wide">{product.category}</span>
+            {product.type === 'digital' && <span className="text-[10px] font-black px-2 py-1 rounded-full bg-primary/20 backdrop-blur-sm text-primary uppercase tracking-wide">Digital</span>}
           </div>
         </div>
+
+        <div className="p-4 flex flex-col flex-1">
+          <div className="flex-1">
+            <p className="font-bold text-sm mb-1 line-clamp-2 leading-snug">{product.name}</p>
+            <p className="text-xs text-white/40 mb-2 truncate">por <span className="text-white/60">{product.seller_name}</span></p>
+            {product.description && <p className="text-xs text-white/30 line-clamp-2 mb-3">{product.description}</p>}
+            <StarRating rating={product.avg_rating || 0} count={product.review_count || 0} />
+          </div>
+
+          <div className="mt-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-black text-primary">R$ {price}</p>
+              {product.orders_count > 0 && (
+                <span className="text-[10px] text-white/30 flex items-center gap-1"><ShoppingCart size={10} />{product.orders_count} vendas</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </RouterLink>
+
+      <div className="px-4 pb-4 flex gap-2">
+        <button
+          onClick={(e) => { e.preventDefault(); onBuy(product); }}
+          className="flex-1 py-2.5 bg-primary text-black font-black text-xs rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5"
+        >
+          <ShoppingCart size={13} /> Comprar
+        </button>
+        <button
+          onClick={(e) => { e.preventDefault(); onResell(product); }}
+          title="Revender este produto"
+          className="px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+        >
+          <RefreshCw size={13} />
+        </button>
       </div>
     </div>
   );
@@ -352,7 +355,7 @@ export default function VitrinePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Todos');
-  const [sort, setSort] = useState('recent');
+  const [sort, setSort] = useState('popular');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [buyModal, setBuyModal] = useState(null);

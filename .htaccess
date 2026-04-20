@@ -5,7 +5,8 @@ RewriteEngine On
 RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ pay.php?c=$1 [L,QSA]
 
 # Todas as rotas SPA → index.php (antes do fallback de arquivos)
-RewriteRule ^(dashboard|vendas|relatorios|saques|config|admin|admin/apis|admin/chats|checkouts|checkout-builder|afiliado|login|register|forgot-password|demo|docs|chat)/?$ index.php [L,QSA]
+RewriteRule ^(dashboard|vendas|relatorios|saques|config|admin|admin/apis|admin/chats|checkouts|checkout-builder|afiliado|login|register|forgot-password|demo|docs|chat|vitrine)/?$ index.php [L,QSA]
+RewriteRule ^vitrine/produto/(.+)$ index.php [L,QSA]
 RewriteRule ^reset-password/(.+)$ index.php [L,QSA]
 RewriteRule ^chat/(.+)$ index.php [L,QSA]
 RewriteRule ^p/(.+)$ index.php [L,QSA]

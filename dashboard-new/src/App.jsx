@@ -40,6 +40,7 @@ import CuponsPage from './pages/CuponsPage';
 import CriarProdutoPage from './pages/CriarProdutoPage';
 import LojaPage from './pages/LojaPage';
 import VitrinePage from './pages/VitrinePage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import AdminProdutosPage from './pages/AdminProdutosPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminAnunciosPage from './pages/AdminAnunciosPage';
@@ -427,6 +428,13 @@ export default function App() {
           <PrivateRoute>
             <DashboardLayout {...commonProps} activeTab="vitrine">
               <VitrinePage />
+            </DashboardLayout>
+          </PrivateRoute>
+        } />
+        <Route path="/vitrine/produto/:id" element={
+          <PrivateRoute>
+            <DashboardLayout {...commonProps} activeTab="vitrine">
+              <ProductDetailPage />
             </DashboardLayout>
           </PrivateRoute>
         } />

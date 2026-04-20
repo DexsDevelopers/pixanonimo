@@ -5,7 +5,7 @@ header('Access-Control-Allow-Origin: *');
 
 $search   = trim($_GET['search'] ?? '');
 $category = trim($_GET['category'] ?? '');
-$sort     = $_GET['sort'] ?? 'recent';
+$sort     = $_GET['sort'] ?? 'popular';
 $page     = max(1, (int)($_GET['page'] ?? 1));
 $perPage  = 12;
 $offset   = ($page - 1) * $perPage;
