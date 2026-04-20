@@ -12,13 +12,13 @@ $search = trim($_GET['search'] ?? '');
 // Stats
 $pendingCount  = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'pending'")->fetchColumn();
 $pendingAmount = (float)($pdo->query("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status = 'pending'")->fetchColumn() ?: 0);
-$paidAmount    = (float)($pdo->query("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status = 'paid'")->fetchColumn() ?: 0);
-$paidCount     = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'paid'")->fetchColumn();
+$paidAmount    = (float)($pdo->query("SELECT COALESCE(SUM(amount),0) FROM withdrawals WHERE status = 'completed'")->fetchColumn() ?: 0);
+$paidCount     = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'completed'")->fetchColumn();
 $rejectedCount = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'rejected'")->fetchColumn();
 $todayPending  = (int)$pdo->query("SELECT COUNT(*) FROM withdrawals WHERE status = 'pending' AND DATE(created_at) = CURDATE()")->fetchColumn();
 
 // Main query
-$sql = "SELECT w.id, w.user_id, w.amount, w.pix_key, w.status, w.tx_hash, w.full_name, w.type, w.created_at,
+$sql = "SELECT w.id, w.user_id, w.amount, COALESCE(w.pix_key, u.pix_key) AS pix_key, w.status, w.tx_hash, COALESCE(w.full_name, u.full_name) AS full_name, w.type, w.created_at,
                u.email
         FROM withdrawals w
         JOIN users u ON w.user_id = u.id

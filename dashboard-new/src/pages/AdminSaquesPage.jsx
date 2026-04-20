@@ -9,9 +9,9 @@ import { cn } from '../lib/utils';
 const fmt = (v) => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const STATUS_CONFIG = {
-    pending:  { label: 'Pendente',  icon: <Clock size={11} />,       cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-    paid:     { label: 'Pago',      icon: <CheckCircle size={11} />, cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
-    rejected: { label: 'Negado',    icon: <XCircle size={11} />,     cls: 'bg-red-500/10 text-red-400 border-red-500/20' },
+    pending:   { label: 'Pendente',  icon: <Clock size={11} />,       cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+    completed: { label: 'Pago',      icon: <CheckCircle size={11} />, cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+    rejected:  { label: 'Negado',    icon: <XCircle size={11} />,     cls: 'bg-red-500/10 text-red-400 border-red-500/20' },
 };
 
 function StatusBadge({ status }) {
@@ -152,7 +152,7 @@ export default function AdminSaquesPage() {
                     />
                 </div>
                 <div className="flex gap-2">
-                    {[['pending','Pendentes'],['paid','Pagos'],['rejected','Negados'],['all','Todos']].map(([val, label]) => (
+                    {[['pending','Pendentes'],['completed','Pagos'],['rejected','Negados'],['all','Todos']].map(([val, label]) => (
                         <button
                             key={val}
                             onClick={() => setStatusFilter(val)}
