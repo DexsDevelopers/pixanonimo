@@ -107,6 +107,7 @@ export default function Sidebar({ isOpen, activeTab, onTabChange, onClose, userD
         { id: 'apis', icon: <Settings size={18} />, label: 'Gestão de APIs', path: '/admin/apis', accent: true },
         { id: 'admin-anuncios', icon: <Megaphone size={18} />, label: 'Anúncios', path: '/admin/anuncios', accent: true },
         { id: 'admin-chats', icon: <MessageCircle size={18} />, label: 'Chats', path: '/admin/chats', accent: true },
+        { id: 'admin-saques', icon: <Wallet size={18} />, label: 'Saques', path: '/admin/saques', accent: true },
     ];
 
     const linkProps = { location, onTabChange, onClose };

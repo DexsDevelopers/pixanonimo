@@ -47,6 +47,7 @@ import AdminAnunciosPage from './pages/AdminAnunciosPage';
 import EntregaPage from './pages/EntregaPage';
 import ChatPage from './pages/ChatPage';
 import AdminChatsPage from './pages/AdminChatsPage';
+import AdminSaquesPage from './pages/AdminSaquesPage';
 import BuyerChatPage from './pages/BuyerChatPage';
 import AnnouncementModal from './components/AnnouncementModal';
 
@@ -381,6 +382,16 @@ export default function App() {
             <AdminRoute userData={userData}>
               <DashboardLayout {...commonProps} activeTab="admin-anuncios">
                 <AdminAnunciosPage />
+              </DashboardLayout>
+            </AdminRoute>
+          </PrivateRoute>
+        } />
+
+        <Route path="/admin/saques" element={
+          <PrivateRoute>
+            <AdminRoute userData={userData}>
+              <DashboardLayout {...commonProps} activeTab="admin-saques">
+                <AdminSaquesPage />
               </DashboardLayout>
             </AdminRoute>
           </PrivateRoute>
