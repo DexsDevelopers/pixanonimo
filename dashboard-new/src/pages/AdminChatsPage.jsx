@@ -83,6 +83,17 @@ export default function AdminChatsPage() {
         return () => { if (pollRef.current) clearInterval(pollRef.current); };
     }, []);
 
+    // Lock parent scroll on mobile to prevent background scrolling
+    useEffect(() => {
+        const main = document.querySelector('main');
+        if (main) { main.style.overflow = 'hidden'; }
+        document.body.style.overflow = 'hidden';
+        return () => {
+            if (main) { main.style.overflow = ''; }
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
