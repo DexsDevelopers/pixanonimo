@@ -36,7 +36,7 @@ export default function AdminSaquesPage() {
         setLoading(true);
         try {
             const params = new URLSearchParams({ status: statusFilter, search });
-            const res  = await fetch(`../get_admin_withdrawals.php?${params}`);
+            const res  = await fetch(`/get_admin_withdrawals.php?${params}`);
             const json = await res.json();
             if (json.success) setData(json);
         } catch {}
@@ -58,7 +58,7 @@ export default function AdminSaquesPage() {
             const fd = new FormData();
             fd.append('action', action);
             Object.keys(payload).forEach(k => fd.append(k, payload[k]));
-            const res  = await fetch('../admin_actions.php', { method: 'POST', body: fd });
+            const res  = await fetch('/admin_actions.php', { method: 'POST', body: fd });
             const json = await res.json();
             if (json.success) {
                 fetchData();
