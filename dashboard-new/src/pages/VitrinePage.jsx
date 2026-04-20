@@ -399,14 +399,14 @@ export default function VitrinePage() {
       </div>
 
       {/* ── Segurança da Plataforma ── */}
-      <div className="flex items-start gap-4 rounded-2xl px-5 py-5 bg-primary/[0.06] border border-primary/20">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10">
-          <Shield size={20} className="text-primary" />
+      <div className="flex items-start gap-4 rounded-2xl px-5 py-5 bg-green-500/[0.08] border border-green-500/25">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-green-500/15">
+          <Shield size={20} className="text-green-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-primary mb-1">🛡️ Compra Protegida pela Plataforma</p>
-          <p className="text-xs text-white/50 leading-relaxed">
-            <strong className="text-white/70">Todos os produtos possuem segurança Ghost Pix.</strong>{' '}
+          <p className="text-sm font-black text-green-400 mb-1">🛡️ Compra Protegida pela Plataforma</p>
+          <p className="text-[13px] text-white/80 leading-relaxed">
+            <strong className="text-white">Todos os produtos possuem segurança Ghost Pix.</strong>{' '}
             O pagamento ao vendedor só é liberado após a confirmação de entrega do produto. Compre com tranquilidade e segurança total.
           </p>
         </div>
