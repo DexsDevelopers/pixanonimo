@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Sparkles, Star, ShoppingCart, RefreshCw, Search, Filter, Package, TrendingUp, Award, ChevronDown, X, ExternalLink, Check, Copy, Link, CreditCard, QrCode } from 'lucide-react';
+import { Sparkles, Star, ShoppingCart, RefreshCw, Search, Filter, Package, TrendingUp, Award, ChevronDown, X, ExternalLink, Check, Copy, Link, CreditCard, QrCode, Shield } from 'lucide-react';
 
 const CATEGORIES = ['Todos', 'Digital', 'Físico', 'Serviço', 'Curso', 'Software', 'Template', 'E-book', 'Outro'];
 const SORTS = [
@@ -398,18 +398,16 @@ export default function VitrinePage() {
         </div>
       </div>
 
-      {/* ── Aviso de compra sem reembolso ── */}
-      <div className="flex items-start gap-4 rounded-2xl px-5 py-5" style={{background:'rgba(245,158,11,0.12)', border:'1.5px solid rgba(245,158,11,0.4)'}}>
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{background:'rgba(245,158,11,0.2)'}}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2.2" style={{width:22,height:22}}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          </svg>
+      {/* ── Segurança da Plataforma ── */}
+      <div className="flex items-start gap-4 rounded-2xl px-5 py-5 bg-primary/[0.06] border border-primary/20">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10">
+          <Shield size={20} className="text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p style={{fontSize:14,fontWeight:900,color:'#fbbf24',marginBottom:4}}>⚠️ Atenção antes de comprar</p>
-          <p style={{fontSize:12,color:'rgba(253,230,138,0.8)',lineHeight:1.6}}>
-            <strong style={{color:'#fcd34d'}}>Todo produto adquirido nesta vitrine não possui reembolso.</strong>{' '}
-            As compras são definitivas e de responsabilidade exclusiva do comprador. Certifique-se de que está adquirindo de um vendedor confiável — verifique as avaliações e o histórico antes de finalizar sua compra.
+          <p className="text-sm font-black text-primary mb-1">🛡️ Compra Protegida pela Plataforma</p>
+          <p className="text-xs text-white/50 leading-relaxed">
+            <strong className="text-white/70">Todos os produtos possuem segurança Ghost Pix.</strong>{' '}
+            O pagamento ao vendedor só é liberado após a confirmação de entrega do produto. Compre com tranquilidade e segurança total.
           </p>
         </div>
       </div>
