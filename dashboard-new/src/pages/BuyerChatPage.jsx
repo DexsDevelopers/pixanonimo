@@ -98,7 +98,7 @@ export default function BuyerChatPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#08080a] flex flex-col text-white font-['Outfit']">
+        <div className="h-[100dvh] bg-[#08080a] flex flex-col text-white font-['Outfit'] overflow-hidden">
             {/* Header */}
             <div className="bg-[#111] border-b border-white/5 p-4 flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">

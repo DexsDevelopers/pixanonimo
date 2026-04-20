@@ -134,7 +134,7 @@ export default function AdminChatsPage() {
     const totalUnread = rooms.reduce((s, r) => s + (parseInt(r.unread) || 0), 0);
 
     return (
-        <div className="h-full flex flex-col md:flex-row gap-0 overflow-hidden animate-in fade-in duration-500">
+        <div className="-m-4 lg:-m-8 h-[calc(100vh-5rem)] flex flex-col md:flex-row gap-0 overflow-hidden animate-in fade-in duration-500">
             {/* ── Room List ── */}
             <div className={cn(
                 "w-full md:w-[340px] lg:w-[380px] flex-shrink-0 border-r border-white/5 flex flex-col bg-[#0a0a0c]",
