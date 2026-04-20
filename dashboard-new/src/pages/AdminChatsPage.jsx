@@ -134,7 +134,7 @@ export default function AdminChatsPage() {
     const totalUnread = rooms.reduce((s, r) => s + (parseInt(r.unread) || 0), 0);
 
     return (
-        <div className="-m-4 lg:-m-8 h-[calc(100vh-5rem)] flex flex-col md:flex-row gap-0 overflow-hidden animate-in fade-in duration-500">
+        <div className="fixed inset-0 md:relative md:inset-auto -m-0 md:-m-4 lg:-m-8 h-[100dvh] md:h-[calc(100vh-5rem)] flex flex-col md:flex-row gap-0 overflow-hidden animate-in fade-in duration-500 z-40 md:z-auto bg-[#08080a]">
             {/* ── Room List ── */}
             <div className={cn(
                 "w-full md:w-[340px] lg:w-[380px] flex-shrink-0 border-r border-white/5 flex flex-col bg-[#0a0a0c]",
@@ -221,7 +221,7 @@ export default function AdminChatsPage() {
             </div>
 
             {/* ── Chat Area ── */}
-            <div className={cn("flex-1 flex flex-col bg-black/50", showChat ? "flex" : "hidden md:flex")}>
+            <div className={cn("flex-1 flex flex-col min-h-0 bg-black/50", showChat ? "flex" : "hidden md:flex")}>
                 {activeRoom ? (
                     <>
                         <div className="p-4 border-b border-white/5 flex items-center gap-3 bg-[#0a0a0c]">
@@ -255,7 +255,7 @@ export default function AdminChatsPage() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 overscroll-contain">
                             {messages.length === 0 && (
                                 <div className="text-center py-10 text-white/15 text-sm font-bold">
                                     Nenhuma mensagem ainda.
