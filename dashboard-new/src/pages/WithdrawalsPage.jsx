@@ -174,6 +174,11 @@ export default function WithdrawalsPage({ balance, availableForWithdraw, pending
                                     <>Confirmar Saque <ArrowUpRight size={24} /></>
                                 )}
                             </button>
+
+                            <p className="text-[11px] text-white/30 text-center font-medium flex items-center justify-center gap-1.5">
+                                <Clock size={12} className="text-white/20" />
+                                O saque pode levar até <strong className="text-white/50">1 dia útil</strong> para ser processado.
+                            </p>
                         </div>
                     </div>
                 </div>
