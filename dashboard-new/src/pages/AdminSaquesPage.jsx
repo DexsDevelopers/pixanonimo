@@ -37,9 +37,16 @@ export default function AdminSaquesPage() {
         try {
             const params = new URLSearchParams({ status: statusFilter, search });
             const res  = await fetch(`/get_admin_withdrawals.php?${params}`);
-            const json = await res.json();
-            if (json.success) setData(json);
-        } catch {}
+            const text = await res.text();
+            console.log('AdminSaques response:', res.status, text.substring(0, 500));
+            try {
+                const json = JSON.parse(text);
+                if (json.success) setData(json);
+                else console.error('AdminSaques error:', json);
+            } catch (e) {
+                console.error('AdminSaques parse error:', e, text.substring(0, 200));
+            }
+        } catch (e) { console.error('AdminSaques fetch error:', e); }
         finally { setLoading(false); }
     }, [statusFilter, search]);
 
