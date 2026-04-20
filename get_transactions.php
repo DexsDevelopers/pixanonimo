@@ -58,6 +58,7 @@ foreach ($rows as $t) {
         'qr_image'       => $t['qr_image'] ?? '',
         'pix_code'       => $t['pix_code'] ?? '',
         'seconds_old'    => (int)$t['seconds_old'],
+        'med'            => (int)($t['med'] ?? 0),
     ];
 }
 

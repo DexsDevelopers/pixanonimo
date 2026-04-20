@@ -97,6 +97,25 @@ export default function WithdrawalsPage({ balance, availableForWithdraw, pending
                         </div>
                     </div>
 
+                    {/* Aviso MED / Reembolso PIX */}
+                    <div className="bg-red-500/[0.06] border border-red-500/20 rounded-[28px] p-5 flex gap-4 items-start">
+                        <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                            <AlertTriangle size={20} className="text-red-400" />
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-black text-red-400 flex items-center gap-2">
+                                <AlertTriangle size={14} />
+                                Risco de MED (Reembolso PIX) — Importante
+                            </h4>
+                            <p className="text-xs text-white/50 leading-relaxed font-medium">
+                                Clientes que utilizam <strong className="text-white/70">Nubank, PicPay</strong> ou outros bancos com fácil acesso ao reembolso podem solicitar a devolução do PIX <strong className="text-red-400">(MED - Mecanismo Especial de Devolução)</strong>. O processo de liquidação do pagamento leva <strong className="text-white/70">até 1 dia útil</strong> — se o reembolso for solicitado no <strong className="text-white/70">mesmo dia da venda</strong>, existe risco real do seu saldo ser impactado.
+                            </p>
+                            <p className="text-xs text-white/50 leading-relaxed font-medium mt-1">
+                                Se seu saldo diminuiu inesperadamente, verifique se alguma venda recebeu um <strong className="text-red-400">MED</strong> na página de vendas. Vendas marcadas com MED aparecerão com um aviso vermelho.
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="glass p-8 rounded-[40px] space-y-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -z-10" />
 

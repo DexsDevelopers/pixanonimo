@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { History, QrCode, Trash2, Copy, Check, Clock } from 'lucide-react';
+import { History, QrCode, Trash2, Copy, Check, Clock, AlertTriangle } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 function CountdownTimer({ secondsOld }) {
@@ -71,14 +71,21 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                                 <span className="text-white font-bold text-sm block truncate">{tx.customer_name || 'Sem nome'}</span>
                                 <span className="text-white/20 text-[10px] font-medium uppercase tracking-wider">#{tx.id} • {tx.date}</span>
                             </div>
-                            <span className={cn(
-                                "px-3 py-1 rounded-full text-[9px] font-black uppercase shrink-0",
-                                tx.badge === 'approved' || tx.badge === 'paid' ? 'bg-primary/10 text-primary border border-primary/20' :
-                                    tx.badge === 'expired' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
-                                        'bg-orange-500/10 text-orange-500 border border-orange-500/20'
-                            )}>
-                                {tx.status}
-                            </span>
+                            <div className="flex flex-col items-end gap-1">
+                                <span className={cn(
+                                    "px-3 py-1 rounded-full text-[9px] font-black uppercase shrink-0",
+                                    tx.badge === 'approved' || tx.badge === 'paid' ? 'bg-primary/10 text-primary border border-primary/20' :
+                                        tx.badge === 'expired' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                                            'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                                )}>
+                                    {tx.status}
+                                </span>
+                                {!!tx.med && (
+                                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-red-500/15 text-red-400 border border-red-500/20 animate-pulse">
+                                        <AlertTriangle size={9} /> MED
+                                    </span>
+                                )}
+                            </div>
                         </div>
                         {showSeller && tx.seller_name && (
                             <span className="text-white/70 font-semibold text-xs bg-white/5 px-2.5 py-1 rounded-full border border-white/10">{tx.seller_name}</span>
@@ -169,6 +176,11 @@ export default function TransactionsTable({ transactions = [], loading = false, 
                                         )}>
                                             {tx.status}
                                         </span>
+                                        {!!tx.med && (
+                                            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-red-500/15 text-red-400 border border-red-500/20 animate-pulse">
+                                                <AlertTriangle size={10} /> MED — Reembolso
+                                            </span>
+                                        )}
                                         {tx.badge === 'pending' && (
                                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/30">
                                                 <Clock size={10} className="text-orange-500/50" />

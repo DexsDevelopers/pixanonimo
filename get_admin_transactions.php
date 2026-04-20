@@ -88,7 +88,8 @@ foreach ($rows as $t) {
         'badge' => $badge,
         'date' => date('d/m/Y H:i', strtotime($t['created_at'])),
         'created_at' => $t['created_at'],
-        'seconds_old' => (int)$t['seconds_old']
+        'seconds_old' => (int)$t['seconds_old'],
+        'med' => (int)($t['med'] ?? 0),
     ];
 }
 

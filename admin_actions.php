@@ -214,6 +214,28 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'toggle_med':
+            $txId = (int)$data['transaction_id'];
+            $stmt = $pdo->prepare("SELECT med, user_id, amount_brl FROM transactions WHERE id = ?");
+            $stmt->execute([$txId]);
+            $tx = $stmt->fetch();
+            if (!$tx) {
+                echo json_encode(['error' => 'Transação não encontrada']);
+                break;
+            }
+            $newMed = $tx['med'] ? 0 : 1;
+            $pdo->prepare("UPDATE transactions SET med = ? WHERE id = ?")->execute([$newMed, $txId]);
+            // Notificar vendedor
+            $msg = $newMed
+                ? "Sua venda #$txId de R$ " . number_format($tx['amount_brl'], 2, ',', '.') . " recebeu um MED (Mecanismo Especial de Devolução). Seu saldo pode ser impactado."
+                : "O MED da venda #$txId foi removido.";
+            $title = $newMed ? 'MED Recebido ⚠️' : 'MED Removido ✅';
+            $type = $newMed ? 'danger' : 'success';
+            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")
+                ->execute([$tx['user_id'], $title, $msg, $type]);
+            echo json_encode(['success' => true, 'med' => $newMed]);
+            break;
+
         default:
             echo json_encode(['success' => false, 'error' => 'Ação desconhecida']);
             break;

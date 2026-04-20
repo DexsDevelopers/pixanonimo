@@ -56,6 +56,11 @@ try {
         $pdo->exec("ALTER TABLE transactions ADD COLUMN external_id VARCHAR(100) AFTER customer_name");
     } catch (PDOException $e) {}
 
+    // Auto-Migração: Adicionar coluna med nas transações (MED = Mecanismo Especial de Devolução)
+    try {
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN med TINYINT(1) NOT NULL DEFAULT 0");
+    } catch (PDOException $e) {}
+
     // Auto-Migração: Criar tabela de cupons de desconto
     try {
         $pdo->exec("CREATE TABLE IF NOT EXISTS coupons (

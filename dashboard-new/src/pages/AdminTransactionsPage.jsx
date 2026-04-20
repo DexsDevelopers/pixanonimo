@@ -11,7 +11,9 @@ import {
     TrendingUp,
     Receipt,
     Filter,
-    ArrowUpDown
+    ArrowUpDown,
+    AlertTriangle,
+    Loader2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -76,6 +78,31 @@ export default function AdminTransactionsPage() {
     useEffect(() => {
         setPage(1);
     }, [statusFilter, searchDebounced]);
+
+    const [medLoading, setMedLoading] = useState(null);
+
+    const toggleMed = async (txId) => {
+        setMedLoading(txId);
+        try {
+            const fd = new FormData();
+            fd.append('action', 'toggle_med');
+            fd.append('transaction_id', txId);
+            const res = await fetch('/admin_actions.php', { method: 'POST', body: fd });
+            const json = await res.json();
+            if (json.success) {
+                // Update locally
+                setData(prev => ({
+                    ...prev,
+                    transactions: prev.transactions.map(t =>
+                        t.id === txId ? { ...t, med: json.med } : t
+                    )
+                }));
+            } else {
+                alert(json.error || 'Erro');
+            }
+        } catch { alert('Erro de conexão'); }
+        finally { setMedLoading(null); }
+    };
 
     const stats = data?.stats;
     const pagination = data?.pagination;
@@ -218,6 +245,13 @@ export default function AdminTransactionsPage() {
                                         )}>{tx.status}</span>
                                     </div>
 
+                                    {!!tx.med && (
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+                                            <AlertTriangle size={13} className="text-red-400 shrink-0" />
+                                            <span className="text-[10px] font-black text-red-400 uppercase">MED — Reembolso PIX</span>
+                                        </div>
+                                    )}
+
                                     {/* Row 2: Values */}
                                     <div className="flex items-center gap-3">
                                         <div className="bg-black/30 rounded-xl px-3 py-2 flex-1 text-center">
@@ -230,10 +264,25 @@ export default function AdminTransactionsPage() {
                                         </div>
                                     </div>
 
-                                    {/* Row 3: Meta info */}
+                                    {/* Row 3: Meta info + MED button */}
                                     <div className="flex items-center justify-between text-[11px] text-white/30">
                                         <span>#{tx.id} • {tx.date}</span>
-                                        {tx.customer_name && <span className="text-white/40 font-medium truncate ml-2">{tx.customer_name}</span>}
+                                        <div className="flex items-center gap-2">
+                                            {tx.customer_name && <span className="text-white/40 font-medium truncate">{tx.customer_name}</span>}
+                                            <button
+                                                onClick={() => toggleMed(tx.id)}
+                                                disabled={medLoading === tx.id}
+                                                className={cn(
+                                                    "flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase transition-all border",
+                                                    tx.med
+                                                        ? 'bg-red-500/15 text-red-400 border-red-500/20 hover:bg-red-500 hover:text-white'
+                                                        : 'bg-white/5 text-white/30 border-white/10 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20'
+                                                )}
+                                            >
+                                                {medLoading === tx.id ? <Loader2 size={10} className="animate-spin" /> : <AlertTriangle size={10} />}
+                                                {tx.med ? 'Remover MED' : 'Marcar MED'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -252,20 +301,22 @@ export default function AdminTransactionsPage() {
                                 <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Valor Bruto</th>
                                 <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Líquido</th>
                                 <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-center">Status</th>
+                                <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-center">MED</th>
+                                <th className="p-5 text-[10px] font-black text-white/20 uppercase tracking-widest text-center">Ação</th>
                                 <th className="p-5 pr-8 text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Data</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.03]">
                             {loading && !data ? (
                                 <tr>
-                                    <td colSpan={7} className="p-20 text-center">
+                                    <td colSpan={9} className="p-20 text-center">
                                         <RefreshCw className="animate-spin text-primary mx-auto mb-3" size={28} />
                                         <p className="text-white/30 text-sm font-medium">Carregando transações...</p>
                                     </td>
                                 </tr>
                             ) : data?.transactions?.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="p-20 text-center">
+                                    <td colSpan={9} className="p-20 text-center">
                                         <Receipt className="text-white/10 mx-auto mb-3" size={40} />
                                         <p className="text-white/30 text-sm font-medium">Nenhuma transação encontrada.</p>
                                     </td>
@@ -299,6 +350,28 @@ export default function AdminTransactionsPage() {
                                                 {tx.status}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td className="p-5 text-center">
+                                        {!!tx.med && (
+                                            <span className="flex items-center justify-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase bg-red-500/15 text-red-400 border border-red-500/20 animate-pulse w-fit mx-auto">
+                                                <AlertTriangle size={10} /> MED
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="p-5">
+                                        <button
+                                            onClick={() => toggleMed(tx.id)}
+                                            disabled={medLoading === tx.id}
+                                            className={cn(
+                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all border",
+                                                tx.med
+                                                    ? 'bg-red-500/15 text-red-400 border-red-500/20 hover:bg-red-500 hover:text-white'
+                                                    : 'bg-white/5 text-white/30 border-white/10 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20'
+                                            )}
+                                        >
+                                            {medLoading === tx.id ? <Loader2 size={11} className="animate-spin" /> : <AlertTriangle size={11} />}
+                                            {tx.med ? 'Remover MED' : 'Marcar MED'}
+                                        </button>
                                     </td>
                                     <td className="p-5 pr-8 text-right">
                                         <span className="text-xs text-white/40 font-medium">{tx.date}</span>
