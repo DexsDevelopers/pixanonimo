@@ -53,9 +53,22 @@ try {
         case 'update':
             $id = (int)($input['id'] ?? 0);
             // Verify ownership
-            $check = $pdo->prepare("SELECT id FROM products WHERE id = ? AND user_id = ?");
+            $check = $pdo->prepare("SELECT id, vitrine, status FROM products WHERE id = ? AND user_id = ?");
             $check->execute([$id, $userId]);
-            if (!$check->fetch()) { echo json_encode(['success' => false, 'error' => 'Produto não encontrado.']); exit; }
+            $current = $check->fetch();
+            if (!$current) { echo json_encode(['success' => false, 'error' => 'Produto não encontrado.']); exit; }
+
+            $wantsVitrine = ($input['vitrine'] ?? '0') === '1' ? 1 : 0;
+
+            // Se quer vitrine, status SEMPRE volta pra pendente (admin precisa aprovar)
+            // Se não quer vitrine, mantém active
+            if ($wantsVitrine) {
+                $newStatus = 'pending';
+                $newVitrine = 1;
+            } else {
+                $newStatus = 'active';
+                $newVitrine = 0;
+            }
 
             $stmt = $pdo->prepare("UPDATE products SET name=?, description=?, price=?, image_url=?, category=?, type=?, delivery_method=?, delivery_info=?, vitrine=?, stock=?, status=?, updated_at=NOW() WHERE id = ? AND user_id = ?");
             $stmt->execute([
@@ -67,12 +80,29 @@ try {
                 $input['type'] ?? 'digital',
                 trim($input['delivery_method'] ?? ''),
                 trim($input['delivery_info'] ?? ''),
-                ($input['vitrine'] ?? '0') === '1' ? 1 : 0,
+                $newVitrine,
                 (int)($input['stock'] ?? -1),
-                $input['status'] ?? 'active',
+                $newStatus,
                 $id,
                 $userId,
             ]);
+
+            // Notificar admin se produto quer vitrine e mudou para pendente
+            if ($wantsVitrine && ($current['status'] !== 'pending' || $current['vitrine'] != 1)) {
+                try {
+                    $seller = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+                    $seller->execute([$userId]);
+                    $sellerName = $seller->fetchColumn() ?: 'Desconhecido';
+                    TelegramService::notifyNewProductAdmin(
+                        $sellerName,
+                        trim($input['name'] ?? ''),
+                        (float)($input['price'] ?? 0),
+                        $id,
+                        $input['category'] ?? ''
+                    );
+                } catch (Throwable $e) {}
+            }
+
             echo json_encode(['success' => true]);
             break;
 

@@ -108,6 +108,7 @@ if ($method === 'GET') {
             case 'reject':
                 // Remove da vitrine mas mantém o produto ativo para o vendedor usar em checkouts próprios
                 $reason = trim($input['reason'] ?? '');
+                $sendChat = (bool)($input['send_chat'] ?? true);
                 $pdo->prepare("UPDATE products SET vitrine = 0, updated_at = NOW() WHERE id = ?")
                     ->execute([$id]);
 
@@ -130,6 +131,35 @@ if ($method === 'GET') {
                         if ($reason) $notifMsg .= ' Motivo: ' . $reason;
                         $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, 'warning')")
                             ->execute([$prod['user_id'], '📤 Removido da Vitrine', $notifMsg . ' O produto continua ativo para seus checkouts.']);
+                    }
+
+                    // Enviar mensagem no chat para o vendedor
+                    if ($sendChat && $reason) {
+                        try {
+                            // Procurar sala de moderação existente para este vendedor
+                            $roomCheck = $pdo->prepare("SELECT id FROM chat_rooms WHERE seller_id = ? AND buyer_name = 'Moderação da Plataforma' AND status = 'open' LIMIT 1");
+                            $roomCheck->execute([$prod['user_id']]);
+                            $roomId = $roomCheck->fetchColumn();
+
+                            if (!$roomId) {
+                                // Criar sala de moderação
+                                $token = bin2hex(random_bytes(16));
+                                $pdo->prepare("INSERT INTO chat_rooms (seller_id, product_id, buyer_name, buyer_email, chat_token, status) VALUES (?, ?, 'Moderação da Plataforma', 'admin@plataforma', ?, 'open')")
+                                    ->execute([$prod['user_id'], $id, $token]);
+                                $roomId = (int)$pdo->lastInsertId();
+                            }
+
+                            // Compor mensagem com contexto do produto
+                            $isPending = $prod['status'] === 'pending';
+                            $chatMsg = ($isPending ? "❌ *Produto Reprovado*" : "📤 *Produto Removido da Vitrine*")
+                                     . "\n\n📦 Produto: \"{$prod['name']}\""
+                                     . "\n\n💬 Mensagem do Admin:\n{$reason}"
+                                     . ($isPending ? "\n\n✏️ Corrija o que foi pedido e envie novamente para aprovação." : "");
+
+                            $pdo->prepare("INSERT INTO chat_messages (room_id, sender_type, sender_name, message) VALUES (?, 'admin', 'Dono da Plataforma', ?)")
+                                ->execute([$roomId, $chatMsg]);
+                            $pdo->prepare("UPDATE chat_rooms SET last_message_at = NOW(), product_id = ? WHERE id = ?")->execute([$id, $roomId]);
+                        } catch (Throwable $e) {}
                     }
                 }
 

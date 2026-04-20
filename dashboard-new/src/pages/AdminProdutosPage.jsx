@@ -28,6 +28,7 @@ function StatusBadge({ status }) {
 
 function RejectModal({ product, onClose, onConfirm }) {
     const [reason, setReason] = useState('');
+    const [sendChat, setSendChat] = useState(true);
     const [loading, setLoading] = useState(false);
 
     const isPending = product.status === 'pending';
@@ -39,8 +40,9 @@ function RejectModal({ product, onClose, onConfirm }) {
     const actionText = loading ? (isPending ? 'Reprovando...' : 'Removendo...') : (isPending ? 'Confirmar Reprovação' : 'Confirmar Remoção');
 
     const handle = async () => {
+        if (!reason.trim()) return;
         setLoading(true);
-        await onConfirm(product.id, reason);
+        await onConfirm(product.id, reason, sendChat);
         setLoading(false);
     };
 
@@ -69,22 +71,34 @@ function RejectModal({ product, onClose, onConfirm }) {
                     )}
                     <div>
                         <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-1.5">
-                            Motivo {isPending ? 'da reprovação' : 'da remoção'} (opcional)
+                            Mensagem para o vendedor <span className="text-red-400">*</span>
                         </label>
                         <textarea
-                            rows={3}
+                            rows={4}
                             value={reason}
                             onChange={e => setReason(e.target.value)}
-                            placeholder={isPending ? "Explique ao vendedor por que o produto foi reprovado..." : "Explique por que está removendo da vitrine..."}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-red-500/30 resize-none"
+                            placeholder={isPending ? "Ex: A imagem do produto não é adequada, por favor troque por uma foto real do produto..." : "Ex: Produto removido por não cumprir as diretrizes da plataforma..."}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-primary/30 resize-none"
                         />
+                        {!reason.trim() && <p className="text-xs text-red-400/60 mt-1">Escreva o motivo para o vendedor saber o que corrigir.</p>}
                     </div>
-                    <p className="text-xs text-white/30">O vendedor será notificado automaticamente no dashboard.</p>
+                    <label className="flex items-center gap-3 cursor-pointer p-3 bg-white/[0.02] rounded-xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={sendChat}
+                            onChange={e => setSendChat(e.target.checked)}
+                            className="w-4 h-4 accent-primary rounded"
+                        />
+                        <div>
+                            <p className="text-sm font-bold text-white/80">Enviar via Chat</p>
+                            <p className="text-xs text-white/40">A mensagem chegará na página de chats do vendedor</p>
+                        </div>
+                    </label>
                     <div className="flex gap-3">
                         <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-white/10 text-white/60 hover:bg-white/5 transition-all text-sm font-semibold">
                             Cancelar
                         </button>
-                        <button onClick={handle} disabled={loading} className={`flex-1 py-3 rounded-xl border ${btnClass} transition-all text-sm font-bold disabled:opacity-50`}>
+                        <button onClick={handle} disabled={loading || !reason.trim()} className={`flex-1 py-3 rounded-xl border ${btnClass} transition-all text-sm font-bold disabled:opacity-50`}>
                             {actionText}
                         </button>
                     </div>
@@ -282,13 +296,13 @@ export default function AdminProdutosPage() {
         setActionLoading(null);
     };
 
-    const handleReject = async (id, reason) => {
+    const handleReject = async (id, reason, sendChat = true) => {
         setActionLoading(id);
         try {
             await fetch('/admin_products.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reject', id, reason }),
+                body: JSON.stringify({ action: 'reject', id, reason, send_chat: sendChat }),
             });
             setRejectModal(null);
             fetchProducts();
