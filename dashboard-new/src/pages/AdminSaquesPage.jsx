@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
     Wallet, Search, RefreshCw, CheckCircle, XCircle, Clock,
     Copy, ChevronDown, ArrowUpRight, AlertTriangle, Loader2,
-    BadgeDollarSign, TrendingUp, Ban, CalendarClock
+    BadgeDollarSign, TrendingUp, Ban, CalendarClock, Calendar
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -31,17 +31,19 @@ export default function AdminSaquesPage() {
     const [actionLoading, setActionLoading] = useState(null);
     const [txInputs, setTxInputs]       = useState({});
     const [copied, setCopied]           = useState(null);
+    const [dateFilter, setDateFilter]   = useState('');
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams({ status: statusFilter, search });
+            if (dateFilter) params.append('date', dateFilter);
             const res  = await fetch(`/get_admin_withdrawals.php?${params}`);
             const json = await res.json();
             if (json.success) setData(json);
         } catch (e) { console.error('AdminSaques fetch error:', e); }
         finally { setLoading(false); }
-    }, [statusFilter, search]);
+    }, [statusFilter, search, dateFilter]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -150,6 +152,23 @@ export default function AdminSaquesPage() {
                         placeholder="Buscar por nome, email ou chave PIX..."
                         className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/40 transition-colors"
                     />
+                </div>
+                <div className="relative">
+                    <Calendar size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+                    <input
+                        type="date"
+                        value={dateFilter}
+                        onChange={e => setDateFilter(e.target.value)}
+                        className="bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-3 text-sm text-white/60 focus:outline-none focus:border-primary/40 transition-colors appearance-none [color-scheme:dark]"
+                    />
+                    {dateFilter && (
+                        <button
+                            onClick={() => setDateFilter('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white text-xs font-bold"
+                        >
+                            ✕
+                        </button>
+                    )}
                 </div>
                 <div className="flex gap-2">
                     {[['pending','Pendentes'],['completed','Pagos'],['rejected','Negados'],['all','Todos']].map(([val, label]) => (

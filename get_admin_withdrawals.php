@@ -38,6 +38,12 @@ try {
         array_push($params, $like, $like, $like);
     }
 
+    $date = trim($_GET['date'] ?? '');
+    if (!empty($date) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $sql .= " AND DATE(w.created_at) = ?";
+        $params[] = $date;
+    }
+
     $sql .= " ORDER BY w.created_at DESC LIMIT 200";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
