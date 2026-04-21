@@ -216,7 +216,7 @@ try {
 
         case 'toggle_med':
             $txId = (int)$data['transaction_id'];
-            $stmt = $pdo->prepare("SELECT med, user_id, amount_brl FROM transactions WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT med, user_id, amount_brl, amount_net_brl, status FROM transactions WHERE id = ?");
             $stmt->execute([$txId]);
             $tx = $stmt->fetch();
             if (!$tx) {
@@ -224,15 +224,55 @@ try {
                 break;
             }
             $newMed = $tx['med'] ? 0 : 1;
-            $pdo->prepare("UPDATE transactions SET med = ? WHERE id = ?")->execute([$newMed, $txId]);
-            // Notificar vendedor
-            $msg = $newMed
-                ? "Sua venda #$txId de R$ " . number_format($tx['amount_brl'], 2, ',', '.') . " recebeu um MED (Mecanismo Especial de Devolução). Seu saldo pode ser impactado."
-                : "O MED da venda #$txId foi removido.";
-            $title = $newMed ? 'MED Recebido ⚠️' : 'MED Removido ✅';
-            $type = $newMed ? 'danger' : 'success';
-            $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")
-                ->execute([$tx['user_id'], $title, $msg, $type]);
+            $netAmount = (float)$tx['amount_net_brl'];
+
+            $pdo->beginTransaction();
+            try {
+                $pdo->prepare("UPDATE transactions SET med = ? WHERE id = ?")->execute([$newMed, $txId]);
+
+                // Ajustar saldo: marcar MED = debitar, remover MED = devolver
+                if ($newMed) {
+                    // Debitar valor líquido do vendedor
+                    $result = adjustBalance(
+                        (int)$tx['user_id'],
+                        -abs($netAmount),
+                        'med_debit',
+                        'med_' . $txId,
+                        'MED na venda #' . $txId . ' — R$ ' . number_format($tx['amount_brl'], 2, ',', '.'),
+                        true // allowNegative
+                    );
+                } else {
+                    // Devolver valor líquido ao vendedor
+                    $result = adjustBalance(
+                        (int)$tx['user_id'],
+                        abs($netAmount),
+                        'med_refund',
+                        'med_refund_' . $txId,
+                        'MED removido da venda #' . $txId . ' — estorno R$ ' . number_format($netAmount, 2, ',', '.')
+                    );
+                }
+
+                if (!$result['success']) {
+                    $pdo->rollBack();
+                    echo json_encode(['error' => 'Falha ao ajustar saldo: ' . ($result['error'] ?? 'erro desconhecido')]);
+                    break;
+                }
+
+                // Notificar vendedor
+                $msg = $newMed
+                    ? "Sua venda #$txId de R$ " . number_format($tx['amount_brl'], 2, ',', '.') . " recebeu um MED (Mecanismo Especial de Devolução). O valor líquido de R$ " . number_format($netAmount, 2, ',', '.') . " foi debitado do seu saldo."
+                    : "O MED da venda #$txId foi removido. R$ " . number_format($netAmount, 2, ',', '.') . " foi devolvido ao seu saldo.";
+                $title = $newMed ? 'MED Recebido ⚠️' : 'MED Removido ✅';
+                $type = $newMed ? 'danger' : 'success';
+                $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)")
+                    ->execute([$tx['user_id'], $title, $msg, $type]);
+
+                $pdo->commit();
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                echo json_encode(['error' => 'Erro: ' . $e->getMessage()]);
+                break;
+            }
             echo json_encode(['success' => true, 'med' => $newMed]);
             break;
 
